@@ -38,7 +38,7 @@ public class ImageViewer extends Activity {
         setContentView(R.layout.cameraview);
 
 
-        int image = R.mipmap.example;
+        int image = R.drawable.vehicle_ex;
         ImageView imgFp = (ImageView) findViewById(R.id.imageView);
 
         Mat src = new Mat();
@@ -54,28 +54,24 @@ public class ImageViewer extends Activity {
         Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
 
         // Start dilation section
-        Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 9, 9 ));
+        Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 9, 3 ));
         Imgproc.dilate( mat, mat, element );
         // End dilation section
 
 
         // Start erotion section
-        Mat element2 = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 9, 9 ));
+        Mat element2 = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 9, 3 ));
         Imgproc.erode( mat, mat, element2 );
         // End erotion section
-
-
 
         // Start sustraction
         //Core.absdiff(src, mat, dest);
 
-/*
-        for (int i= 0; i<src.cols(); ++i)
+        for (int j= 0; j<src.cols(); ++j)
         {
-            for (int j=0; j<src.rows(); ++j)
+            for (int i=0; i<src.rows(); ++i)
             {
                 byte valor = (byte)Math.abs(src.get(i,j)[0] - mat.get(i,j)[0]);
-                Log.e("q", String.valueOf(valor));
                 byte[] b = new byte[4];
                 b[0] = valor;
                 b[1] = valor;
@@ -83,17 +79,57 @@ public class ImageViewer extends Activity {
                 b[3] = (byte)(255 & 0xFF);
                 dest.put(i,j, b);
             }
-        }*/
+        }
 
-        Log.e("q", String.valueOf(src.cols()) +" " + String.valueOf(src.rows()) );
         // End sustraction
 
 
+        //START sobel
+        //Imgproc.Sobel(dest, dest, CvType.CV_8U, 0, 1); almost work
+        Mat grad_x = new Mat();
+        Mat abs_grad_x = new Mat();
+        Imgproc.Sobel(dest, grad_x, CvType.CV_8U, 1, 0, 3, 1, Core.BORDER_DEFAULT);
+        //Imgproc.Sobel(dest, grad_y, CvType.CV_16S, 0, 1, 3, 1, Core.BORDER_DEFAULT);
+
+        Core.convertScaleAbs(grad_x, abs_grad_x);
+        //Core.convertScaleAbs(grad_y, abs_grad_y);
+        Core.addWeighted(abs_grad_x, 1, abs_grad_x, 0, 0, dest); // or? Core.addWeighted(abs_grad_x, 0.5, abs_grad_x, 0, 0, dest);
+        //END sobel
+
+        //Start Gaussian Blur
+        Imgproc.GaussianBlur(dest, dest, new Size(5,5), 2);
+        //End Gaussian Blur
 
 
-        Bitmap bm = Bitmap.createBitmap(dest.cols(), dest.rows(), Bitmap.Config.ARGB_8888);
-        Utils.matToBitmap(dest, bm);
+        // Start dilation section
+        Mat element3 = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 9, 3 ));
+        Imgproc.dilate( dest, dest, element3 );
+        // End dilation section
+
+
+        // Start erotion section
+        Mat element4 = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 9, 3 ));
+        Imgproc.erode( dest, dest, element4 );
+        // End erotion section
+
+
+
+
+
+        //start OTSU's threshold
+        Imgproc.cvtColor(dest, dest, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
+        Imgproc.threshold(dest, dest, 0, 255, Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU); //aca se cae
+        //end OTSU's threshold
+
+
+
+        Mat finalMat = dest;
+        Bitmap bm = Bitmap.createBitmap(finalMat.cols(), finalMat.rows(), Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(finalMat, bm);
         imgFp.setImageBitmap(bm);
+
+
+
 
 
         //savedFuncion();
