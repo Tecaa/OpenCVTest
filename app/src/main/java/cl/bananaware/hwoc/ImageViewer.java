@@ -3,6 +3,7 @@ package cl.bananaware.hwoc;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.util.DebugUtils;
@@ -41,7 +42,7 @@ public class ImageViewer extends Activity {
         setContentView(R.layout.cameraview);
 
 
-        int image = R.drawable.vehicle_ex;
+        int image = R.drawable.vehicle_ex6;
         ImageView imgFp = (ImageView) findViewById(R.id.imageView);
 
         Mat src = new Mat();
@@ -140,6 +141,7 @@ public class ImageViewer extends Activity {
 
         //STEP 2: start selecting outlines
         List<RotatedRect> rects = new ArrayList<RotatedRect>();
+        List<MatOfPoint> debugContourns = new ArrayList<MatOfPoint>();
         for(int i=0; i<contours.size(); ++i)//while (itc != contours.end())
         {
             MatOfPoint mop = contours.get(i);
@@ -154,14 +156,14 @@ public class ImageViewer extends Activity {
                 ;// do nothing
             }else{
                 rects.add(mr);
+                debugContourns.add(contours.get(i));
             }
         }
         // end selecting outlines
+        drawContornsToMatInBitmap(src, contours, debugContourns, imgFp);
 
 
-
-
-
+/*
 
 
 
@@ -235,10 +237,31 @@ public class ImageViewer extends Activity {
 
 
             //STEP 11:
-            Mat sinCortar = src.clone();
-            Rect roi2 = new Rect(rects.get(i).boundingRect().x + mr2.boundingRect().x,
-                    rects.get(i).boundingRect().y + mr2.boundingRect().y, (int)mr2.size.width, (int)mr2.size.height);
-            Mat cropped2 = new Mat(sinCortar, roi2);
+            double angle = rects.get(i).angle;
+            Size rect_size = rects.get(i).size;
+            if (rects.get(i).angle < -45.) {
+                angle += 90.0;
+                //swaping height and width
+                double widthTemp = rect_size.width;
+                rect_size.width = rect_size.height;
+                rect_size.height = widthTemp;
+            }
+            // get the rotation matrix
+            Mat matrix = Imgproc.getRotationMatrix2D(rects.get(i).center, angle, 1.0);
+            // perform the affine transformation
+            Mat rotated = new Mat();
+            Mat cropped2 = new Mat();
+            Mat precrop = src.clone();
+            Imgproc.cvtColor(precrop, precrop, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
+            Imgproc.warpAffine(precrop, rotated, matrix, precrop.size(), Imgproc.INTER_CUBIC);
+            // crop the resulting image
+            Imgproc.getRectSubPix(rotated, rect_size, rects.get(i).center, cropped2);
+
+            // Paso 11 sin rotación.
+            //Mat sinCortar = src.clone();
+            //Rect roi2 = new Rect(rects.get(i).boundingRect().x + mr2.boundingRect().x,
+            //        rects.get(i).boundingRect().y + mr2.boundingRect().y, (int)mr2.boundingRect().width, (int)mr2.boundingRect().height);
+            //Mat cropped2 = new Mat(sinCortar, roi2);
 
 
             if (i==0) {
@@ -250,12 +273,14 @@ public class ImageViewer extends Activity {
             }
 
             // Apply Gray Scale, Skew Correction, Fixed Size.
-            //
+            //Mat resizeimage = new Mat();
+            //Size sz = new Size(100,100);
+            //Imgproc.resize( croppedimage, resizeimage, sz );
             //
             //
         }
 
-
+*/
 
 /*
 
@@ -271,11 +296,17 @@ public class ImageViewer extends Activity {
         //savedFuncion();
     }
 
-    private void drawContornsToMatInBitmap(Mat m, List<MatOfPoint> cs, ImageView imgFp) {
+    private void drawContornsToMatInBitmap(Mat m, List<MatOfPoint> cs, List<MatOfPoint> csRefine, ImageView imgFp) {
         Mat finalMat = m.clone();
-        Imgproc.cvtColor(finalMat, finalMat, Imgproc.COLOR_GRAY2RGB); //Convert to RGB
+        //Imgproc.cvtColor(finalMat, finalMat, Imgproc.COLOR_GRAY2RGB); //USAR SI APLICA, SI SE CAE LA APP, Convert to RGB
         for (int cId = 0; cId < cs.size(); cId++) {
-            Imgproc.drawContours(finalMat, cs, cId, new Scalar(0, 0, 255), 1);
+            Imgproc.drawContours(finalMat, cs, cId, new Scalar(0, 255, 0), 1);
+        }
+        if (csRefine != null)
+        {
+            for (int cId = 0; cId < csRefine.size(); cId++) {
+                Imgproc.drawContours(finalMat, csRefine, cId, new Scalar(0, 0, 255), 1);
+            }
         }
         Bitmap bm = Bitmap.createBitmap(finalMat.cols(), finalMat.rows(), Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(finalMat, bm);
