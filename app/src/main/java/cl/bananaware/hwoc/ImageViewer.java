@@ -42,7 +42,7 @@ public class ImageViewer extends Activity {
         setContentView(R.layout.cameraview);
 
 
-        int image = R.drawable.vehicle_ex6;
+        int image = R.drawable.vehicle_ex2;
         ImageView imgFp = (ImageView) findViewById(R.id.imageView);
 
         Mat src = new Mat();
@@ -233,6 +233,9 @@ public class ImageViewer extends Activity {
 
             //STEP 10:
             //checks
+            // Autos chilenos 36cm x 13cm Concentrarse en estos
+            // Motos chilenas nuevas 14,5cm x 12cm.
+            // Motos chilenas antiguas 14,5cm x 8cm.
 
 
 
