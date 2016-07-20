@@ -130,8 +130,18 @@ public class ImageViewer extends Activity {
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
         Mat hierarchy = new Mat();
         //cv::findContours(inputImg, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
-        Imgproc.findContours(dest, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE );
+        Mat temp = dest.clone();
+        Imgproc.findContours(temp, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE );
         // end Finding outlines in the binary image
+
+
+        Imgproc.cvtColor(dest, dest, Imgproc.COLOR_GRAY2RGB); //Convert to gray scale
+        for (int q=0; q<contours.size(); ++q)
+            Imgproc.drawContours(dest, contours, q, new Scalar(0, 255, 0), 1);
+        Mat finalMat3 = dest;
+        Bitmap bm3 = Bitmap.createBitmap(finalMat3.cols(), finalMat3.rows(), Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(finalMat3, bm3);
+        imgFp.setImageBitmap(bm3);
 
 
 
@@ -158,6 +168,10 @@ public class ImageViewer extends Activity {
         }
         // end selecting outlines
 
+
+
+
+        /*
         //STEP 3: loop
         for (int i=0; i<rects.size(); ++i)
         {
@@ -228,7 +242,7 @@ public class ImageViewer extends Activity {
 
 
 
-/*
+
         Mat finalMat = dest;
         Bitmap bm = Bitmap.createBitmap(finalMat.cols(), finalMat.rows(), Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(finalMat, bm);
