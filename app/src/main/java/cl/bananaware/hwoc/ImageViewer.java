@@ -42,7 +42,7 @@ public class ImageViewer extends Activity {
         setContentView(R.layout.cameraview);
 
 
-        int image = R.drawable.vehicle_ex22;
+        int image = R.drawable.vehicle_ex4;
         ImageView imgFp = (ImageView) findViewById(R.id.imageView);
 
         Mat src = new Mat();
@@ -58,15 +58,19 @@ public class ImageViewer extends Activity {
         Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
 
         // Start dilation section
-        Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 9, 3 ));
+        float dilatationAmplifier = 1.4f;
+        Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 9*dilatationAmplifier, 3*dilatationAmplifier ));
         Imgproc.dilate( mat, mat, element );
         // End dilation section
 
-
+        float erotionAmplifier = 1;
         // Start erotion section
-        Mat element2 = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 9, 3 ));
+        Mat element2 = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 9*erotionAmplifier, 3*erotionAmplifier ));
         Imgproc.erode( mat, mat, element2 );
         // End erotion section
+
+
+
 
         // Start sustraction
         //Core.absdiff(src, mat, dest);
@@ -88,6 +92,7 @@ public class ImageViewer extends Activity {
         // End sustraction
 
 
+
         //START sobel
         //Imgproc.Sobel(dest, dest, CvType.CV_8U, 0, 1); almost work
         Mat grad_x = new Mat();
@@ -95,20 +100,28 @@ public class ImageViewer extends Activity {
         Imgproc.Sobel(dest, grad_x, CvType.CV_8U, 1, 0, 3, 1, Core.BORDER_DEFAULT);
         //Imgproc.Sobel(dest, grad_y, CvType.CV_16S, 0, 1, 3, 1, Core.BORDER_DEFAULT);
 
+
         Core.convertScaleAbs(grad_x, abs_grad_x);
         //Core.convertScaleAbs(grad_y, abs_grad_y);
         Core.addWeighted(abs_grad_x, 1, abs_grad_x, 0, 0, dest); // or? Core.addWeighted(abs_grad_x, 0.5, abs_grad_x, 0, 0, dest);
         //END sobel
+
+
+
 
         //Start Gaussian Blur
         Imgproc.GaussianBlur(dest, dest, new Size(5,5), 2);
         //End Gaussian Blur
 
 
+
         // Start dilation section
-        Mat element3 = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 9, 3 ));
+        float dilationAmplifier2 = 2.9f;
+        Mat element3 = Imgproc.getStructuringElement( Imgproc.MORPH_RECT,
+                new Size( 9*dilationAmplifier2, 3*dilationAmplifier2 ));
         Imgproc.dilate( dest, dest, element3 );
         // End dilation section
+
 
 
         // Start erotion section
