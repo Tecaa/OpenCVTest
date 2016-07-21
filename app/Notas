@@ -1,0 +1,3 @@
+- El archivo vehicle_ex2 da problemas porque el zoom es mucho. Al crear la imagen vehicle_ex22 se
+pierde el problema y aparecer en un recuadro azul la patente. Probar mejorar los filtros. O analizar
+como hacerlos sensibles al zoom.

@@ -42,7 +42,7 @@ public class ImageViewer extends Activity {
         setContentView(R.layout.cameraview);
 
 
-        int image = R.drawable.vehicle_ex2;
+        int image = R.drawable.vehicle_ex22;
         ImageView imgFp = (ImageView) findViewById(R.id.imageView);
 
         Mat src = new Mat();
@@ -124,7 +124,7 @@ public class ImageViewer extends Activity {
         Imgproc.cvtColor(dest, dest, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
         Imgproc.threshold(dest, dest, 0, 255, Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU); //aca se cae
         //end OTSU's threshold
-
+        drawContornsToMatInBitmap(dest, null, null, imgFp);
 
 
         //STEP 1: start Finding outlines in the binary image
@@ -163,9 +163,9 @@ public class ImageViewer extends Activity {
         drawContornsToMatInBitmap(src, contours, debugContourns, imgFp);
 
 
+
+
 /*
-
-
 
         //STEP 3: loop
         for (int i=0; i<rects.size(); ++i)
@@ -302,8 +302,11 @@ public class ImageViewer extends Activity {
     private void drawContornsToMatInBitmap(Mat m, List<MatOfPoint> cs, List<MatOfPoint> csRefine, ImageView imgFp) {
         Mat finalMat = m.clone();
         //Imgproc.cvtColor(finalMat, finalMat, Imgproc.COLOR_GRAY2RGB); //USAR SI APLICA, SI SE CAE LA APP, Convert to RGB
-        for (int cId = 0; cId < cs.size(); cId++) {
-            Imgproc.drawContours(finalMat, cs, cId, new Scalar(0, 255, 0), 1);
+        if (cs != null)
+        {
+            for (int cId = 0; cId < cs.size(); cId++) {
+                Imgproc.drawContours(finalMat, cs, cId, new Scalar(0, 255, 0), 1);
+            }
         }
         if (csRefine != null)
         {
