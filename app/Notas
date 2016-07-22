@@ -1,7 +1,8 @@
 - El archivo vehicle_ex2 da problemas porque el zoom es mucho. Al crear la imagen vehicle_ex22 se
 pierde el problema y aparecer en un recuadro azul la patente. Probar mejorar los filtros. O analizar
 como hacerlos sensibles al zoom.
-- Al parecer el zoom y quizas también la angulación afecta mucho. Para esto se ve que jugando con
+- Al parecer el zoom y quizás también la angulación afecta mucho. Para esto se ve que jugando con
 distintos valores de dilatationAmplifier y dilatationAmplifier2 se pueden obtener mejores resultados
 en algunos fotos aunque a veces esto empeora los resultados de otras fotos. 1.4 y 2.9 parecen ser
 valores regularmente buenos en todas las fotos de prueba.
+- Revisar que sucede con vehicke_ex5 que solo toma como rotatedRect una parte de la patente y no completa. con i==3.

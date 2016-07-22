@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.support.v4.util.DebugUtils;
 import android.util.Log;
 import android.view.SurfaceView;
@@ -19,6 +20,7 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
@@ -42,7 +44,7 @@ public class ImageViewer extends Activity {
         setContentView(R.layout.cameraview);
 
 
-        int image = R.drawable.vehicle_ex4;
+        int image = R.drawable.vehicle_ex5;
         ImageView imgFp = (ImageView) findViewById(R.id.imageView);
 
         Mat src = new Mat();
@@ -137,7 +139,6 @@ public class ImageViewer extends Activity {
         Imgproc.cvtColor(dest, dest, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
         Imgproc.threshold(dest, dest, 0, 255, Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU); //aca se cae
         //end OTSU's threshold
-        drawContornsToMatInBitmap(dest, null, null, imgFp);
 
 
         //STEP 1: start Finding outlines in the binary image
@@ -173,20 +174,23 @@ public class ImageViewer extends Activity {
             }
         }
         // end selecting outlines
-        drawContornsToMatInBitmap(src, contours, debugContourns, imgFp);
+
+        // DRAWING GREEN AND BLUE LINES
+        //drawContornsToMatInBitmap(src.clone(), contours, debugContourns, imgFp);
 
 
 
 
-/*
+
 
         //STEP 3: loop
         for (int i=0; i<rects.size(); ++i)
         {
-            if (i!=0)
+            if (i!=i)
                 continue;
 
             //STEP 4:
+
             double dx = 0.15126 * rects.get(i).boundingRect().size().width;
             double dy = 0.625* rects.get(i).boundingRect().size().height;;
             int newWidth = (int)(rects.get(i).boundingRect().size().width + dx);
@@ -194,16 +198,60 @@ public class ImageViewer extends Activity {
 
             //STEP 5:
             Mat uncropped = src.clone();
+
+            // si excedimos el ancho de la imagen, lo truncamos
+            if (src.width() < rects.get(i).boundingRect().x + newWidth)
+                newWidth = newWidth -  ((rects.get(i).boundingRect().x + newWidth) - src.width());
+            // si excedimos el alto de la imagen, lo truncamos
+            if (src.height() < rects.get(i).boundingRect().y + newHeight)
+                newHeight = newHeight -  ((rects.get(i).boundingRect().y + newHeight) - src.height());
+
             Rect roi = new Rect(rects.get(i).boundingRect().x, rects.get(i).boundingRect().y, newWidth, newHeight);
             Mat cropped = new Mat(uncropped, roi);
+            Mat croppedColor = cropped.clone();
+            //drawContornsToMatInBitmap(uncropped, null, null, imgFp);
 
 
 
 
-            Mat finalMat3 = cropped;
-            Bitmap bm3 = Bitmap.createBitmap(finalMat3.cols(), finalMat3.rows(), Bitmap.Config.ARGB_8888);
-            Utils.matToBitmap(finalMat3, bm3);
-            imgFp.setImageBitmap(bm3);
+
+            ////////////////////////////// START INVENCION MIA //////////////////////////////
+
+            Mat grad_x2 = new Mat();
+            Mat abs_grad_x2 = new Mat();
+            Imgproc.Sobel(cropped, grad_x2, CvType.CV_8U, 1, 0, 3, 1, Core.BORDER_DEFAULT);
+
+
+            Core.convertScaleAbs(grad_x2, abs_grad_x2);
+            //Core.convertScaleAbs(grad_y, abs_grad_y);
+            Core.addWeighted(abs_grad_x2, 1, abs_grad_x2, 0, 0, cropped); // or? Core.addWeighted(abs_grad_x, 0.5, abs_grad_x, 0, 0, dest);
+            //END sobel
+
+
+
+
+            //Start Gaussian Blur
+            Imgproc.GaussianBlur(cropped, cropped, new Size(5,5), 2);
+            //End Gaussian Blur
+
+
+            // Start dilation section
+            float dilationAmplifier3 = 1f;
+            Mat element5 = Imgproc.getStructuringElement( Imgproc.MORPH_RECT,
+                    new Size( 9*dilationAmplifier3, 3*dilationAmplifier3 ));
+            Imgproc.dilate( cropped, cropped, element5 );
+            // End dilation section
+
+
+
+            // Start erotion section
+            float erotionAmplifier3 = 1f;
+            Mat element6 = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 9*erotionAmplifier3, 3*erotionAmplifier3 ));
+            Imgproc.erode( cropped, cropped, element6 );
+            // End erotion section
+
+            ////////////////////////////// END INVENCION MIA //////////////////////////////
+
 
 
 
@@ -216,6 +264,9 @@ public class ImageViewer extends Activity {
             Mat hierarchy2 = new Mat();
             Imgproc.findContours(cropped.clone(), contours2, hierarchy2, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE );
 
+            // DRAW A SECTION WITH ITS CONTOURS
+            //Imgproc.cvtColor(cropped, cropped, Imgproc.COLOR_GRAY2RGB); //Convert to gray scale
+            //drawContornsToMatInBitmap(cropped, contours2, null, imgFp );
 
 
 
@@ -223,12 +274,12 @@ public class ImageViewer extends Activity {
             //STEP 8:
             double maxArea = 0;
             int maxAreaIndex = 0;
-            for(int j=0; j<contours2.size(); ++j)//while (itc != contours.end())
+            for(int j=0; j<contours2.size(); ++j)
             {
                 MatOfPoint mop = contours2.get(j);
                 MatOfPoint2f mop2f = mopToMop2f(mop);
                 //MatOfPoint2f mop2f = new MatOfPoint2f(mop);
-                RotatedRect mr = Imgproc.minAreaRect(mop2f); // SE CAE EN ESTA LINEA
+                RotatedRect mr = Imgproc.minAreaRect(mop2f);
 
                 double currentArea=mr.size.width * mr.size.height;
                 if (currentArea > maxArea) {
@@ -237,41 +288,78 @@ public class ImageViewer extends Activity {
                 }
             }
 
+            //Imgproc.cvtColor(cropped, cropped, Imgproc.COLOR_GRAY2RGB); //Convert to gray scale
+            //drawContornsToMatInBitmap(cropped, contours2.get(maxAreaIndex), imgFp );
+
+
+
 
             //STEP 9:
             MatOfPoint mop2 = contours2.get(maxAreaIndex);
             MatOfPoint2f mop2f2 = mopToMop2f(mop2);
             //MatOfPoint2f mop2f = new MatOfPoint2f(mop);
-            RotatedRect mr2 = Imgproc.minAreaRect(mop2f2); // SE CAE EN ESTA LINEA
+            RotatedRect mr2 = Imgproc.minAreaRect(mop2f2);
+
+            // DRAWING ROTATED RECTANGLE
+           // Imgproc.cvtColor(cropped, cropped, Imgproc.COLOR_GRAY2RGB);
+          //  drawContornsToMatInBitmap(drawRotatedRectInMat(mr2, croppedColor), null, null, imgFp);
+           // if (i==3)
+           //     break;
 
             //STEP 10:
             //checks
-            // Autos chilenos 36cm x 13cm Concentrarse en estos
+            // Autos chilenos 36cm x 13cm Concentrarse en éstos
             // Motos chilenas nuevas 14,5cm x 12cm.
             // Motos chilenas antiguas 14,5cm x 8cm.
-
-
-
-            //STEP 11:
-            double angle = rects.get(i).angle;
-            Size rect_size = rects.get(i).size;
-            if (rects.get(i).angle < -45.) {
+            double angle = mr2.angle;
+            Size rect_size = mr2.size;
+            if (mr2.angle < -45.) {
                 angle += 90.0;
                 //swaping height and width
                 double widthTemp = rect_size.width;
                 rect_size.width = rect_size.height;
                 rect_size.height = widthTemp;
             }
+
+            double imageRatio = rect_size.width / rect_size.height;//Math.max(mr2.size.width,mr2.size.height)/Math.min(mr2.size.width,mr2.size.height);
+            final double OFFICIAL_RATIO = 36f/13f;
+            final double MIN_RATIO = 2.2f;
+            final double MAX_RATIO = 3.3f;
+            boolean ratioCorrect = false;
+            if (imageRatio >= MIN_RATIO && imageRatio <= MAX_RATIO)
+                ratioCorrect = true;
+
+            boolean areaCorrect = false;
+            if (ratioCorrect)
+            {
+                // AREAS Y PORCENTAJE DE AREAS
+                double area = rect_size.width*rect_size.height;
+                double maxAreaImage = src.size().width * src.size().height;
+                double percentajeImage = area/maxAreaImage;
+                final double MIN_AREA = 2000;
+                final double MAX_PERCENTAJE_AREA = 0.15;
+                if (area >= MIN_AREA && percentajeImage <= MAX_PERCENTAJE_AREA)
+                    areaCorrect = true;
+            }
+
+
+
+
+            //STEP 11:
+            if (!areaCorrect)
+                continue;
+
             // get the rotation matrix
-            Mat matrix = Imgproc.getRotationMatrix2D(rects.get(i).center, angle, 1.0);
+            Mat matrix = Imgproc.getRotationMatrix2D(mr2.center, angle, 1.0);
             // perform the affine transformation
             Mat rotated = new Mat();
             Mat cropped2 = new Mat();
-            Mat precrop = src.clone();
+            Mat precrop = croppedColor.clone();
             Imgproc.cvtColor(precrop, precrop, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
             Imgproc.warpAffine(precrop, rotated, matrix, precrop.size(), Imgproc.INTER_CUBIC);
             // crop the resulting image
-            Imgproc.getRectSubPix(rotated, rect_size, rects.get(i).center, cropped2);
+            Imgproc.getRectSubPix(rotated, rect_size, mr2.center, cropped2);
+
 
             // Paso 11 sin rotación.
             //Mat sinCortar = src.clone();
@@ -280,12 +368,13 @@ public class ImageViewer extends Activity {
             //Mat cropped2 = new Mat(sinCortar, roi2);
 
 
-            if (i==0) {
+            if (i==3) {
                 // mostrar en pantalla
                 Mat finalMat1 = cropped2;
                 Bitmap bm1 = Bitmap.createBitmap(finalMat1.cols(), finalMat1.rows(), Bitmap.Config.ARGB_8888);
                 Utils.matToBitmap(finalMat1, bm1);
                 imgFp.setImageBitmap(bm1);
+
             }
 
             // Apply Gray Scale, Skew Correction, Fixed Size.
@@ -296,7 +385,7 @@ public class ImageViewer extends Activity {
             //
         }
 
-*/
+
 
 /*
 
@@ -332,6 +421,22 @@ public class ImageViewer extends Activity {
         imgFp.setImageBitmap(bm);
     }
 
+    private void drawContornsToMatInBitmap(Mat m, MatOfPoint cs, ImageView imgFp) {
+        List<MatOfPoint> l = new ArrayList<MatOfPoint>();
+        if (cs != null)
+            l.add(cs);
+        drawContornsToMatInBitmap(m, l, null, imgFp);
+    }
+
+    private Mat drawRotatedRectInMat(RotatedRect rRect, Mat mat)
+    {
+        Point[] vertices = new Point[4];
+        rRect.points(vertices);
+        for (int j = 0; j < 4; j++){
+            Imgproc.line(mat, vertices[j], vertices[(j+1)%4], new Scalar(255,0,0));
+        }
+        return mat;
+    }
     private MatOfPoint2f mopToMop2f(MatOfPoint mop) {
         return new MatOfPoint2f( mop.toArray() );
     }
