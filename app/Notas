@@ -5,4 +5,4 @@ como hacerlos sensibles al zoom.
 distintos valores de dilatationAmplifier y dilatationAmplifier2 se pueden obtener mejores resultados
 en algunos fotos aunque a veces esto empeora los resultados de otras fotos. 1.4 y 2.9 parecen ser
 valores regularmente buenos en todas las fotos de prueba.
-- Revisar que sucede con vehicke_ex5 que solo toma como rotatedRect una parte de la patente y no completa. con i==3.
+- Revisar que sucede con vehicle_ex5 que solo toma como rotatedRect una parte de la patente y no completa. con i==3.

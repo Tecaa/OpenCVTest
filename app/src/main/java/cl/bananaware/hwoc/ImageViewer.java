@@ -44,12 +44,11 @@ public class ImageViewer extends Activity {
         setContentView(R.layout.cameraview);
 
 
-        int image = R.drawable.vehicle_ex5;
+        int image = R.drawable.vehicle_ex2;
         ImageView imgFp = (ImageView) findViewById(R.id.imageView);
 
         Mat src = new Mat();
         Utils.bitmapToMat(BitmapFactory.decodeResource(getResources(), image) , src);
-
 
 
 
@@ -176,7 +175,7 @@ public class ImageViewer extends Activity {
         // end selecting outlines
 
         // DRAWING GREEN AND BLUE LINES
-        //drawContornsToMatInBitmap(src.clone(), contours, debugContourns, imgFp);
+        drawContornsToMatInBitmap(src.clone(), contours, debugContourns, imgFp);
 
 
 
@@ -288,9 +287,10 @@ public class ImageViewer extends Activity {
                 }
             }
 
-            //Imgproc.cvtColor(cropped, cropped, Imgproc.COLOR_GRAY2RGB); //Convert to gray scale
-            //drawContornsToMatInBitmap(cropped, contours2.get(maxAreaIndex), imgFp );
-
+            Imgproc.cvtColor(cropped, cropped, Imgproc.COLOR_GRAY2RGB); //Convert to gray scale
+            drawContornsToMatInBitmap(cropped, contours2.get(maxAreaIndex), imgFp );
+            if (i==1)
+                break;
 
 
 
@@ -301,10 +301,10 @@ public class ImageViewer extends Activity {
             RotatedRect mr2 = Imgproc.minAreaRect(mop2f2);
 
             // DRAWING ROTATED RECTANGLE
-           // Imgproc.cvtColor(cropped, cropped, Imgproc.COLOR_GRAY2RGB);
-          //  drawContornsToMatInBitmap(drawRotatedRectInMat(mr2, croppedColor), null, null, imgFp);
-           // if (i==3)
-           //     break;
+            //Imgproc.cvtColor(cropped, cropped, Imgproc.COLOR_GRAY2RGB);
+            //drawContornsToMatInBitmap(drawRotatedRectInMat(mr2, croppedColor), null, null, imgFp);
+            //if (i==1)
+            //    break;
 
             //STEP 10:
             //checks
@@ -368,7 +368,7 @@ public class ImageViewer extends Activity {
             //Mat cropped2 = new Mat(sinCortar, roi2);
 
 
-            if (i==3) {
+            if (i==0) {
                 // mostrar en pantalla
                 Mat finalMat1 = cropped2;
                 Bitmap bm1 = Bitmap.createBitmap(finalMat1.cols(), finalMat1.rows(), Bitmap.Config.ARGB_8888);
