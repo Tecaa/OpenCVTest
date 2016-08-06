@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<!-- saved from url=(0067)http://rnd.azoft.com/instant-license-plate-recognition-in-ios-apps/ -->
+<html lang="en" prefix="fb: http://www.facebook.com/2008/fbml"><!-- xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" --><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script src="./azoft_files/cb=gapi.loaded_1" async=""></script><script src="./azoft_files/cb=gapi.loaded_0" async=""></script><script type="text/javascript" src="./azoft_files/shares.json"></script><script type="text/javascript" src="./azoft_files/widgets.js"></script><script type="text/javascript" src="./azoft_files/plusone.js" gapi_processed="true"></script><script type="text/javascript" src="./azoft_files/300lo.json"></script><script type="text/javascript" src="./azoft_files/boost"></script>
+
+	
+	<meta name="p:domain_verify" content="4144b1bfbbf8aa970d55799b7042fc14">
+		<meta name="og:title" content="Real-Time Video Processing Algorithm for Instant License Plate Recognition in iOS Apps (using OpenCV &amp; GPGPU)">
+	<meta name="og:description" content="The GPGPU opens new horizons for mobile apps. Shifting license plate recognition from OpenCV to GPGPU has made real-time number recognition possible.">
+	
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+	
+	<link rel="alternate" type="application/rss+xml" title="Azoft RSS" href="http://www.azoft.com/rss/">
+
+	<link type="text/css" rel="stylesheet" href="./azoft_files/style.css">
+
+	
+	<!-- Facebook Pixel Code -->
+	<script type="text/javascript" async="" charset="UTF-8" src="./azoft_files/widget_en_US.js"></script><script id="facebook-jssdk" async="" src="./azoft_files/all.js"></script><script type="text/javascript" async="" src="./azoft_files/widgets(1).js"></script><script type="text/javascript" async="" src="./azoft_files/ga.js"></script><script type="text/javascript" async="" src="./azoft_files/127403"></script><script async="" src="./azoft_files/fbevents.js"></script><script>
+		!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+			n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+			n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+			t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+			document,'script','https://connect.facebook.net/en_US/fbevents.js');
+
+		fbq('init', '1708473486061840');
+		fbq('track', "PageView");
+	</script>
+	<noscript>
+		&lt;img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1708473486061840&amp;ev=PageView&amp;noscript=1" /&gt;
+	</noscript>
+	<!-- End Facebook Pixel Code -->
+
+	<script type="text/javascript" src="./azoft_files/jquery.js"></script>
+	<link rel="stylesheet" href="./azoft_files/validationEngine.jquery.css" type="text/css">
+
+	<script src="./azoft_files/jquery.validationEngine-en.js" type="text/javascript" charset="utf-8"></script>
+	<script src="./azoft_files/other-validations.js" type="text/javascript" charset="utf-8"></script>
+	<script src="./azoft_files/jquery.validationEngine.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript" src="./azoft_files/script.js"></script>
+	
+	<!-- BEGIN JIVOSITE CODE {literal} -->
+	<script type="text/javascript">
+		(function(){ var widget_id = '127403';
+		var s = document.createElement('script'); s.type = 'text/javascript'; s.async = true; s.src = '//code.jivosite.com/script/widget/'+widget_id; var ss = document.getElementsByTagName('script')[0]; ss.parentNode.insertBefore(s, ss);})();
+	</script>
+	<!-- {/literal} END JIVOSITE CODE -->
+
+	
+	<script type="text/javascript">
+
+	$(document).ready(function() {
+	    $('.text img').each(function() {
+	        var maxWidth = 505;
+	        var ratio = 0;
+	        var width = $(this).width();
+	        var height = $(this).height();
+	        if(width > maxWidth){
+
+	            ratio = maxWidth / width; 
+
+	            $(this).css("width", maxWidth);
+
+	            $(this).css("height", height * ratio);
+
+	            height = height * ratio;
+
+	            width = width * ratio;
+
+	        }
+	    });
+	});
+	</script>
+
+		
+	<script type="text/javascript">
+		$(function() {
+			$('.social a').hover(
+				 function () {
+					$(this).find('img').toggle();
+				 }
+			);
+			$('.button-menu').bind('click', function(e) {
+				$(this).toggleClass('open');
+				$('.menu').toggleClass('open')
+			});
+			$('.mlevel').bind('click', function(e) {
+				if(!/Mobile|Android/i.test(window.navigator.userAgent)) return;
+				var sub = $(this).parent('div').parent('li').children('.sub');
+				$('.mlevel').removeClass('open');
+				if (sub.length > 0) {
+					if($(this).hasClass('open')) return;
+					$(this).addClass('open');
+					$(sub).show();
+					return false;
+				}
+			});
+		});
+	</script>
+	
+	<!--[if IE 6]>
+		<link type="text/css" rel="stylesheet" href="http://rnd.azoft.com/wp-content/themes/azoft/css/ie6.css" />
+		<script type="text/javascript" src="http://rnd.azoft.com/wp-content/themes/azoft/js/DD_belatedPNG.js"></script>
+		<script type="text/javascript">DD_belatedPNG.fix('.ie');</script>
+	<![endif]-->
+
+	
+<!-- This site is optimized with the Yoast SEO plugin v3.4.1 - https://yoast.com/wordpress/plugins/seo/ -->
+<title>Real-Time Video Processing Algorithm for Instant License Plate Recognition in iOS Apps (using OpenCV &amp; GPGPU)</title>
+<meta name="description" content="The GPGPU opens new horizons for mobile apps. Shifting license plate recognition from OpenCV to GPGPU has made real-time number recognition possible.">
+<meta name="robots" content="noodp">
+<meta name="keywords" content="computer vision, optical recognition, opencv, GPGPU, ios development">
+<link rel="canonical" href="http://rnd.azoft.com/instant-license-plate-recognition-in-ios-apps/">
+<!-- / Yoast SEO plugin. -->
+
+<link rel="alternate" type="application/rss+xml" title="Azoft RnD » Real-Time Video Processing Algorithm for Instant License Plate Recognition in iOS Apps (using OpenCV &amp; GPGPU) Comments Feed" href="http://rnd.azoft.com/instant-license-plate-recognition-in-ios-apps/feed/">
+		<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/72x72\/","ext":".png","source":{"concatemoji":"http:\/\/rnd.azoft.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.5.3"}};
+			!function(a,b,c){function d(a){var c,d,e,f=b.createElement("canvas"),g=f.getContext&&f.getContext("2d"),h=String.fromCharCode;if(!g||!g.fillText)return!1;switch(g.textBaseline="top",g.font="600 32px Arial",a){case"flag":return g.fillText(h(55356,56806,55356,56826),0,0),f.toDataURL().length>3e3;case"diversity":return g.fillText(h(55356,57221),0,0),c=g.getImageData(16,16,1,1).data,d=c[0]+","+c[1]+","+c[2]+","+c[3],g.fillText(h(55356,57221,55356,57343),0,0),c=g.getImageData(16,16,1,1).data,e=c[0]+","+c[1]+","+c[2]+","+c[3],d!==e;case"simple":return g.fillText(h(55357,56835),0,0),0!==g.getImageData(16,16,1,1).data[0];case"unicode8":return g.fillText(h(55356,57135),0,0),0!==g.getImageData(16,16,1,1).data[0]}return!1}function e(a){var c=b.createElement("script");c.src=a,c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var f,g,h,i;for(i=Array("simple","flag","unicode8","diversity"),c.supports={everything:!0,everythingExceptFlag:!0},h=0;h<i.length;h++)c.supports[i[h]]=d(i[h]),c.supports.everything=c.supports.everything&&c.supports[i[h]],"flag"!==i[h]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[i[h]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(g=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",g,!1),a.addEventListener("load",g,!1)):(a.attachEvent("onload",g),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),f=c.source||{},f.concatemoji?e(f.concatemoji):f.wpemoji&&f.twemoji&&(e(f.twemoji),e(f.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script><script src="./azoft_files/wp-emoji-release.min.js" type="text/javascript"></script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<link rel="stylesheet" id="gdsr_style_main-css" href="./azoft_files/gdsr.css.php" type="text/css" media="all">
+<link rel="stylesheet" id="gdsr_style_xtra-css" href="./azoft_files/rating.css" type="text/css" media="all">
+<link rel="stylesheet" id="fbSEOStylesheet-css" href="./azoft_files/fbseo-style.css" type="text/css" media="all">
+<link rel="stylesheet" id="fbSEOwpcomments-css" href="./azoft_files/wpcomments.css" type="text/css" media="all">
+<script type="text/javascript" src="./azoft_files/jquery(1).js"></script>
+<script type="text/javascript" src="./azoft_files/jquery-migrate.min.js"></script>
+<script type="text/javascript" src="./azoft_files/gdsr.js"></script>
+<link rel="https://api.w.org/" href="http://rnd.azoft.com/wp-json/">
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://rnd.azoft.com/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://rnd.azoft.com/wp-includes/wlwmanifest.xml"> 
+<meta name="generator" content="WordPress 4.5.3">
+<link rel="shortlink" href="http://rnd.azoft.com/?p=3152">
+<link rel="alternate" type="application/json+oembed" href="http://rnd.azoft.com/wp-json/oembed/1.0/embed?url=http%3A%2F%2Frnd.azoft.com%2Finstant-license-plate-recognition-in-ios-apps%2F">
+<link rel="alternate" type="text/xml+oembed" href="http://rnd.azoft.com/wp-json/oembed/1.0/embed?url=http%3A%2F%2Frnd.azoft.com%2Finstant-license-plate-recognition-in-ios-apps%2F&amp;format=xml">
+<script type="text/javascript" src="./azoft_files/skripta.js"></script><link rel="stylesheet" href="./azoft_files/ae_style.css" type="text/css"><script type="text/javascript">
+//<![CDATA[
+var gdsr_cnst_nonce = "38f5322174";
+var gdsr_cnst_ajax = "http://rnd.azoft.com/wp-content/plugins/gd-star-rating/ajax.php";
+var gdsr_cnst_button = 1;
+var gdsr_cnst_cache = 0;
+// ]]>
+</script>
+<!--[if IE]><style type="text/css">.ratemulti .starsbar .gdcurrent { -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=70)"; filter: alpha(opacity=70); }</style><![endif]-->
+	<link href="./azoft_files/SyntaxHighlighter.css" type="text/css" rel="stylesheet">
+	<meta property="fb:admins" content="100004654291835"><meta property="og:title" content="Real-Time Video Processing Algorithm for Instant License Plate Recognition in iOS Apps (using OpenCV &amp; GPGPU)"><meta property="fb:admins" content="100004654291835"><meta property="og:site_name" content="Azoft RnD"><meta property="og:url" content="http://rnd.azoft.com/instant-license-plate-recognition-in-ios-apps/"><meta property="og:type" content="article"><meta property="fb:app_id" content="482862998415017">
+<style type="text/css" id="syntaxhighlighteranchor"></style>
+	<link type="text/css" rel="stylesheet" href="./azoft_files/media.css" media="all">
+
+	<script type="text/javascript">
+
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-12600422-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+
+	</script>
+
+<style type="text/css">#at16lb{display:none;position:absolute;top:0;left:0;width:100%;height:100%;z-index:1001;background-color:#000;opacity:.001}#at16pc,#at16pi,#at16pib,#at_complete,#at_email,#at_error,#at_share,#at_success{position:static!important}.at15dn{display:none}.at15a{border:0;height:0;margin:0;padding:0;width:230px}.atnt{text-align:center!important;padding:6px 0 0!important;height:24px!important}.atnt a{text-decoration:none;color:#36b}.atnt a:hover{text-decoration:underline}#at15s,#at16nms,#at16p,#at16p form input,#at16p label,#at16p textarea,#at16recap,#at16sas,#at_msg,#at_share .at_item{font-family:arial,helvetica,tahoma,verdana,sans-serif!important;font-size:9pt!important;outline-style:none;outline-width:0;line-height:1em}* html #at15s.mmborder{position:absolute!important}#at15s.mmborder{position:fixed!important;width:250px!important}#at15s{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABtJREFUeNpiZGBgaGAgAjAxEAlGFVJHIUCAAQDcngCUgqGMqwAAAABJRU5ErkJggg==);float:none;line-height:1em;margin:0;overflow:visible;padding:5px;text-align:left;position:absolute}#at15s a,#at15s span{outline:0;direction:ltr;text-transform:none}#at15s .at-label{margin-left:5px}#at15s .at-icon-wrapper,#at16ps .at-icon-wrapper{width:1pc;height:1pc;vertical-align:middle}#at15s .at-icon,#at16ps .at-icon{width:1pc;height:1pc}.at4-icon{display:inline-block;background-repeat:no-repeat;background-position:top left;margin:0;overflow:hidden;cursor:pointer}.addthis_16x16_style .at4-icon,.addthis_16x16_white_style .at4-icon,.addthis_default_style .at4-icon,.at4-icon,.at-16x16{width:1pc;height:1pc;line-height:1pc;background-size:1pc!important}.addthis_32x32_style .at4-icon,.addthis_32x32_white_style .at4-icon,.at-32x32{width:2pc;height:2pc;line-height:2pc;background-size:2pc!important}.addthis_24x24_style .at4-icon,.addthis_24x24_white_style .at4-icon,.at-24x24{width:24px;height:24px;line-height:24px;background-size:24px!important}.addthis_20x20_style .at4-icon,.addthis_20x20_white_style .at4-icon,.at-20x20{width:20px;height:20px;line-height:20px;background-size:20px!important}.at4-icon.circular,.circular .at4-icon,.circular.aticon{border-radius:50%}.at4-icon.rounded,.rounded .at4-icon{border-radius:4px}.at4-icon-left{float:left}#at15s .at4-icon{text-indent:20px;padding:0;overflow:visible;white-space:nowrap;background-size:1pc;width:1pc;height:1pc;background-position:top left;display:inline-block;line-height:1pc}.addthis_vertical_style .at4-icon,.at4-follow-container .at4-icon,.sortable-list-container .at4-icon{margin-right:5px}html>body #at15s{width:250px!important}#at15s.atm{background:none!important;padding:0!important;width:10pc!important}#at15s.atiemode2{width:252px!important}#at15s_inner{background:#fff;border:1px solid #fff;margin:0}#at15s_head{position:relative;background:#f2f2f2;padding:4px;cursor:default;border-bottom:1px solid #e5e5e5}.at15s_head_success{background:#cafd99!important;border-bottom:1px solid #a9d582!important}.at15s_head_success a,.at15s_head_success span{color:#000!important;text-decoration:none}#at15s_brand,#at15sptx,#at16_brand{position:absolute}#at15s_brand{top:4px;right:4px}.at15s_brandx{right:20px!important}a#at15sptx{top:4px;right:4px;text-decoration:none;color:#4c4c4c;font-weight:700}#at15s.atiemode2 a#at15sptx{right:8px}#at15sptx:hover{text-decoration:underline}#at16_brand{top:5px;right:30px;cursor:default}#at_hover{padding:4px}#at_hover .at_item,#at_share .at_item{background:#fff!important;float:left!important;color:#4c4c4c!important}#at_share .at_item .at-icon-wrapper{margin-right:5px}#at_hover .at_bold{font-weight:700;color:#000!important}#at16nms,#at16sas{padding:4px 5px}#at16nms{display:none}#at16sas{clear:left;padding-top:1pc;padding-bottom:1pc}#at_hover .at_item{width:7pc!important;padding:2px 3px!important;margin:1px;text-decoration:none!important}#at_hover .at_item.atiemode2{width:114px!important}#at_hover .at_item.athov,#at_hover .at_item:focus,#at_hover .at_item:hover{margin:0!important}#at16ps .at_item:focus,#at_hover .at_item.athov,#at_hover .at_item:focus,#at_hover .at_item:hover,#at_share .at_item.athov,#at_share .at_item:hover{background:#f2f2f2!important;border:1px solid #e5e5e5;color:#000!important;text-decoration:none}.ipad #at_hover .at_item:focus{background:#fff!important;border:1px solid #fff}#at_email15{padding-top:5px}.at15e_row{height:28px}.at15e_row label,.at15e_row span{padding-left:10px!important;display:block!important;width:60px!important;float:left!important}.at15e_row input,.at15e_row textarea{display:block!important;width:150px!important;float:left!important;background:#fff!important;border:1px solid #ccc!important;color:#333!important;font-size:11px!important;font-weight:400!important;padding:0!important}#at_email input,#at_email label,#at_email textarea{font-size:11px!important}#at_email #at16meo{margin:15px 0 0 2px}#at16meo span{float:left;margin-right:5px;padding-top:4px}#at16meo a{float:left;margin:0}#at_sending{top:130px;left:110px;position:absolute;text-align:center}#at_sending img{padding:10px}.at15t{display:block!important;height:1pc!important;line-height:1pc!important;padding-left:20px!important;background-position:0 0;text-align:left}.addthis_button,.at15t{cursor:pointer}.addthis_toolbox a.at300b,.addthis_toolbox a.at300m{width:auto}.addthis_toolbox a{margin-bottom:5px;line-height:initial}.addthis_toolbox.addthis_vertical_style{width:200px}.addthis_toolbox.addthis_close_style .addthis_button_google_plusone{width:65px;overflow:hidden}.addthis_toolbox.addthis_close_style .addthis_button_facebook_like{width:85px;overflow:hidden}.addthis_toolbox.addthis_close_style .addthis_button_tweet{width:62px;overflow:hidden}.addthis_button_facebook_like .fb_iframe_widget{line-height:100%}.addthis_button_facebook_like iframe.fb_iframe_widget_lift{max-width:none}.addthis_toolbox a.addthis_button_counter,.addthis_toolbox a.addthis_button_facebook_like,.addthis_toolbox a.addthis_button_facebook_send,.addthis_toolbox a.addthis_button_facebook_share,.addthis_toolbox a.addthis_button_foursquare,.addthis_toolbox a.addthis_button_google_plusone,.addthis_toolbox a.addthis_button_linkedin_counter,.addthis_toolbox a.addthis_button_pinterest_pinit,.addthis_toolbox a.addthis_button_stumbleupon_badge,.addthis_toolbox a.addthis_button_tweet{display:inline-block}.at-share-tbx-element .google_plusone_iframe_widget>span>div{vertical-align:top!important}.addthis_toolbox span.addthis_follow_label{display:none}.addthis_toolbox.addthis_vertical_style span.addthis_follow_label{display:block;white-space:nowrap}.addthis_toolbox.addthis_vertical_style a{display:block}.addthis_toolbox.addthis_vertical_style.addthis_32x32_style a{line-height:2pc;height:2pc}.addthis_toolbox.addthis_vertical_style .at300bs{margin-right:4px;float:left}.addthis_toolbox.addthis_20x20_style span{line-height:20px;*height:20px}.addthis_toolbox.addthis_32x32_style span{line-height:2pc;*height:2pc}.addthis_toolbox.addthis_pill_combo_style .addthis_button_compact .at15t_compact,.addthis_toolbox.addthis_pill_combo_style a{float:left}.addthis_toolbox.addthis_pill_combo_style a.addthis_button_tweet{margin-top:-2px}.addthis_toolbox.addthis_pill_combo_style .addthis_button_compact .at15t_compact{margin-right:4px}.addthis_default_style .addthis_separator{margin:0 5px;display:inline}div.atclear{clear:both}.addthis_default_style .addthis_separator,.addthis_default_style .at4-icon,.addthis_default_style .at300b,.addthis_default_style .at300bo,.addthis_default_style .at300bs,.addthis_default_style .at300m{float:left}.at300b img,.at300bo img{border:0}a.at300b .at4-icon,a.at300m .at4-icon{display:block}.addthis_default_style .at300b,.addthis_default_style .at300bo,.addthis_default_style .at300m{padding:0 2px}.at300b,.at300bo,.at300bs,.at300m{cursor:pointer}.addthis_button_facebook_like.at300b:hover,.addthis_button_facebook_like.at300bs:hover,.addthis_button_facebook_send.at300b:hover,.addthis_button_facebook_send.at300bs:hover{opacity:1;-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";filter:alpha(opacity=100)}.addthis_20x20_style .at15t,.addthis_20x20_style .at300bs,.addthis_20x20_style .dummy .at300bs{overflow:hidden;display:block;height:20px!important;width:20px!important;line-height:20px!important}.addthis_32x32_style .at15t,.addthis_32x32_style .at300bs,.addthis_32x32_style .dummy .at300bs{overflow:hidden;display:block;height:2pc!important;width:2pc!important;line-height:2pc!important}.at300bs{background-position:0 0}.at16nc,.at300bs{overflow:hidden;display:block;height:1pc;width:1pc;line-height:1pc!important}.at16t{padding-left:20px!important;width:auto;cursor:pointer;text-align:left;overflow:visible!important}#at_feed{display:none;padding:10px;height:300px}#at_feed span{margin-bottom:10px;font-size:9pt}#at_feed div{width:102px!important;height:26px!important;line-height:26px!important;float:left!important;margin-right:68px}#at_feed div.at_litem{margin-right:0}#at_feed a{margin:10px 0;height:17px;line-height:17px}#at_feed.atused .fbtn{background:url(//s7.addthis.com/static/r05/feed00.gif) no-repeat;float:left;width:102px;cursor:pointer;text-indent:-9000px}#at_feed .fbtn.bloglines{background-position:0 0!important;width:94px;height:20px!important;line-height:20px!important;margin-top:8px!important}#at_feed .fbtn.yahoo{background-position:0 -20px!important}#at_feed .fbtn.newsgator,.fbtn.newsgator-on{background-position:0 -37px!important}#at_feed .fbtn.technorati{background-position:0 -71px!important}#at_feed .fbtn.netvibes{background-position:0 -88px!important}#at_feed .fbtn.pageflakes{background-position:0 -141px!important}#at_feed .fbtn.feedreader{background-position:0 -172px!important}#at_feed .fbtn.newsisfree{background-position:0 -207px!important}#at_feed .fbtn.google{background-position:0 -54px!important;width:78pt}#at_feed .fbtn.winlive{background-position:0 -105px!important;width:75pt;height:19px!important;line-height:19px;margin-top:9px!important}#at_feed .fbtn.mymsn{background-position:0 -158px;width:71px;height:14px!important;line-height:14px!important;margin-top:9pt!important}#at_feed .fbtn.aol{background-position:0 -189px;width:92px;height:18px!important;line-height:18px!important}.addthis_default_style .at15t_compact,.addthis_default_style .at15t_expanded{margin-right:4px}#at16clb{font-size:16pt;font-family:verdana bold,verdana,arial,sans-serif}#at_share .at_item{width:123px!important;padding:4px;margin-right:2px;border:1px solid #fff}#at16pm{background:#fff;width:298px;height:380px;text-align:left;border-right:1px solid #ccc;position:static}#at16pcc,#at16pccImg{position:fixed;top:0;left:0;width:100%;margin:0 auto;font-size:10px!important;color:#4c4c4c;padding:0;z-index:10000001;overflow:visible}#at16pccImg{height:100%}#at16abifc{overflow:hidden;margin:0;top:10px;left:10px;height:355px;width:492px;position:absolute;border:0}#at16abifc iframe{border:0;position:absolute;height:380px;width:516px;top:-10px;left:-10px}* html div#at16abifc.atiemode2{height:374px;width:482px}* html #at16abifc iframe{height:23pc;left:-10px;top:-10px;overflow:hidden}#at16p{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABtJREFUeNpiZGBgaGAgAjAxEAlGFVJHIUCAAQDcngCUgqGMqwAAAABJRU5ErkJggg==);z-index:10000001;position:absolute;top:50%;left:50%;width:300px;padding:10px;margin:0 auto;margin-top:-185px;margin-left:-155px;font-family:arial,helvetica,tahoma,verdana,sans-serif;font-size:9pt;color:#5e5e5e}#at_share{margin:0;padding:0}#at16ps{overflow-y:scroll;height:19pc;padding:5px}a#at16pit{position:absolute;top:37px;right:10px;display:block;background:url(data:image/gif;base64,R0lGODlhEAAUAKIFAKqqquHh4cLCwszMzP///////wAAAAAAACH5BAEAAAUALAAAAAAQABQAAAMtOLqsAqWQSSsN0OoLthfeNoTaSFbmOaUqe7okHMoeLaqUXeITiGM/SGM4eEQSADs=) no-repeat;width:1pc;height:20px;line-height:19px;margin-right:-17px;text-align:center;overflow:hidden;color:#36b}#at16pi{background:#e5e5e5;text-align:left;border:1px solid #ccc;border-bottom:0}#at16pi a{text-decoration:none;color:#36b}#at16p #at16abc{margin-left:2px!important}#at16pi a:hover{text-decoration:underline}#at16pt{position:relative;background:#f2f2f2;height:13px;padding:5px 10px}#at16pt a,#at16pt h4{font-weight:700}#at16pt h4{display:inline;margin:0;padding:0;font-size:9pt;color:#4c4c4c;cursor:default}#at16pt a{position:absolute;top:5px;right:10px;color:#4c4c4c;text-decoration:none;padding:2px}#at15sptx:focus,#at16pt a:focus{outline:thin dotted}#at16pc form{margin:0}#at16pc form label{display:block;font-size:11px;font-weight:700;padding-bottom:4px;float:none;text-align:left}#at16pc form label span{font-weight:400;color:#4c4c4c;display:inline}#at_email form .abif{width:17pc!important}#at_email textarea{height:55px!important;word-wrap:break-word}* html #at_email textarea,:first-child+html #at_email textarea{height:42px!important}#at_email label{width:220px}#at_email input,#at_email textarea{background:#fff;border:1px solid #bbb;width:17pc!important;margin:0;margin-bottom:8px;font-weight:400;padding:3px!important;font-family:arial,helvetica,tahoma,verdana,sans-serif;font-size:11px;line-height:1.4em;color:#333}#at_email form .atfxmode2{width:279px!important}#at16pc form .at_ent{color:#333!important}#at16pc textarea{height:3pc}#at16pc form input:focus,#at16pc textarea:focus{background:ivory;color:#333}#at16p .atbtn,#at16recap .atbtn{background:#fff;border:1px solid #b5b5b5;width:60px!important;padding:2px 4px;margin:0;margin-right:2px!important;font-size:11px!important;font-weight:700;color:#333;cursor:pointer}#at16p .atbtn:focus,#at16p .atbtn:hover,#at16recap .atbtn:focus,#at16recap .atbtn:hover{border-color:#444;color:#06c}#at16p .atrse,#at16recap .atrse{font-weight:400!important;color:#666;margin-left:2px!important}#atsb .atbtn{width:78px!important;margin:0!important}#at_email #ateml{text-align:right;font-size:10px;color:#999}#at16pc{height:343px!important;font-size:11px;text-align:left;color:#4c4c4c}#at_email{padding:5px 10px}#at16pc .tmsg{padding:4px 2px;text-align:right}#at16psf{position:relative;background:#f2f2f2 url(data:image/gif;base64,R0lGODlhGQEVAMQYAGZmZuDg4Ozs7MjIyMzMzPj4+LOzs3BwcMbGxsvLy5+fn/X19djY2IODg+bm5paWlnl5eeLi4oyMjKmpqdXV1dvb28/Pz////////wAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAABgALAAAAAAZARUAAAX/ICaOGJFYaKqubOu+cCzPdG3feK7vPJwQpOBoEChcjsikcslsOp/QqHRKrVqv2Kx2Gy0EBkKRgMEtm8/otHrNTjMEQYGjTa/b7/h82gEfVfSAgYKDhGcVQ0sLBhAAEAYLhZGSk5RqYBgBSgsNAA0GnA2QlaOkpaZHASVGSQYACEgIABOntLW2eAUmSxASShIHt8HCw1snSwAGSq3EzM3OSyhLBw9KD8DP2Nm30UoKrrAACtrj5KMWCYmcCgbeAAcR5fHygT+rSQvtAA8A7vDz/wDV5MIUJVa/gAgTZkmFYYAUg70USpz45BKGPwUPiKPIseOhEXI6ihzphE8cMiRTMI58E6ZhEZUwEXqx2LIEAwsUKujcybOnz59AgwodSrSo0aNIkypdyrSpU58ofoQJAQA7) no-repeat center center;border-bottom:1px solid #ccc;height:20px;padding:4px 10px;text-align:center}* html #at16psf input,:first-child+html #at16psf input{padding:0}#at16psf input,#at16psf input:focus{background:#fff;border:none;width:220px;margin:2px 0 0;color:#666;outline-style:none;outline-width:0;padding:2px 0 0;line-height:9pt;font-family:arial,helvetica,tahoma,verdana,sans-serif;font-size:9pt}#at16pcc .at_error,#at16recap .at_error{background:#f26d7d;border-bottom:1px solid #df5666;padding:5px 10px;color:#fff}#at16pcc #at_success{background:#d0fbda;border-bottom:1px solid #a8e7b7;padding:5px 10px;color:#4c4c4c}#at_complete{font-size:13pt;color:#47731d;text-align:center;padding-top:130px;height:13pc!important;width:472px}#at_s_msg{margin-bottom:10px}.atabout{left:55px}.ac-about{right:20px}.at_baa{display:block;overflow:hidden;outline:0}#at15s #at16pf a{top:1px}#at16pc form #at_send{width:5pc!important}#at16pp{color:#4c4c4c;position:absolute;top:9pt;right:9pt;font-size:11px}#at16pp label{font-size:11px!important}#at16ppc{padding:10px;width:179px}#at16pph{padding:5px 0 10px}#at16pph select{margin:5px 0 8px}#at16pp .atinp{width:156px}#at16ppb{background:#fff;border:1px solid #ccc;height:274px}#at16ep{height:1pc;padding:8px}#at16ep a{display:block;height:1pc;line-height:1pc;padding-left:22px;margin-bottom:8px;font-size:9pt}#at16ep a.at_gmail{background:url(data:image/gif;base64,R0lGODlhEAAQALMPAPKqo95TU+NkY/TCwP74+PbX1/zo59wtJ/nx7uZ7fvnRzfCTgvq2td9DQf///////yH5BAEAAA8ALAAAAAAQABAAAARi8MlJq700hMS6/4vWNIdQOERKOMgyvqSgOLRjJAe8CUcw0ApeYyF4DQpCwCDQGyCKo59BGDtNjbRBIvazQRtSxgCwGDAMrO/AcK7ZztcRoO1+B43oOs0Qb8w/gAxFGISFFREAOw==) no-repeat left}#at16ep a.at_hotmail{background:url(data:image/gif;base64,R0lGODlhEAAQAMQfAP7XFG7B4/zjl/JZIAm7TK7V7v3FY/aLRGDNhOqmkA2ql/2YJvfr2Pn7++9vWtXe6/jQvOfw9funZg2EzEWv3zil0heg0zDCbESHx9PpxY6TvJ3QpPJtQf7+/v///////yH5BAEAAB8ALAAAAAAQABAAAAWO4CeOpNhAUFeuzDEMiRepK/S+XDBVjzd6kAWHc3tMjpVZhyE8cByvDsViOQYehsPCSeR8IpQpFZMwGCQHl/dToAQoionGLEHDRJ5CoHJRkM92ED8FCgQEGHNoDgsCJB4XhgpzZwsAjSQZFxcIGgCengwlHRsIpQKfAg0rHQiGEacGqisfDZsdtzSzHz4rIQA7) no-repeat left}#at16ep a.at_yahoo{background:url(data:image/gif;base64,R0lGODlhEAAQAKIHAPylpevx8bsICNJfX/jQ0Kahof8AAP///yH5BAEAAAcALAAAAAAQABAAAANJeLrc/jAuAmolcQhjhBiBBRDDAChAVxzE5g3csKRGQQpFqDL0fsCCQCOFUwR8vI7wECgtjQDg6CfA8DxYmWbVCHi/TK9kTC4zEgA7) no-repeat left}#at16ppf p#atsb{padding-top:20px;font-size:10px}#at16abr{margin-top:10px}#at16abr input{padding:0;margin:0;margin-right:5px}#at16ppso{display:none;text-align:right;margin-top:2px}#at16ppa{background:#fff;border:1px solid #ccc;height:228px;width:178px;overflow:auto}#at16ppa a{display:block;white-space:nowrap;padding:4px 8px;font-size:9pt!important}#at16eatdr{position:absolute;background:#fff;border-top:0;max-height:110px;overflow:auto;z-index:500;top:129px;left:21px;width:277px}* html #at_email #at16eatdr,:first-child+html #at_email #at16eatdr{top:115px!important;width:17pc!important}#at16eatdr a{display:block;overflow:hidden;border-bottom:1px dotted #eee;padding:4px 8px}#at16eatdr a.hover,#at16eatdr a:hover{background:#e0eefa;text-decoration:none;color:#333}#at_pspromo{height:130px;padding-top:10px}#at15psp,#at_pspromo{width:205px;padding-left:5px}#at_testpromo{font-size:9pt;width:220px;display:none}.atm-i #at_pspromo{height:150px}.atm-i #at_pspromo,.atm-i #at_testpromo{width:140px}#at_testpromo input{width:200px}#at_promo .at-promo-content,#at_testpromo .at-promo-content{margin-top:9pt}#at_promo .at-promo-btn,#at_testpromo .at-promo-btn{padding-top:10px}#at_promo h4,#at_testpromo h4{font-family:arial,helvetica,tahoma,verdana,sans-serif;background:0;font-size:14px;font-weight:700;margin:0 0 4px;padding:0;line-height:18px;height:36px}.atm-i #at_promo h4,.atm-i #at_testpromo h4{height:66px}#at_testpromo h4{font-size:13.5px}#at_promo h4 sup{font-size:11px;color:#ee6a44}#at_promo span{display:block}#_atssh{width:1px!important;height:1px!important;border:0!important}.at-promo-single{padding:10px;padding-top:2px;line-height:1.5em}.at-promo-single img{padding:3px}.at-promo-content img{margin-right:5px;margin-bottom:20px;float:left}.addthis_textshare{display:block;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAABKCAYAAAAYJRJMAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAABmNJREFUeNrsmk9oI3UUx99vZjL5n7TbukLbxYve1INa8KAi6F48ubAHV2+KWCoqyF4WpZZ6cuthq1gKe1oU9+CCoLjg+uciCEWQPSjuReyy7Vq7W7LNJM0kM5nxvV9+U5JNk/xCm8wmMw8ek06TXyafee/93u83XwY1Y+jKwsLCiUwm87Gqqg8oigJBMsdxoFqtXs/n86fn5ua+plPoLhNw1NnZ2ZPZbPai67pgWRbQMUjGGINIJMKPOzs7p5aXly/h6apGkYMexZOLSA/K5TKYpgm2bQcKkKZpEIvFIBqNUnAs4qlv0U0CpKInt7a2pjC1+JuDBoeMsobcMAxKtSliQqcJEHmSIofCK8hGgMhEeSFABS+CopVKJfCAPBOAosRG82awEFATIKrNTPOKuAyg54/p8O6Lz0AylgKnVAEo4WxXruKIdW9SGBSNPCz9+jv8uFUdZEAchgcIZAC98+wjMK644Nz8B9x8GcCogFvarQHC6g9ModEhHk/CWw/eD5fX1wYZEDQAkinSCasCzvYdcAwsZgWLR6H78ttgRxDOd1+AbuTAxZnQrZiQsC0+5tAAkomgqmGCi/0C5EuYk5heWMKSj06DFU9B8fKXwBAgRHRe2qr4JTTm0ADyprj2gMocgJPIQnUkhhmlAMPBGEaLmRkDB18r2LJHSwb/kkEF1NBAdgPIMTFqbBOiL7wCypPP1apYMg0RPIzNvs+hFK6uAlz8hC9kZMYcKkBAk1KEpjwTtGKeF3oWT2ApUkEvl8Ct2qBZou5gLQoeIPzRDAty5colqHz/FQeTPHMObKxBhU8/AH17k69pIJ3ka+GhAoTrj84ppqje3gC6eD8WZBfP8887uIajFXEGZzXLkRpzYADRfkjHANIwv1yH9gZ49FDfY63+DI4eraVWIopwYgAp/NtmUmMODCAZy+EqfyyVxS66KKhWofLN55yXnsK0ymI9SscgMn4Ecuvrw7EN0s2b3/tpFT48/hSMJBKw1ypo0VrhjmtYn3SEpUJ+YxPOXPhhODbS0DPox9D/CJepDfYw+g0l5NDeQkAhoMMBRCV3LcSxZ2uCCQfkikXEEnopZMMZLAkmLrXGfE8anR5lUPNyH/rRgML5E/08+m/oW+iGJsBQ53dL/OM6ekr0SL3YpGYicl9Cf6zLz/6LfgH9NjRu9B54C0hwKAgwtwQT27tYiqARET1j6Gl0vUeAFDE2PVZ5Df0Jyc/dRD8nLr7spcAhAqLNKwN9W3zHHfoeVndH6aIT4sJjPYwgSum4uBGUyrPo0xJwzorovi3utNWDCDJF5OwKYA6jTS5W22tl4uK9Z2W9agEUcQOOoE+gT6K/2QYSwfkI/W/x+pb4AdVDTjNHjGl7Y5OxfosUxM2IiDpHETTVBlI9nBvo/6Hv0N3F6+7LVkHfG0W3dkesuoJIM+cG+mdikmgFZ7PfcPgN9Uvm0iKSJkQkTYqaUw8n3284vgJqAYkAjYsamBNR5BucrveDepFuyMhLNxDF0RCpnxdTrm9wfI+gfSIpJloAJnqdkp9w7hlAdZAUkV7etOv4CQfqGkF+cSsrKyfS6TQXcQZNCkOBQiJOwzBOz8zMNIs45+fnT46OjnIRJ0nwgijipGd6dMzlcqeQR6OIs1gsLpZKJf48nVQZw/BMq6v1j6pyAaeu6/S4qlnEub29PeVpo4MGxzNPbIGAmkWcGEEQNPF4y0VZ7YFno4iTtNEhoAZAjSLOEFAToEYRJxXoToCePurCG8cfh2QsCc4uNsDm/iLO3YIB569eg192tEEG1CjipAjq1Pu8Pv0QjDEHnI32Is5YPAmvTqTgymZuYHuiprUYRVAnQHHLlBdx4oxAYwYKkE0iTlVOxGm7MFyAZFLMIRGnJifipFSjMYcGkIym2SFlvSYr4hxcQPvuB8kA4utqJifipFo0qELyfQFJaZoVrSsR51DppGV+jOP1SZIizqECFIo4OwCSsVDE2cFCEWdo9RaKOGUsBBQCOhxAoYiz0dYgFHG2tFDE2cZCEWerdTiEIs6OgEIRp0QENYs468I+FHHeJeIEIV7wY3lzYBGn+EE9N9Wn2cK7W5Y4ErRrAtRkCzh7Urx+wfETUCtIf9UBOus3HOhRET5IurUVcfYbTtf7QT2wes00QBsRpx9w7oUIujuS9hVx+gWHX1jQpHbd2v8CDAAwldUwLVojIgAAAABJRU5ErkJggg==) no-repeat 0 0;width:44px;height:37px;line-height:28px;padding:0 0 0 28px;margin:0;text-decoration:none;font-family:helvetica,arial,sans-serif;font-size:9pt;color:#fff;cursor:pointer}.addthis_textshare:hover{background-position:0 -37px;text-decoration:none}.at_img_share{position:absolute;opacity:0;background:url(data:image/gif;base64,R0lGODlhFwAVAMQAAP7+/vLy8vv7+/X19fj4+Pz8/PHx8f39/fDw8O/v7/T09Pn5+fPz8/r6+vb29vf394CAgHZ2dm5ubklJSWRkZFtbW39/f4KCglJSUnt7e3h4eAAAAAAAAAAAAAAAAAAAACH5BAAAAAAALAAAAAAXABUAAAWLICCOZGmeaAocbOu+MFvMdG3fs6DvfO//PY0QqGsYj8iMEslsLJ7QqGUarS4I2Kz2wtV6vwSIeEyGfB/odGTNbkfSaYd8Lqnb75L5fMDv+ymAfoKDghWGhH0KiouMGI6MkAoMk5SVE5eVmQwBnJ2en6ChoqMBBqanqKmqpgitrq+wsa0JtLW2t7i0IQA7) repeat-x bottom;border:1px solid #ccc;width:23px;height:21px;line-height:21px;text-indent:-9999px;padding:0;margin:0;cursor:pointer;z-index:1000}.at_img_share:hover{border-color:#8b8b8b}.at_img_share .addthis_toolbox{width:180px;margin:0 auto}.atm{width:10pc!important;padding:0;margin:0;line-height:9pt;letter-spacing:normal;font-family:arial,helvetica,tahoma,verdana,sans-serif;font-size:9pt;color:#444;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABtJREFUeNpiZGBgaGAgAjAxEAlGFVJHIUCAAQDcngCUgqGMqwAAAABJRU5ErkJggg==);padding:4px}.atm-f{text-align:right;border-top:1px solid #ddd;padding:5px 8px}.atm-i{background:#fff;border:1px solid #d5d6d6;padding:0;margin:0;box-shadow:1px 1px 5px rgba(0,0,0,.15)}.atm-s{margin:0!important;padding:0!important}.atm-s a:focus{border:transparent;outline:0;-webkit-transition:none;transition:none}#at_hover.atm-s a,.atm-s a{display:block;text-decoration:none;padding:4px 10px;color:#235dab!important;font-weight:400;font-style:normal;-webkit-transition:none;transition:none}#at_hover.atm-s .at_bold{color:#235dab!important}#at_hover.atm-s a:hover,.atm-s a:hover{background:#2095f0;text-decoration:none;color:#fff!important}#at_hover.atm-s .at_bold{font-weight:700}#at_hover.atm-s a:hover .at_bold{color:#fff!important}.atm-s a .at-label{vertical-align:middle;margin-left:5px;direction:ltr}.atm-i #atic_settings{border:none!important;border-top:1px solid #d5d6d6!important;padding-top:6px!important;top:4px}.at_a11y{position:absolute!important;top:auto!important;width:1px!important;height:1px!important;overflow:hidden!important}.at_a11y_container{margin:0;padding:0}.addthis_overlay_container{position:absolute}.addthis_overlay_toolbox{-webkit-border-top-left-radius:10px;-webkit-border-top-right-radius:10px;-moz-border-radius-topleft:10px;-moz-border-radius-topright:10px;border-top-left-radius:10px;border-top-right-radius:10px;padding:5px;background-color:#000;background-color:rgba(0,0,0,.6)}.linkServiceDiv{height:200px;width:25pc;border:1px solid #000;background-color:#aaa}.at_redloading{background:url(data:image/gif;base64,R0lGODlhCgAKAJEDAMzMzP9mZv8AAP///yH/C05FVFNDQVBFMi4wAwEAAAAh+QQFAAADACwAAAAACgAKAAACF5wncgaAGgJzJ647cWua4sOBFEd62VEAACH5BAUAAAMALAEAAAAIAAMAAAIKnBM2IoMDAFMQFAAh+QQFAAADACwAAAAABgAGAAACDJwHMBGofKIRItJYAAAh+QQFAAADACwAAAEAAwAIAAACChxgOBPBvpYQYxYAIfkEBQAAAwAsAAAEAAYABgAAAgoEhmPJHOGgEGwWACH5BAUAAAMALAEABwAIAAMAAAIKBIYjYhOhRHqpAAAh+QQFAAADACwEAAQABgAGAAACDJwncqi7EQYAA0p6CgAh+QQJAAADACwHAAEAAwAIAAACCpRmoxoxvQAYchQAOw==);height:1pc;width:1pc;background-repeat:no-repeat;margin:0 auto}.at-promo-single-dl-ch{width:90pt;height:37px}.at-promo-single-dl-ff{width:90pt;height:44px}.at-promo-single-dl-saf{width:90pt;height:3pc}.at-promo-single-dl-ie{width:129px;height:51px}.atPinBox{position:fixed;top:25%;left:35%;background:#fff;width:482px;margin:0 auto;overflow:auto;overflow-x:hidden;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABtJREFUeNpiZGBgaGAgAjAxEAlGFVJHIUCAAQDcngCUgqGMqwAAAABJRU5ErkJggg==);border-radius:8px;-webkit-border-radius:8px;-moz-border-radius:8px;padding:8px;font-family:arial,helvetica,tahoma,verdana,sans-serif;font-size:9pt;color:#cfcaca;z-index:10000001}.atPinHdr,.atPinWinHdr{display:block;background:#f1f1f1;border-bottom:1px solid #ccc;box-shadow:0 0 3px rgba(0,0,0,.1);-webkit-box-shadow:0 0 3px rgba(0,0,0,.1);-moz-box-shadow:0 0 3px rgba(0,0,0,.1);padding:8px 10px;font-size:1pc;line-height:1pc;color:#8c7e7e}.atPinHdr img,.atPinWinHdr img{vertical-align:bottom;margin-left:5px;cursor:pointer}.atPinHdr span{vertical-align:top}.atPinHdr{height:1pc}.atPinMn{background:#fff;padding:10px;height:296px;overflow:auto;overflow-x:hidden;text-align:center;position:relative}.atPinHdrMsg{left:20px}.atPinClose{width:9pt;text-align:right;font-weight:700;position:absolute;right:15px;cursor:pointer}.atImgSpanOuter{position:relative;overflow:hidden;height:200px;width:200px;border:1px solid #a0a0a0;float:left;display:block;margin:10px;background-color:#fff}.atImgSpanInner img{cursor:pointer}.atImgSpanSize{position:absolute;bottom:0;left:0;right:0;display:block;background:#fff;height:22px;line-height:24px;color:#000;overflow:hidden;font-size:10px;zoom:1;filter:alpha(opacity=70);opacity:.7}.atImgActBtn{display:none;width:2pc;height:2pc;position:absolute;top:75px;left:5pc;background-color:#fff}.atPinWin{font-family:arial,helvetica,tahoma,verdana,sans-serif;text-align:center}.atPinWinHdr{display:block;font-size:20px;height:20px;width:100%;position:fixed;z-index:1}.atPinWinMn{text-align:center;padding:40px 0 0;display:inline-block}.atImgIco,.atImgMsg{float:left}.atImgIco{margin-right:5px}.atNoImg{display:block;margin-top:40px;font-size:1pc;line-height:1pc;color:#8c7e7e}.at_PinItButton{display:block;width:40px;height:20px;padding:0;margin:0;background-image:url(//s7.addthis.com/static/t00/pinit00.png);background-repeat:no-repeat}.at_PinItButton:hover{background-position:0 -20px}.addthis_toolbox .addthis_button_pinterest_pinit{position:relative}.at-share-tbx-element .fb_iframe_widget span{vertical-align:baseline!important}.at3PinWinMn{text-align:center;padding:20px 0 0 20px;overflow:auto;height:437px}.at3ImgSpanOuter{position:relative;width:185px;height:185px;border:1px solid #dedede;margin:0 10px 10px 0;overflow:hidden;float:left}.at3ImgSpanOuter:hover{border-color:#3dadfc;box-shadow:0 0 3px #3dadfc;cursor:pointer}.at3ImgSpanOuter .atImgLB{display:block;position:absolute;top:0;bottom:0;left:0;right:0;z-index:1;background-color:rgba(0,0,0,.8);background-repeat:no-repeat;background-position:center center}#at3lb{position:fixed;top:0;right:0;left:0;bottom:0;z-index:16777270;display:none}.at3lblight{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABtJREFUeNpizCuu/sRABGBiIBKMKqSOQoAAAwC8KgJipENhxwAAAABJRU5ErkJggg==);background:hsla(217,6%,46%,.65)}.at3lbdark{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABtJREFUeNpiZGBg2M9ABGBiIBKMKqSOQoAAAwBAlwDTJEe1aAAAAABJRU5ErkJggg==);background:rgba(0,0,0,.5)}.at3lbnone{background:hsla(0,0%,100%,0)}#at3win{position:fixed;_position:absolute;top:15%;left:50%;margin-left:-20pc;background:#fff;border:1px solid #d2d2d1;width:40pc;box-shadow:0 0 8px 4px rgba(0,0,0,.25);font-family:helvetica neue,helvetica,arial,sans-serif;z-index:16777271;display:none;overflow:hidden}#at3win #at3winheader{position:relative;border-bottom:1px solid #d2d2d1;background:#f1f1f1;height:49px;cursor:default}#at3win #at3winheader p{position:absolute;top:1pc;left:75pt;width:475px;padding:0;margin:0;font-size:14px;line-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#at3win #at3winheader h3{height:49px;text-align:left;line-height:49px;margin:0 50px 0 22px;border:0;padding:0 20px;font-size:1pc;font-family:helvetica neue,helvetica,arial,sans-serif;font-weight:700;text-shadow:0 1px #fff;color:#333;direction:ltr}#at3win #at3winheader h3.logoaddthis{padding-left:22px}#at3win #at3winheader .at3winheadersvc{display:inline-block;position:absolute;top:15px;left:20px;cursor:default!important;opacity:1!important}#at3win #at3winheader .at3winheadersvc .at-icon,#at3win #at3winheader .at3winheadersvc .at-icon-wrapper{display:block}#at3win #at3winheader #at3winheaderclose{display:block;position:absolute;top:0;right:0;background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2tpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wUmlnaHRzPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvcmlnaHRzLyIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcFJpZ2h0czpNYXJrZWQ9IkZhbHNlIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjQwNzc2QTQ5Qjk1RDExRTFCMkE4OEUxNTUwRjMwREY0IiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjQwNzc2QTQ4Qjk1RDExRTFCMkE4OEUxNTUwRjMwREY0IiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDUzMgTWFjaW50b3NoIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InV1aWQ6OEE1QUU0REMzMEU4REYxMUJCNzJGQkJCQzlBM0Y1RkMiIHN0UmVmOmRvY3VtZW50SUQ9InV1aWQ6M0M5RkJGRTEyQUU4REYxMUJCNzJGQkJCQzlBM0Y1RkMiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz78RHhFAAAApUlEQVR42rxTiQnAIAxU6QAdxRW6iZ1EnKRu4gqO0g1sCilEvT7Q0kBQ9O4wl6hLKepNGPUyhmMTQhhpSZTZez8jMGEWWizlRJi1fUHiS8dARHaMSaiELPaViCB3WC1NBMB4CMozWaJuuwBE1BkZdoEB8Qn5kzaaC7fbgN0xN+TYlNOJmCvyXjPwpBKRL7BnhgERiwQmHhDothDJjMVz8Ptv3AQYAJWjVVdnlDZCAAAAAElFTkSuQmCC);background-repeat:no-repeat;background-position:center center;border-left:1px solid #d2d2d1;width:49px;height:49px;line-height:49px;overflow:hidden;text-indent:-9999px;text-shadow:none;cursor:pointer}#at3win #at3winheader #at3winheaderclose:hover{background-color:#dedede}#at3win #at3wincontent{height:450px;position:relative}#at3wincopy,#at3winemail,#at3winshare{height:450px}#ate-promo .addthis_button_twitter .aticon-twitter{background-position:0 -4pc!important}#at3wincontent{-o-box-sizing:content-box;box-sizing:content-box}#at3win #at3wincontent.at3nowin{position:relative;height:25pc;padding:20px;overflow:auto}#at3winfooter{position:relative;background:#fff;-o-box-sizing:content-box;box-sizing:content-box;border-top:1px solid #d2d2d1;height:11px;_height:20px;line-height:11px;padding:5px 20px;font-size:11px;color:#666}#at3winfooter a{margin-right:10px;text-decoration:none;color:#666;float:left}#at3winfooter a:hover{text-decoration:none;color:#000}#at3logo{background:url(//s7.addthis.com/static/t00/at3logo-sm.gif) no-repeat left center!important;padding-left:10px}#at3privacy{position:absolute;top:5px;right:10px;background:url(//s7.addthis.com/static/t00/at3-privacy.gif) no-repeat right center!important;padding-right:14px}#at3winfilter{background:#f1f1f1;border-top:1px solid #fff;border-bottom:1px solid #d2d2d1;padding:13px 0;text-align:center}#at3winsvc-filter{background-repeat:no-repeat;background-position:right;background-image:url(data:image/gif;base64,R0lGODlhHgAUALMAAJiYmHV1deTk5Kmpqbe3t9nZ2Y2Njfn5+fT09Ozs7MnJyYGBgWpqav39/WZmZv///yH5BAAAAAAALAAAAAAeABQAAASi8MlXxgoLqDa7/xICOGTpLAKoTshCMsZgBG+6gqNjJA93DAxH4HDzCEgGTqdBIBGKnSYjoewcXAvoZJRVDUhErcEBWClIPC1X1fg6ENrHl4GoThquQJxCKn+kA3sPY2QHSkwMQQJ2Nw0INEIABBYmATZxCQtBJpyWgg0KBkEMCwQKm0KXgoYTBaiegh8NriUBabFLtH24Hg2zm368HgULKDcRADs=);border:1px solid #d2d2d1;padding:15px 38px 15px 9pt;margin:0 auto;width:374px;text-align:left;font-size:18px;border-radius:5px;box-shadow:inset 0 1px 2px rgba(0,0,0,.1);-webkit-box-shadow:inset 0 1px 2px rgba(0,0,0,.1);-moz-box-shadow:inset 0 1px 2px rgba(0,0,0,.1);color:#666}#service-filter:hover{border-color:#9c9c9c}#service-filter:focus{border-color:#3dadfc;box-shadow:0 0 4px rgba(61,173,252,.8);-webkit-box-shadow:0 0 4px rgba(61,173,252,.8);-moz-box-shadow:0 0 4px rgba(61,173,252,.8);outline:0}#at3wintoolbox{margin:0 0 0 20px;height:340px;overflow:auto;padding:10px 0}#at3wintoolbox a{display:block;float:left;width:180px;padding:4px;margin-bottom:10px;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-radius:4px;-moz-border-radius:4px;-webkit-border-radius:4px;font-size:1pc;color:#235dab}#at3wintoolbox a:focus,#at3wintoolbox a:hover{background-color:#2095f0}#at3wintoolbox a:focus,#at3wintoolbox a:hover,#at3wintoolbox span:hover{text-decoration:none;color:#fff;font-weight:400;text-shadow:none;opacity:1;filter:alpha(opacity=100);cursor:pointer}#at3wintoolbox span{display:block;height:2pc;line-height:2pc;padding-left:38px!important;width:auto!important}.service-icon{padding:4px 8px}.service-icon:hover{background:#2095f0;color:#fff}.service-icon span{padding-left:20px}#at3winssi{position:absolute;right:50px;top:0;height:50px;display:block}.at-quickshare-header-peep{position:absolute;top:0;right:34px;height:1pc;padding:6px;border-left:1px solid #dedede;cursor:pointer}.at-quickshare-header-peep.peep-active{background:#dedede;cursor:default}.at-quickshare-header-peep span{display:inline-block;background:url(data:image/gif;base64,R0lGODlhBwAEAIABALm5uf///yH5BAEAAAEALAAAAAAHAAQAAAIIhA+BGWoNWSgAOw==) no-repeat right;padding-right:11px}.at-quickshare-header-peep span img{display:block;background:#ccc;width:1pc;height:1pc;line-height:20px;overflow:hidden;text-indent:-9999px;border:1px solid #bbb;border-radius:3px;-webkit-border-radius:3px;-moz-border-radius:3px}.at-quickshare-header-peep ul{position:absolute;top:25px;left:-75px;width:140px;background:#fff;border:1px solid #bbb;border-radius:4px;box-shadow:0 1px 4px hsla(0,0%,40%,.8);margin:0;padding:0;font-weight:400;z-index:1100}.at-quickshare-header-peep ul li{list-style:none;font-size:9pt;padding:0;margin:0;text-align:left}.at-quickshare-menu{outline:0}.at-quickshare-menu li.at-quickshare-menu-sep{border-bottom:1px solid #dedede}.at-quickshare-header-peep ul li a{display:block;padding:5px 10px;text-decoration:none;color:#666}.at-quickshare-header-peep ul li a:hover{background:#0d98fb;text-decoration:none;color:#fff}#at_auth{position:relative;box-sizing:content-box;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;-o-box-sizing:content-box;border-top:1px solid #d5d6d6!important;padding:10px 10px 7px;line-height:1pc;height:1pc}#atic_signin{cursor:pointer}#atic_signin,#atic_signin:hover{text-decoration:none}#atic_signin #at_auth:hover{background:#2095f0;text-decoration:none;color:#fff!important}#atic_usersettings{cursor:pointer}#atic_usersettings:hover{text-decoration:underline}#atic_usersignout{font-size:11px;position:absolute;top:10px;right:10px;cursor:pointer}#atic_usersignout:hover{text-decoration:underline}#at_auth img{width:1pc;height:1pc;overflow:hidden;border:none;padding:0;margin:0 5px 0 0;float:left}#at_auth a{text-decoration:none}#at16pf{height:auto;text-align:right;padding:4px 8px}.at-privacy-info{position:absolute;left:7px;bottom:7px;cursor:pointer;text-decoration:none;font-family:helvetica,arial,sans-serif;font-size:10px;line-height:9pt;letter-spacing:.2px;color:#666}.at-privacy-info:hover{color:#000}@media screen and (max-width:680px){#at3win{width:95%;left:auto;margin-left:auto}}@media print{#at3win,#at4-follow,#at4-share,#at4-thankyou,#at4-whatsnext,#at4m-mobile,#at15s,.at4,.at4-recommended{display:none!important}}@media screen and (max-width:400px){.at4win{width:100%}}@media screen and (max-height:700px) and (max-width:400px){.at4-thankyou-inner .at4-recommended-container{height:122px;overflow:hidden}.at4-thankyou-inner .at4-recommended .at4-recommended-item:first-child{border-bottom:1px solid #c5c5c5}}</style><style type="text/css">.at-icon{fill:#fff;border:0}.at-icon-wrapper{display:inline-block;overflow:hidden}a .at-icon-wrapper{cursor:pointer}.at-rounded,.at-rounded-element .at-icon-wrapper{border-radius:12%}.at-circular,.at-circular-element .at-icon-wrapper{border-radius:50%}.addthis_32x32_style .at-icon{width:2pc;height:2pc}.addthis_24x24_style .at-icon{width:24px;height:24px}.addthis_20x20_style .at-icon{width:20px;height:20px}.addthis_16x16_style .at-icon{width:1pc;height:1pc}</style><style type="text/css">.at-branding-logo{font-family:helvetica,arial,sans-serif;text-decoration:none;font-size:10px;display:inline-block;margin:2px 0;letter-spacing:.2px}.at-branding-logo .at-branding-icon{background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAMAAAC67D+PAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAZQTFRF////+GlNUkcc1QAAAB1JREFUeNpiYIQDBjQmAwMmkwEM0JnY1WIxFyDAABGeAFEudiZsAAAAAElFTkSuQmCC")}.at-branding-logo .at-branding-icon,.at-branding-logo .at-privacy-icon{display:inline-block;height:10px;width:10px;margin-left:4px;margin-right:3px;margin-bottom:-1px;background-repeat:no-repeat}.at-branding-logo .at-privacy-icon{background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAKCAMAAABR24SMAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABhQTFRF8fr9ot/xXcfn2/P5AKva////////AKTWodjhjAAAAAd0Uk5T////////ABpLA0YAAAA6SURBVHjaJMzBDQAwCAJAQaj7b9xifV0kUKJ9ciWxlzWEWI5gMF65KUTv0VKkjVeTerqE/x7+9BVgAEXbAWI8QDcfAAAAAElFTkSuQmCC")}.at-branding-logo span{text-decoration:none}.at-branding-logo .at-branding-addthis,.at-branding-logo .at-branding-powered-by{color:#666}.at-branding-logo .at-branding-addthis:hover{color:#333}.at-cv-with-image .at-branding-addthis,.at-cv-with-image .at-branding-addthis:hover{color:#fff}a.at-branding-logo:visited{color:initial}.at-branding-info{display:inline-block;padding:0 5px;color:#666;border:1px solid #666;border-radius:50%;font-size:10px;line-height:9pt;opacity:.7;transition:all .3s ease;text-decoration:none}.at-branding-info span{border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px}.at-branding-info:before{content:'i';font-family:Times New Roman}.at-branding-info:hover{color:#0780df;border-color:#0780df}</style><script type="text/javascript" charset="utf-8" async="" src="./azoft_files/menu.b4367c661b335520a754.js"></script><script type="text/javascript" charset="utf-8" async="" src="./azoft_files/floating-css.96fe569da59f0eae3983.js"></script><script type="text/javascript" charset="utf-8" async="" src="./azoft_files/counter.499434f42cd86777eb02.js"></script><style type="text/css">.fb_hidden{position:absolute;top:-10000px;z-index:10001}.fb_reposition{overflow:hidden;position:relative}.fb_invisible{display:none}.fb_reset{background:none;border:0;border-spacing:0;color:#000;cursor:auto;direction:ltr;font-family:"lucida grande", tahoma, verdana, arial, sans-serif;font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;letter-spacing:normal;line-height:1;margin:0;overflow:visible;padding:0;text-align:left;text-decoration:none;text-indent:0;text-shadow:none;text-transform:none;visibility:visible;white-space:normal;word-spacing:normal}.fb_reset>div{overflow:hidden}.fb_link img{border:none}@keyframes fb_transform{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}.fb_animate{animation:fb_transform .3s forwards}
+.fb_dialog{background:rgba(82, 82, 82, .7);position:absolute;top:-10000px;z-index:10001}.fb_reset .fb_dialog_legacy{overflow:visible}.fb_dialog_advanced{padding:10px;-moz-border-radius:8px;-webkit-border-radius:8px;border-radius:8px}.fb_dialog_content{background:#fff;color:#333}.fb_dialog_close_icon{background:url(https://static.xx.fbcdn.net/rsrc.php/v2/yq/r/IE9JII6Z1Ys.png) no-repeat scroll 0 0 transparent;_background-image:url(https://static.xx.fbcdn.net/rsrc.php/v2/yL/r/s816eWC-2sl.gif);cursor:pointer;display:block;height:15px;position:absolute;right:18px;top:17px;width:15px}.fb_dialog_mobile .fb_dialog_close_icon{top:5px;left:5px;right:auto}.fb_dialog_padding{background-color:transparent;position:absolute;width:1px;z-index:-1}.fb_dialog_close_icon:hover{background:url(https://static.xx.fbcdn.net/rsrc.php/v2/yq/r/IE9JII6Z1Ys.png) no-repeat scroll 0 -15px transparent;_background-image:url(https://static.xx.fbcdn.net/rsrc.php/v2/yL/r/s816eWC-2sl.gif)}.fb_dialog_close_icon:active{background:url(https://static.xx.fbcdn.net/rsrc.php/v2/yq/r/IE9JII6Z1Ys.png) no-repeat scroll 0 -30px transparent;_background-image:url(https://static.xx.fbcdn.net/rsrc.php/v2/yL/r/s816eWC-2sl.gif)}.fb_dialog_loader{background-color:#f6f7f9;border:1px solid #606060;font-size:24px;padding:20px}.fb_dialog_top_left,.fb_dialog_top_right,.fb_dialog_bottom_left,.fb_dialog_bottom_right{height:10px;width:10px;overflow:hidden;position:absolute}.fb_dialog_top_left{background:url(https://static.xx.fbcdn.net/rsrc.php/v2/ye/r/8YeTNIlTZjm.png) no-repeat 0 0;left:-10px;top:-10px}.fb_dialog_top_right{background:url(https://static.xx.fbcdn.net/rsrc.php/v2/ye/r/8YeTNIlTZjm.png) no-repeat 0 -10px;right:-10px;top:-10px}.fb_dialog_bottom_left{background:url(https://static.xx.fbcdn.net/rsrc.php/v2/ye/r/8YeTNIlTZjm.png) no-repeat 0 -20px;bottom:-10px;left:-10px}.fb_dialog_bottom_right{background:url(https://static.xx.fbcdn.net/rsrc.php/v2/ye/r/8YeTNIlTZjm.png) no-repeat 0 -30px;right:-10px;bottom:-10px}.fb_dialog_vert_left,.fb_dialog_vert_right,.fb_dialog_horiz_top,.fb_dialog_horiz_bottom{position:absolute;background:#525252;filter:alpha(opacity=70);opacity:.7}.fb_dialog_vert_left,.fb_dialog_vert_right{width:10px;height:100%}.fb_dialog_vert_left{margin-left:-10px}.fb_dialog_vert_right{right:0;margin-right:-10px}.fb_dialog_horiz_top,.fb_dialog_horiz_bottom{width:100%;height:10px}.fb_dialog_horiz_top{margin-top:-10px}.fb_dialog_horiz_bottom{bottom:0;margin-bottom:-10px}.fb_dialog_iframe{line-height:0}.fb_dialog_content .dialog_title{background:#6d84b4;border:1px solid #365899;color:#fff;font-size:14px;font-weight:bold;margin:0}.fb_dialog_content .dialog_title>span{background:url(https://static.xx.fbcdn.net/rsrc.php/v2/yd/r/Cou7n-nqK52.gif) no-repeat 5px 50%;float:left;padding:5px 0 7px 26px}body.fb_hidden{-webkit-transform:none;height:100%;margin:0;overflow:visible;position:absolute;top:-10000px;left:0;width:100%}.fb_dialog.fb_dialog_mobile.loading{background:url(https://static.xx.fbcdn.net/rsrc.php/v2/ya/r/3rhSv5V8j3o.gif) white no-repeat 50% 50%;min-height:100%;min-width:100%;overflow:hidden;position:absolute;top:0;z-index:10001}.fb_dialog.fb_dialog_mobile.loading.centered{width:auto;height:auto;min-height:initial;min-width:initial;background:none}.fb_dialog.fb_dialog_mobile.loading.centered #fb_dialog_loader_spinner{width:100%}.fb_dialog.fb_dialog_mobile.loading.centered .fb_dialog_content{background:none}.loading.centered #fb_dialog_loader_close{color:#fff;display:block;padding-top:20px;clear:both;font-size:18px}#fb-root #fb_dialog_ipad_overlay{background:rgba(0, 0, 0, .45);position:absolute;bottom:0;left:0;right:0;top:0;width:100%;min-height:100%;z-index:10000}#fb-root #fb_dialog_ipad_overlay.hidden{display:none}.fb_dialog.fb_dialog_mobile.loading iframe{visibility:hidden}.fb_dialog_content .dialog_header{-webkit-box-shadow:white 0 1px 1px -1px inset;background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#738ABA), to(#2C4987));border-bottom:1px solid;border-color:#1d4088;color:#fff;font:14px Helvetica, sans-serif;font-weight:bold;text-overflow:ellipsis;text-shadow:rgba(0, 30, 84, .296875) 0 -1px 0;vertical-align:middle;white-space:nowrap}.fb_dialog_content .dialog_header table{-webkit-font-smoothing:subpixel-antialiased;height:43px;width:100%}.fb_dialog_content .dialog_header td.header_left{font-size:12px;padding-left:5px;vertical-align:middle;width:60px}.fb_dialog_content .dialog_header td.header_right{font-size:12px;padding-right:5px;vertical-align:middle;width:60px}.fb_dialog_content .touchable_button{background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#4966A6), color-stop(.5, #355492), to(#2A4887));border:1px solid #29487d;-webkit-background-clip:padding-box;-webkit-border-radius:3px;-webkit-box-shadow:rgba(0, 0, 0, .117188) 0 1px 1px inset, rgba(255, 255, 255, .167969) 0 1px 0;display:inline-block;margin-top:3px;max-width:85px;line-height:18px;padding:4px 12px;position:relative}.fb_dialog_content .dialog_header .touchable_button input{border:none;background:none;color:#fff;font:12px Helvetica, sans-serif;font-weight:bold;margin:2px -12px;padding:2px 6px 3px 6px;text-shadow:rgba(0, 30, 84, .296875) 0 -1px 0}.fb_dialog_content .dialog_header .header_center{color:#fff;font-size:16px;font-weight:bold;line-height:18px;text-align:center;vertical-align:middle}.fb_dialog_content .dialog_content{background:url(https://static.xx.fbcdn.net/rsrc.php/v2/y9/r/jKEcVPZFk-2.gif) no-repeat 50% 50%;border:1px solid #555;border-bottom:0;border-top:0;height:150px}.fb_dialog_content .dialog_footer{background:#f6f7f9;border:1px solid #555;border-top-color:#ccc;height:40px}#fb_dialog_loader_close{float:left}.fb_dialog.fb_dialog_mobile .fb_dialog_close_button{text-shadow:rgba(0, 30, 84, .296875) 0 -1px 0}.fb_dialog.fb_dialog_mobile .fb_dialog_close_icon{visibility:hidden}#fb_dialog_loader_spinner{animation:rotateSpinner 1.2s linear infinite;background-color:transparent;background-image:url(https://static.xx.fbcdn.net/rsrc.php/v2/yD/r/t-wz8gw1xG1.png);background-repeat:no-repeat;background-position:50% 50%;height:24px;width:24px}@keyframes rotateSpinner{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+.fb_iframe_widget{display:inline-block;position:relative}.fb_iframe_widget span{display:inline-block;position:relative;text-align:justify}.fb_iframe_widget iframe{position:absolute}.fb_iframe_widget_fluid_desktop,.fb_iframe_widget_fluid_desktop span,.fb_iframe_widget_fluid_desktop iframe{max-width:100%}.fb_iframe_widget_fluid_desktop iframe{min-width:220px;position:relative}.fb_iframe_widget_lift{z-index:1}.fb_hide_iframes iframe{position:relative;left:-10000px}.fb_iframe_widget_loader{position:relative;display:inline-block}.fb_iframe_widget_fluid{display:inline}.fb_iframe_widget_fluid span{width:100%}.fb_iframe_widget_loader iframe{min-height:32px;z-index:2;zoom:1}.fb_iframe_widget_loader .FB_Loader{background:url(https://static.xx.fbcdn.net/rsrc.php/v2/y9/r/jKEcVPZFk-2.gif) no-repeat;height:32px;width:32px;margin-left:-16px;position:absolute;left:50%;z-index:4}</style><style type="text/css">.addthis_floating_style.at-floatingbar-inner{position:relative}.addthis_floating_style span{line-height:1pc}.addthis_floating_style.addthis_16x16_style{padding-bottom:0;line-height:20px;font-size:9pt}.addthis_floating_style.addthis_16x16_style .at-floatingbar-share{margin:0 auto}.addthis_floating_style.addthis_16x16_style .at-floatingbar-close{top:6px}.addthis_floating_style.addthis_32x32_style{line-height:2pc;font-size:14px}.addthis_floating_style.addthis_32x32_style .at-floatingbar-share{margin:0 auto}.addthis_floating_style.addthis_32x32_style .at-floatingbar-close{top:1pc}.addthis_floating_style.addthis_counter_style{padding-bottom:4px;line-height:1pc;font-size:14px}.addthis_floating_style.addthis_counter_style .addthis_counter{padding-left:3px}.addthis_floating_style.addthis_counter_style .at-floatingbar-share{margin:0 auto}.addthis_floating_style.addthis_counter_style .addthis_internal_container span{display:inline-block;margin-right:8px;float:left}.addthis_floating_style.addthis_counter_style .addthis_internal_container span:first-child,.addthis_floating_style.addthis_counter_style .addthis_internal_container span:last-child{margin-right:0}.addthis_floating_style.addthis_counter_style .at-floatingbar-close{top:28px}.addthis_floating_style{position:fixed;_position:absolute;background:#fff;padding:5px;text-align:center;border-radius:8px;-moz-border-radius:8px;-webkit-border-radius:8px;z-index:1}.addthis_floating_style .at300b,.addthis_floating_style .at300bo,.addthis_floating_style .at300m{padding:0 2px}.addthis_floating_style .addthis_native_counter_parent{clear:both}.addthis_floating_style .addthis_native_counter_sibling{float:left}.addthis_floating_style .addthis_counter.addthis_bubble_style.addthis_native_counter{margin:0 2px;display:none}.addthis_floating_style .at300b>*,.addthis_floating_style .at300bo>*,.addthis_floating_style .at300m>*{margin-bottom:5px}.addthis_floating_style .at300b #___plusone_0,.addthis_floating_style .at300bo #___plusone_0,.addthis_floating_style .at300m #___plusone_0{margin-bottom:10px!important}.addthis_floating_style.addthis_counter_style,.addthis_floating_style.addthis_counter_style .addthis_internal_container{width:60px}.addthis_floating_style.addthis_counter_style span{display:inline-block;margin-bottom:4px}.addthis_floating_style.addthis_32x32_style,.addthis_floating_style.addthis_32x32_style .addthis_internal_container{width:36px}.addthis_floating_style.addthis_16x16_style,.addthis_floating_style.addthis_16x16_style .addthis_internal_container{width:20px}.addthis_floating_style.addthis_16x16_style.native-counter,.addthis_floating_style.addthis_16x16_style.native-counter .addthis_internal_container,.addthis_floating_style.addthis_20x20_style.native-counter,.addthis_floating_style.addthis_20x20_style.native-counter .addthis_internal_container,.addthis_floating_style.addthis_32x32_style.native-counter,.addthis_floating_style.addthis_32x32_style.native-counter .addthis_internal_container,.addthis_floating_style.native-counter,.addthis_floating_style.native-counter .addthis_internal_container{width:auto}.addthis_floating_style a,.addthis_floating_style.addthis_16x16_style a,.addthis_floating_style.addthis_20x20_style a,.addthis_floating_style.addthis_32x32_style a{margin-bottom:4px;display:block}.addthis_floating_style.atf-collapsed{right:10px;left:auto;width:24px;height:28px;border-bottom-right-radius:4px;border-bottom-left-radius:4px;-moz-border-radius-bottomright:4px;-moz-border-radius-bottomleft:4px;-webkit-border-bottom-right-radius:4px;-webkit-border-bottom-left-radius:4px;padding:5px}.addthis_floating_style.atf-collapsed .at-floatingbar-close{background-position:0 -24px}.addthis_floating_style.atf-collapsed .at-floatingbar-open{right:5px}</style><script type="text/javascript" charset="utf-8" async="" src="./azoft_files/button.1813ea3f78757294e1ba1cea21b068a0.js"></script><style type="text/css">.addthis_counter{font-weight:700;display:inline-block;border:0;outline:0;cursor:pointer;color:#fff}.addthis_counter a{display:block;font-family:arial,helvetica,sans-serif!important;text-decoration:none!important;border:0}.addthis_counter{text-decoration:none!important;text-align:left}.addthis_counter .addthis_button_expanded,.addthis_counter .atc_s{background:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAACaCAMAAADcrusAAAAA21BMVEX////+bUznWjrnWjrBwcGJiYnm5ubFxcWMjIyRkZH39/f19fX////nWjr+bUzys6n+uq7/7+z87evqd2H+hm3/5+P+sKPxqJz65OH/9/b+el3paU//zcT2yMDshXH99vX+kXz+nIn/w7n0vrX30cz9bEv/3tn529f/1s/ukYH3aUn+ppbvnY/bUjTmWTn/3dX+9fP3aEj/9vT52NH/5d/aUTP9a0r74tzlWDjfWz386+f/7en4b1H/7uv4b1D/3db/9/X/7uraUjT+9vT87Oj87OnpZEb52dH+dlezszuQAAAABHRSTlMAExMAzBw6IQAAAnlJREFUeF6009eKKzEMBuBJriW5T2/pPdvbqb28/xMdGbOQiyxZZ9n/QnjAH8KWJxl8uqeI3H8ZJFcUmatkFktmCUXnXHIBIRevJ/AcBuUSQI0onZ8k1/QxkNqVJIvyNPl8S1/ZMFkuuYxtqhQoS2MA1RNIGKUArjwk/4Lk0jtXp0QpjEjJHiw5SbzZQlo6eUi+fafba0985LKwqSOqJdNaMdmQ5O+NOn6WYsNlPk7nnvRF6iF3lOBz/MZqZ6kvZCBS+bUn1h/MvTCXmumYArEKijlYJr6N6t8y/fcn5zz+dfwvNlhH9ZmtB8nw6REj8vg0TO4wMnfJPpbsE4zOueQGQm5eT+A5DKopgF5htjhJLvFDIE1eoeiq0+T3A/5lw2Q65TIxmdagDU4AdIsgYJUB5NUh+RMklzbPmwwxgxVq0YLBXCBvNpBVuTgkP3/hw6UnPmLamSxHbATTRjPZouDvrT5+lm7LZTHJFp60XeYhdxTgc/zGmtxg24lAhPZrT4w/WP7CXBqmEwzEaOgWYJj4Nrp9y/Tfn5zz+Hex5Ecy3EX12e+G/9mrQxUAYBgGooEFAm3//3snZmviJnL+6cMRrXSgHqsWOGb8iISEhISEqDxRAsSld5De/nLbr4MViEEYDMI5mFQ3ff/nXejx33YHcyqtc/8QQSXaRYfJZpAaFWx2FdwfMXyqYdYjp4punpP5fcgiiyyyyCKVl9+6nxQHCP+t20WHCTdIjQo2KjgDAT/Y7UQk/li1tkPtyaQlEhBARABBUV+lvhc1rz4w+FX4bKWLrA0cp7Ue+KhqnpA/mXggAQFEBBAU9VXqe1HzzgNTv2Iyx9Dc8gWOjkKMG1wfQQAAAABJRU5ErkJggg==');background-repeat:no-repeat;display:inline-block}.addthis_counter.addthis_bubble_style{background-image:url('data:image/gif;base64,R0lGODlhUgBkAKIEAOrq6sLCwoWFhf///////wAAAAAAAAAAACH5BAEAAAQALAAAAABSAGQAAAP/SLoa/jDKSetkOGsdwPhgKI5kaYpAsK1sd75wPKZsjQVyrpuq7eO7YLDnqwGFyBixuDomn6UlkwOtkqTTm3ULwmYXTi7U+3WJreSp+VxNF9fs8ZcBjz/dRo8dPSfU90l4TXqAcn1/hTuCLYSJQ31gjY45i3mTipB0kpcnlTZhnDyZdKFKo2ClMJ5GqS+rLa2dpw2xorOgtR+vg7kou7y9AzSzYBbGx8gRxAwCzc7P0NHS09TSywoCm60AAsvZwSDcxALgId2z5OUf56fp6uyj7uXwmfLg9JD2wfh9+r38X76pGwBwisCBBYscRFhP2718Dh/OWThwXb+IEidi/New+SKIhD4ozmu3sRVIhSVLnVRYcWXIluNgopPZjmY8m/VwQlQnblxKRz29VRtKtCg0YsmSOsBgtGmzNz9zDCMgEkpQWGyI+KuyElebBVuhdI2jNc5JRF+pRtUBEu3XqlYSum0DNy6jPQHqcrVEVq2ds2spYQssY2xWsGZ/9MWW+NNiqo35cpmqV8jVFkqTMXVqlEnmz1I4i4Y3twplwjqCehVTthC71VxaA3qdSPYe2oVs/0WVG7HrBqgx+f1deouKylsEFDeOPPlyNM3tPpcTXSzw2oMT4QakOzJs475n8+Ye/vZ4vOV30+rN+Pf1PacBXQWdefPopgQSAAA7');background-repeat:no-repeat}.addthis_counter a.atc_s{display:block;color:#000;background-repeat:no-repeat;background-position:0 0;width:50px;height:20px;line-height:20px;overflow:hidden;cursor:pointer;-webkit-transition:none;transition:none}.addthis_counter a.atc_s:hover{background-position:0 -20px;height:20px}.addthis_counter .atc_s-span{height:20px;display:block}.addthis_counter .addthis_button_expanded.at300m .at4-icon{display:none!important}.addthis_counter a.addthis_button_expanded:hover,.addthis_counter a.atc_s:hover,.addthis_counter.addthis_pill_style a.addthis_button_expanded:hover,.addthis_counter.addthis_pill_style a.atc_s:hover{text-decoration:none;color:#000}.addthis_counter .addthis_button_expanded{display:block;background-repeat:no-repeat;background-position:0 -40px;width:50px;height:33px;line-height:33px;padding-bottom:4px;margin-bottom:3px;text-align:center;text-decoration:none;font-size:1pc;font-weight:700;color:#333}.addthis_counter{vertical-align:top}.addthis_counter.addthis_native_counter .addthis_button_expanded{font-weight:400}* html .addthis_counter.compatmode0 .addthis_button_expanded{padding-bottom:0!important}* html .addthis_counter .addthis_button_expanded{height:37px}.addthis_counter .addthis_button_expanded:hover{background-position:0 -77px;cursor:pointer;color:#000}.addthis_counter .addthis_button_expanded .at300bs{display:none!important}.addthis_counter.addthis_pill_style{display:block;height:25px;overflow:hidden}.addthis_counter.addthis_pill_style a.atc_s{float:left}.addthis_counter.addthis_pill_style a.addthis_button_expanded{display:none;background-repeat:no-repeat;background-position:0 -114px;width:34px!important;height:20px;line-height:20px;margin:0 0 0 3px;padding:0 0 0 4px;float:left;text-align:center;text-decoration:none;font-family:arial,helvetica,sans-serif;font-weight:700;font-size:11px;color:#333;-ms-box-sizing:content-box;-o-box-sizing:content-box;box-sizing:content-box}.addthis_counter.addthis_pill_style.addthis_nonzero a.addthis_button_expanded{display:block!important;-webkit-transition:none;transition:none}.addthis_counter.addthis_pill_style a.addthis_button_expanded:hover{background-position:0 -134px!important}.addthis_counter.addthis_bubble_style{margin:0 0 0 -2px;text-align:center;font-weight:700;font-family:arial,helvetica,sans-serif;color:#000;background-repeat:no-repeat;background-position:0 -4pc;padding:0 0 0 4px;height:1pc;width:2pc!important;-ms-box-sizing:content-box;-o-box-sizing:content-box;box-sizing:content-box}.addthis_native_counter_parent .addthis_counter.addthis_bubble_style{background-position:0 -4pc!important}.addthis_counter.addthis_bubble_style.addthis_native_counter{margin:0 2px}.addthis_counter.addthis_bubble_style a.addthis_button_expanded{font-size:11px;height:1pc;line-height:1pc;width:34px;background:none}.addthis_counter.addthis_bubble_style:hover{background-position:-36px -4pc!important}.addthis_20x20_style .addthis_counter.addthis_bubble_style{background-repeat:no-repeat;background-position:0 -5pc!important;height:20px;width:35px!important;line-height:20px;padding:0 0 0 6px}.addthis_20x20_style .addthis_counter.addthis_bubble_style:hover{background-position:-41px -5pc!important}.addthis_20x20_style .addthis_counter.addthis_bubble_style a.addthis_button_expanded{background:none;font-size:9pt;line-height:20px;height:20px;margin:0;width:35px!important;padding:0!important}.addthis_20x20_style .addthis_counter.addthis_bubble_style.addthis_native_counter a.addthis_button_expanded{font-size:11px}.addthis_32x32_style .addthis_counter.addthis_bubble_style,.addthis_32x32_white_style .addthis_counter.addthis_bubble_style{background-repeat:no-repeat;background-position:0 0!important;height:2pc;width:56px!important;line-height:2pc;padding:0 0 0 6px}.addthis_32x32_style .addthis_counter.addthis_bubble_style a.addthis_button_expanded,.addthis_32x32_white_style .addthis_counter.addthis_bubble_style a.addthis_button_expanded{background:none;font-size:1pc;line-height:2pc;height:2pc;margin:0;width:56px!important;padding:0!important}.addthis_32x32_style .addthis_counter.addthis_bubble_style:hover,.addthis_32x32_white_style .addthis_counter.addthis_bubble_style:hover{background-position:0 -2pc!important}.addthis_counter.addthis_bubble_style .atc_s{display:none!important}* html .addthis_counter.addthis_bubble_style{width:36px!important;display:inline}* html .addthis_counter.bubblecompatmode0{width:2pc!important;display:block}* html .addthis_counter.addthis_bubble_style a.addthis_button_expanded{width:24px!important;height:14px!important;line-height:14px!important;padding:0;margin-top:1px!important;display:inline}* html .addthis_counter.bubblecompatmode0 a.addthis_button_expanded{width:36px}* html .addthis_32x32_style .addthis_counter.addthis_bubble_style{width:60px!important}* html .addthis_32x32_style .addthis_counter.addthis_bubble_style a.addthis_button_expanded{width:46px;height:26px!important;line-height:26px!important;margin-top:2px!important}* html .addthis_32x32_style .addthis_counter.bubblecompatmode0 a.addthis_button_expanded{height:2pc!important;line-height:2pc!important}</style></head>
+
+
+
+<body>
+<div id="max-width">
+	<div id="container">
+		<div id="header">
+         	<div class="cr"></div><div class="cl"></div>
+         	<div class="wrap">
+				<!-- New year style -->
+
+				<!--
+				<style>
+					#container #header .wrap {
+						padding: 35px 10px 0 42px;
+					}
+					#container #header #logo {
+						background: rgba(0, 0, 0, 0) url("http://www.azoft.com/images/new_year/logo_ny_1.png") no-repeat scroll 0 0;
+						height: 105px;
+					}
+					#container #header .bm {
+						margin-top: 30px;
+					}
+				</style>
+
+				-->
+
+				<!-- New year style -->
+				<!-- <a href="http://www.azoft.com" id="logo" class="ie"></a> -->
+         		<a href="http://www.azoft.com/" id="logo" class="ie">Software<br>Development</a>
+
+                <div class="bm">
+					<div class="header_title"><a href="http://www.azoft.com/contact-form/">Discuss your project</a></div>
+					<!-- <div class="header_tel">+1 315 633-3310</div> -->
+					<div class="header_tel">+1 315 633-3310</div>
+					<div class="social">
+						<!--noindex-->
+							<a rel="nofollow" href="http://www.facebook.com/azoft.company"><img src="./azoft_files/facebook.png" width="34" height="34" alt=""><img src="./azoft_files/facebook_hover.png" width="34" height="34" alt="" style="display: none;"></a>
+							<a rel="nofollow" href="http://twitter.com/azoft"><img src="./azoft_files/twitter.png" width="34" height="34" alt=""><img src="./azoft_files/twitter_hover.png" width="34" height="34" alt="" style="display: none;"></a>
+							<a rel="nofollow" href="http://www.linkedin.com/company/azoft"><img src="./azoft_files/in.png" width="34" height="34" alt=""><img src="./azoft_files/in_hover.png" width="34" height="34" alt="" style="display: none;"></a>
+							<a rel="nofollow" href="http://www.youtube.com/user/azoft"><img src="./azoft_files/youtube.png" width="34" height="34" alt=""><img src="./azoft_files/youtube_hover.png" width="34" height="34" alt="" style="display: none;"></a>
+							<a rel="nofollow" href="http://www.azoft.com/rss/"><img src="./azoft_files/rss.png" width="34" height="34" alt=""><img src="./azoft_files/rss_hover.png" width="34" height="34" alt="" style="display: none;"></a>
+						<!--/noindex-->
+					</div>				
+                </div>
+				<div class="button-menu">
+					<span></span>
+				</div>
+         	</div>
+        </div>
+	<div id="shadow">
+	<div class="menu_1px"></div>
+	<div class="menu">
+		<ul id="menu">
+			<li><a href="http://www.azoft.com/" class="mlevel">Home</a><div class="item ie"><a href="http://www.azoft.com/" class="mlevel">Home</a></div></li>
+			<li>
+				<a href="http://www.azoft.com/company/about/" class="mlevel">Company</a><div class="item ie" style="display: none;"><a href="http://www.azoft.com/company/about/" class="mlevel">Company</a></div>
+				<div class="sub build" style="left: 80px; display: none; width: 368px;">
+					<div class="tp"><div class="tl ie"></div><div class="tr ie"></div></div>
+					<div class="box ie">
+						<div class="clrfix">
+							<dl class="level">
+								<dt></dt>
+								<dd>
+									<a href="http://www.azoft.com/about-us/">About Us</a>
+								</dd>
+								<dd>
+									<a href="http://www.azoft.com/company/about/management-team/">Management Team</a>
+								</dd>
+								<dd>
+									<a href="http://www.azoft.com/why-azoft/location/">Why Azoft</a>
+								</dd>
+								<dd>
+									<a href="http://www.azoft.com/contacts/">Contacts</a>
+								</dd>
+							</dl>
+						</div>
+					</div>
+					<div class="bt ie"><div class="bl ie"></div><div class="br ie"></div></div>
+				</div>
+			</li>
+
+			<li>
+				<a href="http://www.azoft.com/web-development-company/" class="mlevel">Services</a><div class="item ie" style="display: none;"><a href="http://www.azoft.com/web-development-company/" class="mlevel">Services</a></div>
+				<div class="sub build" style="left: 5px; display: none; width: 594px;">
+					<div class="tp"><div class="tl ie"></div><div class="tr ie"></div></div>
+					<div class="box ie">
+						<div class="clrfix">
+							<dl class="level brr">
+								<dt></dt>
+								<dd style="width: 150px;"><a href="http://www.azoft.com/web-development-company/">Web Development</a>
+									<dl>
+										<dt></dt>
+										<dd><a href="http://www.azoft.com/java-development/">Java Development</a></dd>
+										<dt></dt>
+										<dd><a href="http://www.azoft.com/php-development/">PHP Development</a></dd>
+										<dt></dt>
+										<dd><a href="http://www.azoft.com/dotnet-development/">.NET Development</a></dd>
+										<dt></dt>
+										<dd><a href="http://www.azoft.com/ruby-on-rails-development/">Ruby on Rails</a></dd>
+										<dt></dt>
+										<dd><a href="http://www.azoft.com/frontend-development/">Front-end Development</a></dd>
+									</dl>
+								</dd>
+								<dt></dt>
+								<dd>
+									<a href="http://www.azoft.com/design/">Interface &amp; Design</a>
+								</dd>
+								<dt></dt>
+								<dd>
+									<a href="http://www.azoft.com/business-analysis-services/">Business Analysis</a>
+								</dd>
+								<dd>
+									<a href="http://www.azoft.com/quality-assurance-testing-services/">Quality Assurance</a>
+								</dd>
+							</dl>
+							<dl class="level brl brr">
+								<dt></dt>
+								<dd style="width: 150px;"><a href="http://www.azoft.com/mobile-application-development.htm">Mobile Development</a>
+									<dl>
+										<dt></dt>
+										<dd><a href="http://www.azoft.com/iphone-application-development.htm">iPhone/iPad</a></dd>
+										<dt></dt>
+										<dd><a href="http://www.azoft.com/google-android-development.htm">Android</a></dd>
+										<dt></dt>
+										<dd><a href="http://www.azoft.com/cross-platform-application-development/">Cross-platform</a></dd>
+										<dt></dt>
+										<dd><a href="http://www.azoft.com/windows-mobile-development.htm">Windows</a></dd>
+										<dt></dt>
+										<dd><a href="http://www.azoft.com/nfc/">NFC</a></dd>
+									</dl>
+								</dd>
+								<dt></dt>
+								<dd></dd>
+							</dl>
+							<dl class="level brl">
+								<dt></dt>
+								<dd style="width: 150px;"><a href="http://www.azoft.com/business-automation/">Business Automation</a>
+									<dl>
+										<dt></dt>
+										<dd><a href="http://www.azoft.com/custom-crm-development/">Custom CRM</a></dd>
+										<dt></dt>
+										<dd><a href="http://www.azoft.com/custom-erp-development/">Custom ERP</a></dd>
+										<dt></dt>
+										<dd><a href="http://www.azoft.com/order-management/">Order Management</a></dd>
+										<dt></dt>
+										<dd><a href="http://www.azoft.com/data-migration-services/">Data Migration</a></dd>
+										<dt></dt>
+										<dd><a href="http://www.azoft.com/performance-optimization-services/">Performance Optimization</a></dd>
+									</dl>
+								</dd>
+							</dl>
+						</div>
+					</div>
+					<div class="bt ie"><div class="bl ie"></div><div class="br ie"></div></div></div>
+			</li>
+
+			<li>
+				<a href="http://www.azoft.com/industries/telecom/" class="mlevel">Industries</a><div class="item ie" style="display: none;"><dl><dt><a href="http://www.azoft.com/industries/telecom/" class="mlevel">Industries</a></dt><dd></dd></dl></div>
+				<div class="sub build" style="left: 253px; display: none; width: 668px;">
+					<div class="tp"><div class="tl ie"></div><div class="tr ie"></div></div>
+					<div class="box ie">
+						<div class="clrfix">
+							<dl class="level brr">
+								<dt></dt>
+								<dd><a href="http://www.azoft.com/industries/telecom/">Telecom</a>
+								</dd>
+								<dt></dt>
+								<dd></dd>
+								<dt></dt>
+								<dd><a href="http://www.azoft.com/industries/mobile-wireless/">Mobile &amp; Wireless</a>
+								</dd>
+								<dt></dt>
+								<dd><a href="http://www.azoft.com/industries/transportation-logistics/">Transportation &amp; Logistics</a>
+								</dd>
+								<dt></dt>
+								<dd> </dd>
+								<dt></dt>
+								<dd><a href="http://www.azoft.com/industries/insurance/">Insurance</a>
+								</dd>
+								<dt></dt>
+								<dd><a href="http://www.azoft.com/industries/finance/">Finance</a>
+								</dd>
+							</dl>
+						</div>
+					</div>
+					<div class="bt ie"><div class="bl ie"></div><div class="br ie"></div></div></div>
+			</li>
+
+			<!-- R&D -->
+			<li class="active"><a href="http://rnd.azoft.com/" class="mlevel">R&amp;D</a><div class="item ie"><a href="http://rnd.azoft.com/" class="mlevel">R&amp;D</a></div></li>
+
+			<li><a href="http://cases.azoft.com/" class="mlevel">Dev Insights</a><div class="item ie"><a href="http://rnd.azoft.com/" class="mlevel">Dev Insights</a></div></li>
+
+			<!-- <li><a href="http://www.azoft.com/ebooks/" class="mlevel">eBooks</a><div class="item ie"><a href="http://www.azoft.com/ebooks/" class="mlevel">eBooks</a></div></li> -->
+
+			<!-- Clients -->
+			<li><a href="http://www.azoft.com/clients/" class="mlevel">Portfolio</a>
+				<div class="item ie" style="display: none;"><a href="http://www.azoft.com/clients/" class="mlevel">Portfolio</a></div>
+				<div class="sub build" style="display: none; width: 137px;right: 295px;"><div class="tp"><div class="tl ie"></div><div class="tr ie"></div></div>
+					<div class="box ie">
+						<div class="clrfix">
+							<dl class="level" style="height: 66px;">
+								<dt></dt>
+								<dd><dl><dt><a href="http://www.azoft.com/clients/">Clients</a></dt><dd></dd></dl></dd>
+								<dt></dt>
+								<dd><dl><dt><a href="http://www.azoft.com/case-studies/">Projects</a></dt><dd></dd></dl></dd>
+								<dt></dt>
+								<dd><dl><dt><a href="http://www.azoft.com/clients-feedback/">References</a></dt><dd></dd></dl></dd>
+							</dl>
+						</div>
+					</div>
+					<div class="bt ie"><div class="bl ie"></div><div class="br ie"></div></div></div>
+			</li>
+			<li><a href="http://blog.azoft.com/" class="mlevel">Blog</a><div class="item ie"><a href="http://rnd.azoft.com/" class="mlevel">Blog</a></div></li>
+			<li class="last"><a href="http://www.azoft.com/contacts/" class="mlevel">Contacts</a><div class="item ie"><a href="http://www.azoft.com/contacts/" class="mlevel">Contacts</a></div></li>
+		</ul>
+	</div>
+</div>
+		<script type="text/javascript">
+		
+		var addthis_config = { data_track_clickback: false };
+
+		var isNewStyle = function() {
+			return $('div.addthis_toolbox').closest('#shadow').size();
+		};
+
+		var rebuildToolBar = function () {
+					offset = $('div#container').offset();
+					var fromleft = offset.left - 80;
+					var top = 160;
+					if (isNewStyle()) {
+						top = 103;
+					}
+					$('div.addthis_toolbox').css({'position': 'absolute', 'left' : fromleft + 'px', 'top' : top + 'px'});
+		};
+		
+
+		jQuery(document).ready(function($) {
+
+				offset = $('div.addthis_toolbox').offset();
+				var fromtop = offset.top;
+				var defaultOffsetLeft = offset.left - 80;
+				rebuildToolBar();
+					
+				window.onresize = function(event) {
+					offset = $('div#container').offset();
+					var fromleft = offset.left - 80;
+					$('div.addthis_toolbox').css({'position': 'absolute', 'left' : fromleft + 'px', 'top' : '160px'});
+				};
+			
+				$(document).scroll(function() {
+					doc = $(this);
+					dist = $(this).scrollTop();
+
+					var newStyle = isNewStyle();
+					
+					offset = $('div#container').offset();
+					var fromleft = offset.left - 80;
+
+					if (dist >= fromtop) {
+						if (isNewStyle()) {
+							$('div.addthis_toolbox').css({'position': 'fixed', 'left': defaultOffsetLeft + 'px', 'top': '10px'});
+						} else {
+							$('div.addthis_toolbox').css({'position': 'fixed', 'left': fromleft + 'px', 'top': '10px'});
+						}
+					} else {
+						//$('div.addthis_toolbox').css({'position': 'absolute', 'left' : fromleft + 'px', 'top' : '160px'});
+						rebuildToolBar();
+					}
+				});
+			});
+
+				
+		</script>
+		<!--noindex--><div class="sticky_socials"><!-- AddThis Button BEGIN -->
+				<div class="addthis_toolbox addthis_floating_style addthis_counter_style" style="z-index: 99999; position: absolute; left: 399px; top: 160px;"><div class="at-floatingbar-inner"><div class="at-floatingbar-share"><div class="addthis_internal_container">
+					<a class="addthis_button_linkedin_counter at300b" li:counter="top" rel="nofollow" addthis:title="Real-Time%20Video%20Processing%20Algorithm%20for%20Instant%20License%20Plate%20Recognition%20in%20iOS%20Apps%20(using%20OpenCV%20%26%20GPGPU)"><div class="linkedin_counter_iframe_widget" style="width: 57px; height: 55px;"><span><iframe title="AddThis | LinkedIn Button" frameborder="0" role="presentation" scrolling="no" allowtransparency="true" scrollbars="no" style="width:57px; height:55px;" src="./azoft_files/linkedin.html"></iframe></span></div></a>
+					<a class="addthis_button_google_plusone at300b" g:plusone:size="tall" rel="nofollow"><div class="google_plusone_iframe_widget" style="width: 90px; height: 25px;"><span><div id="___plusone_0" style="text-indent: 0px; margin: 0px; padding: 0px; border-style: none; float: none; line-height: normal; font-size: 1px; vertical-align: baseline; display: inline-block; width: 50px; height: 60px; background: transparent;"><iframe frameborder="0" hspace="0" marginheight="0" marginwidth="0" scrolling="no" style="position: static; top: 0px; width: 50px; margin: 0px; border-style: none; left: 0px; visibility: visible; height: 60px;" tabindex="0" vspace="0" width="100%" id="I0_1470508052974" name="I0_1470508052974" src="./azoft_files/fastbutton.html" data-gapiattached="true" title="+1"></iframe></div></span></div></a>
+					<a class="addthis_button_facebook_like at300b" fb:like:layout="box_count" rel="nofollow"><div class="fb-like fb_iframe_widget" data-layout="box_count" data-show_faces="false" data-share="false" data-action="like" data-width="55" data-height="65" data-font="arial" data-href="http://rnd.azoft.com/instant-license-plate-recognition-in-ios-apps/" data-send="false" style="height: 65px;" fb-xfbml-state="rendered" fb-iframe-plugin-query="action=like&amp;app_id=482862998415017&amp;container_width=0&amp;font=arial&amp;height=65&amp;href=http%3A%2F%2Frnd.azoft.com%2Finstant-license-plate-recognition-in-ios-apps%2F&amp;layout=box_count&amp;locale=en_US&amp;sdk=joey&amp;send=false&amp;share=false&amp;show_faces=false&amp;width=55"><span style="vertical-align: bottom; width: 50px; height: 40px;"><iframe name="f35abfa9768ed6" width="55px" height="65px" frameborder="0" allowtransparency="true" allowfullscreen="true" scrolling="no" title="fb:like Facebook Social Plugin" src="./azoft_files/like.html" style="border: none; visibility: visible; width: 50px; height: 40px;" class=""></iframe></span></div></a>
+					<!-- <div class="fb-like" data-href="" data-width="60px" data-layout="box_count" data-action="like" data-show-faces="true" data-share="true"></div> -->
+
+					<a class="addthis_button_tweet at300b" tw:count="vertical" tw:via="azoft" tw:related="azoft_ru" rel="nofollow"><div class="tweet_iframe_widget" style="width: 56px; height: 62px;"><span><iframe id="twitter-widget-0" scrolling="no" frameborder="0" allowtransparency="true" class="twitter-share-button twitter-share-button-rendered twitter-tweet-button" title="Twitter Tweet Button" src="./azoft_files/tweet_button.a9003d9964444592507bbb36b98c709b.en.html" style="position: static; visibility: visible; width: 60px; height: 20px;" data-url="http://rnd.azoft.com/instant-license-plate-recognition-in-ios-apps/"></iframe></span></div></a><iframe scrolling="no" frameborder="0" allowtransparency="true" src="./azoft_files/saved_resource.html" width="50" height="60" id="iframe-stmblpn-widget-1" style="overflow: hidden; margin: 0px; padding: 0px; border: 0px;"></iframe>
+						<script type="text/javascript">
+						(function() {
+							var li = document.createElement("script"); li.type = "text/javascript"; li.async = true;
+								li.src = ("https:" == document.location.protocol ? "https:" : "http:") + "//platform.stumbleupon.com/1/widgets.js";
+								
+							var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(li, s);
+						})();
+						</script>
+						<a class="addthis_counter" rel="nofollow" href="http://rnd.azoft.com/instant-license-plate-recognition-in-ios-apps/#" style="display: inline-block;"><a class="addthis_button_expanded" target="_blank" title="View more services" href="http://rnd.azoft.com/instant-license-plate-recognition-in-ios-apps/#">29</a><a class="atc_s addthis_button_compact"><span></span></a></a></div></div></div><div class="atclear"></div></div><script type="text/javascript" src="./azoft_files/addthis_widget.js"></script><!-- AddThis Button END --></div><!--/noindex--><script type="text/javascript">$('.addthis_button_linkedin_counter').attr('addthis:title', encodeURIComponent(document.title));</script>
+<div id="wrapper" class="clrfix no-side-l">
+
+<div id="page">
+
+<div class="blog">
+
+	<div id="blog-l">
+
+		<div class="pathway">
+
+			<a href="http://www.azoft.com/">Azoft</a><em></em><a href="http://rnd.azoft.com/">RnD</a><em></em>Real-Time Video Processing Algorithm for Instant License Plate Recognition in iOS Apps (using OpenCV &amp; GPGPU)
+		</div>
+
+		<div id="contentleft">
+
+				
+
+			
+			<h1>Real-Time Video Processing Algorithm for Instant License Plate Recognition in iOS Apps (using OpenCV &amp; GPGPU)</h1>
+
+		       <div class="item">
+
+                  	<div class="by">By <b>Ivan Ozhiganov</b> on May 29, 2014
+						<!-- <div id="comments_block" style="padding-top: 10px; padding-bottom: 5px;">
+
+							<div style="float:left;height:18px;padding-top:2px;">
+
+								<script src="//platform.linkedin.com/in.js" type="text/javascript"></script>
+
+								<script type="IN/Share" data-counter="right"  data-url="http://rnd.azoft.com/instant-license-plate-recognition-in-ios-apps/"></script>
+
+							</div>        
+
+							<div style="float:left; height:18px; padding-left: 25px; padding-top: 2px;">
+
+									<iframe src="http://www.facebook.com/plugins/like.php?href=http://rnd.azoft.com/instant-license-plate-recognition-in-ios-apps/&amp;layout=button_count&amp;show_faces=true&amp;width=450&amp;action=like&amp;colorscheme=light&amp;height=21&amp;locale=en_US" style="border:none; overflow:hidden; width:90px; height:21px;" class="alignright"></iframe>
+
+							</div>
+
+							<div style="float:left;height:18px;padding-top:2px; padding-left:10px;">
+
+							<div class="g-plusone" data-size="medium"></div>
+
+							<script type="text/javascript">
+
+							  (function() {
+
+								var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+
+								po.src = 'https://apis.google.com/js/plusone.js';
+
+								var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+
+							  })();
+
+							</script>
+
+							</div>       	
+
+							<div style="float:left;height:18px;padding-top:2px; width: 85px;">
+
+								<a href="https://twitter.com/share" class="twitter-share-button" data-lang="eng" data-url="http://rnd.azoft.com/instant-license-plate-recognition-in-ios-apps/" data-via="azoft" data-text="Real-Time Video Processing Algorithm for Instant License Plate Recognition in iOS Apps (using OpenCV &#038; GPGPU)" data-related="azoft_ru">Tweet</a>
+
+								<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>   
+
+							</div>                 	
+
+						</div>	-->
+
+                  	</div>
+
+					<div class="text" style="text-align: justify;">
+
+						<p><img class="alignleft size-full wp-image-3178" title="Real-time Video Processing Algorithm for Instant License Plate Recognition in iOS Apps (using GPGPU &amp; OpenCV)" src="./azoft_files/instant-license-plate-recognition-in-ios-apps.jpg" alt="Real-time Video Processing Algorithm for Instant License Plate Recognition in iOS Apps (using GPGPU &amp; OpenCV)" width="500" height="282" srcset="http://rnd.azoft.com/wp-content/uploads/2014/05/instant-license-plate-recognition-in-ios-apps.jpg 710w, http://rnd.azoft.com/wp-content/uploads/2014/05/instant-license-plate-recognition-in-ios-apps-300x169.jpg 300w" sizes="(max-width: 500px) 100vw, 500px"></p>
+<p>Among other current <a href="http://rnd.azoft.com/">optical character recognition (OCR) projects</a> Azoft's R&amp;D team has been working on a new iOS app for reading Russian vehicle license plate numbers. Despite the immense popularity of the use of OCR technology by many mobile developers and researchers to accomplish this task, we still couldn't find a real-time plate recognition solution for mobile platforms.</p>
+<p>In our opining the key to real-time recognition lies in using GPU instead of relying on CPU. Recently, we have been working in this direction in several projects: <a href="http://rnd.azoft.com/fluid-dynamics-simulation-on-ios/">Hydrodynamic Process Simulation</a>, <a href="http://rnd.azoft.com/barcode-scanner-mobile-app/">Barcode Scanner Mobile Application</a>, <a href="http://rnd.azoft.com/optical-recognition-ios-application/">Recognition of Credit Card Numbers</a>, and <a href="http://rnd.azoft.com/applied-use-of-m2m-tchnology-in-ios-apps/">Road Sign Recognition</a>. Thus, we decided to take the challenge and write this app ourselves.  Two major features that make Azoft’s solution unique are real-time processing of streaming video, and, as a result, instant number recognition – which became possible due to moving calculations to GPGPU.  Today’s article includes a general algorithm that can easily be used in license plate recognition applications, along with all necessary snippets of shader code.  <iframe src="./azoft_files/XY_BYXR7xEs.html" width="500" height="297" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<h2>Practical usage</h2>
+<p>The development of a license plate recognition algorithm came as part of a larger project: an automobile “smart camera” app for cars that not only records what's happening on the road ahead but notifies drivers about important roadway events such as the presence of construction warning signs, stationary objects in the road, etc. Another function of this 'smart' driving assistance technology is providing a “social networking platform” for auto enthusiasts – for which license number recognition was required.  In our application, after the license plates of nearby vehicles have been read, a user can contribute to another user’s “karma ranking” – a user's rank that reflects how much good he or she has done for the community – or send a private voice message. The app can also notify users if a driver with a low karma ranking is in the vicinity – provided the other driver has installed the app.</p>
+<h2>Plate recognition algorithm</h2>
+<p>A Russian number plate has the following layout: the number part at the left and a regional code at the right.  <a href="./azoft_files/russian-vehicle-license-plate.jpg"><img class="alignleft size-full wp-image-3155" title="Russian license plate layout" src="./azoft_files/russian-vehicle-license-plate.jpg" alt="Russian license plate layout" width="500" height="158" srcset="http://rnd.azoft.com/wp-content/uploads/2014/05/russian-vehicle-license-plate.jpg 641w, http://rnd.azoft.com/wp-content/uploads/2014/05/russian-vehicle-license-plate-300x94.jpg 300w" sizes="(max-width: 500px) 100vw, 500px"></a>  The typical stages in a plate recognition algorithm include:</p>
+<ul>
+    <li>Localizing the plate in an image.</li>
+    <li>Segmentation of plate characters.</li>
+    <li>Character recognition.</li>
+</ul>
+<p>Let’s look at these stages in more detail.</p>
+<h3>Plate localization</h3>
+<p>Our implementation of plate localization can be split to several key steps:  <a href="./azoft_files/rnd.jpg"><img class="alignleft size-full wp-image-3173" title="Finding candidate regions that may contain license plate; Filtering found regions by various parameters (area, aspect ratio, etc.); Adjusting the plate position in filtered regions." src="./azoft_files/rnd.jpg" alt="Finding candidate regions that may contain license plate; Filtering found regions by various parameters (area, aspect ratio, etc.); Adjusting the plate position in filtered regions." width="500" height="300" srcset="http://rnd.azoft.com/wp-content/uploads/2014/05/rnd.jpg 500w, http://rnd.azoft.com/wp-content/uploads/2014/05/rnd-300x180.jpg 300w" sizes="(max-width: 500px) 100vw, 500px"></a>  There’s an additional skew correction step that technically may be considered as part of the localization stage.  The search for candidate regions is performed as a sequence of the following actions (all implemented using shaders in our project):</p>
+<h4>1. Converting camera image to grayscale</h4>
+<p><a href="./azoft_files/vehicle-license-plate-recognition-algorithm-02.jpg"><img class="alignleft size-full wp-image-3157" title="Step 1. Converting camera image to grayscale" src="./azoft_files/vehicle-license-plate-recognition-algorithm-02.jpg" alt="Step 1. Converting camera image to grayscale" width="500" height="250" srcset="http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-02.jpg 563w, http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-02-300x149.jpg 300w" sizes="(max-width: 500px) 100vw, 500px"></a></p>
+<h4>2. Applying the morphological operation Top Hat over the resulting image</h4>
+<p>A morphological operation called Top Hat is applied over the resulting image. It is a combination of dilation, erosion and subtraction of result from the previous grayscale image. Dilation and erosion use a structuring element defined by a 3x9 rectangle.  Dilation:  <a href="./azoft_files/vehicle-license-plate-recognition-algorithm-03.jpg"><img class="alignleft size-full wp-image-3158" title="Step 2. Applying Top Hat: Dilation" src="./azoft_files/vehicle-license-plate-recognition-algorithm-03.jpg" alt="Step 2. Applying Top Hat: Dilation" width="500" height="249" srcset="http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-03.jpg 562w, http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-03-300x149.jpg 300w" sizes="(max-width: 500px) 100vw, 500px"></a>  Erosion:  <a href="./azoft_files/vehicle-license-plate-recognition-algorithm-04.jpg"><img class="alignleft size-full wp-image-3159" title="Step 2. Applying Top Hat: Erosion" src="./azoft_files/vehicle-license-plate-recognition-algorithm-04.jpg" alt="Step 2. Applying Top Hat: Erosion" width="500" height="249" srcset="http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-04.jpg 564w, http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-04-300x149.jpg 300w" sizes="(max-width: 500px) 100vw, 500px"></a>  Subtraction:  <a href="./azoft_files/vehicle-license-plate-recognition-algorithm-05.jpg"><img class="alignleft size-full wp-image-3160" title="Step 2. Applying Top Hat: Subtraction" src="./azoft_files/vehicle-license-plate-recognition-algorithm-05.jpg" alt="Step 2. Applying Top Hat: Subtraction" width="500" height="250" srcset="http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-05.jpg 563w, http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-05-300x150.jpg 300w" sizes="(max-width: 500px) 100vw, 500px"></a></p>
+<h4>3. Applying Sobel operator</h4>
+<p>Then we find the derivative of the resulting image using Sobel operator in horizontal direction.  <a href="./azoft_files/vehicle-license-plate-recognition-algorithm-06.jpg"><img class="alignleft size-full wp-image-3161" title="3. Applying Sobel operator" src="./azoft_files/vehicle-license-plate-recognition-algorithm-06.jpg" alt="Step 3. Applying Sobel operator" width="500" height="249" srcset="http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-06.jpg 560w, http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-06-300x149.jpg 300w" sizes="(max-width: 500px) 100vw, 500px"></a></p>
+<h4>4. Applying Gaussian blur</h4>
+<p>Next filter is Gaussian blur with 5x5 mask.  <a href="./azoft_files/vehicle-license-plate-recognition-algorithm-07.jpg"><img class="alignleft size-full wp-image-3162" title="Step 4. Applying Gaussian blur" src="./azoft_files/vehicle-license-plate-recognition-algorithm-07.jpg" alt="Step 4. Applying Gaussian blur" width="500" height="248" srcset="http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-07.jpg 562w, http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-07-300x148.jpg 300w" sizes="(max-width: 500px) 100vw, 500px"></a></p>
+<h4>5. Closing</h4>
+<p>Closing (morphological) operation. It is a combination of dilation and erosion. Dilation and erosion use a structuring element defined by a 3x9 rectangle.  <a href="./azoft_files/vehicle-license-plate-recognition-algorithm-09.jpg"><img class="alignleft size-full wp-image-3163" title="Step 5. Closing blur: Dilation" src="./azoft_files/vehicle-license-plate-recognition-algorithm-09.jpg" alt="Step 5. Closing blur: Dilation" width="500" height="250" srcset="http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-09.jpg 561w, http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-09-300x149.jpg 300w" sizes="(max-width: 500px) 100vw, 500px"></a>  <a href="./azoft_files/vehicle-license-plate-recognition-algorithm-10.jpg"><img class="alignleft size-full wp-image-3164" title="Step 5. Closing blur: Erosion" src="./azoft_files/vehicle-license-plate-recognition-algorithm-10.jpg" alt="Step 5. Closing blur: Erosion" width="500" height="248" srcset="http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-10.jpg 560w, http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-10-300x148.jpg 300w" sizes="(max-width: 500px) 100vw, 500px"></a></p>
+<h4>6. Otsu’s thresholding</h4>
+<p><a href="./azoft_files/vehicle-license-plate-recognition-algorithm-11.jpg"><img class="alignleft size-full wp-image-3165" title="Step 6. Otsu’s thresholding" src="./azoft_files/vehicle-license-plate-recognition-algorithm-11.jpg" alt="Step 6. Otsu’s thresholding" width="500" height="248" srcset="http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-11.jpg 560w, http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-11-300x148.jpg 300w" sizes="(max-width: 500px) 100vw, 500px"></a>  To demonstrate the result, let’s see how processed image looks when combined with the over original grayscale image:  <a href="./azoft_files/vehicle-license-plate-recognition-algorithm-12.jpg"><img class="alignleft size-full wp-image-3166" title="Combining the processed image with the original grayscale image" src="./azoft_files/vehicle-license-plate-recognition-algorithm-12.jpg" alt="Combining the processed image with the original grayscale image" width="500" height="248" srcset="http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-12.jpg 703w, http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-12-300x148.jpg 300w" sizes="(max-width: 500px) 100vw, 500px"></a>  The proposed sequence of steps gives best results in our case, but it still can be changed, e.g. the closing operation and Otsu’s binarization can be swapped if required.  To localize the plate in an image we used the following steps:  <strong>Step 1</strong>. Find outlines in the binary image we got in the previous stage:</p>
+<div class="dp-highlighter"><ol start="1" class="dp-c"><li class="alt"><span><span>std::vector&lt;&nbsp;std::vector&nbsp;&gt;&nbsp;contours;&nbsp;&nbsp;</span></span></li><li class=""><span>cv::findContours(inputImg,&nbsp;contours,&nbsp;CV_RETR_EXTERNAL,&nbsp;CV_CHAIN_APPROX_NONE);&nbsp;&nbsp;</span></li></ol></div><pre class="php" data-code="code" style="display: none;">std::vector&lt; std::vector &gt; contours;
+cv::findContours(inputImg, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+</pre>
+<p><strong>Step 2</strong>. Select outlines by ratio of outline area to athe area of bounding box (with a threshold of 0.45) and the actual area of bounding box:</p>
+<div class="dp-highlighter"><div class="bar"><div class="tools"><a href="http://rnd.azoft.com/instant-license-plate-recognition-in-ios-apps/#" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://rnd.azoft.com/instant-license-plate-recognition-in-ios-apps/#" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy to clipboard</a><a href="http://rnd.azoft.com/instant-license-plate-recognition-in-ios-apps/#" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://rnd.azoft.com/instant-license-plate-recognition-in-ios-apps/#" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a></div></div><ol start="1" class="dp-c"><li class="alt"><span><span>std::vector&nbsp;rects;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;std::vector&lt;std::vector&nbsp;&gt;::iterator&nbsp;itc&nbsp;=&nbsp;contours.begin();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">while</span><span>&nbsp;(itc&nbsp;!=&nbsp;contours.</span><span class="func">end</span><span>())&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;{&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;cv::RotatedRect&nbsp;mr&nbsp;=&nbsp;cv::minAreaRect(cv::Mat(*itc));&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;area&nbsp;=&nbsp;fabs(cv::contourArea(*itc));&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;bbArea=mr.size.width&nbsp;*&nbsp;mr.size.height;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float&nbsp;ratio&nbsp;=&nbsp;area/bbArea;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(&nbsp;(ratio&nbsp;&lt;&nbsp;0.45)&nbsp;||&nbsp;(bbArea&nbsp;&lt;&nbsp;400)&nbsp;){&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;itc=&nbsp;contours.erase(itc);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<span class="keyword">else</span><span>{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;++itc;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rects.push_back(mr);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li></ol></div><pre class="php" data-code="code" style="display: none;">std::vector rects;
+   std::vector&lt;std::vector &gt;::iterator itc = contours.begin();
+    while (itc != contours.end())
+    {
+	cv::RotatedRect mr = cv::minAreaRect(cv::Mat(*itc));   
+        
+       	float area = fabs(cv::contourArea(*itc));
+        	float bbArea=mr.size.width * mr.size.height;
+        	float ratio = area/bbArea;
+                
+        	if( (ratio &lt; 0.45) || (bbArea &lt; 400) ){
+            	itc= contours.erase(itc);
+        	}else{
+            	++itc;
+            	rects.push_back(mr);
+        	}
+    }</pre>
+<p><strong>Step 3</strong>. All resulting rectangles (rects) are processed using steps 4-11.  <strong>Step 4</strong>. The rectangle width and height is increased by dx and dy values, where dx and dy is chosen according to the bounding box dimensions (dx = 0.15126*width, dy = 0.625*height). This step is to make sure that the plate will be completely inside the rectangle for better results in further processing.  <strong>Step 5</strong>. Extract part of the original grayscale image corresponding to the new rectangle.  <strong>Step 6</strong>. Apply Otsu’s binarization using OpenCV with the following parameters:</p>
+<div class="dp-highlighter"><ol start="1" class="dp-c"><li class="alt"><span><span>cv::threshold(img,&nbsp;img_bin,&nbsp;0,&nbsp;255,&nbsp;CV_THRESH_OTSU+CV_THRESH_BINARY);&nbsp;&nbsp;</span></span></li></ol></div><pre class="php" data-code="code" style="display: none;">cv::threshold(img, img_bin, 0, 255, CV_THRESH_OTSU+CV_THRESH_BINARY);</pre>
+<p><strong>Step 7</strong>. Find outlines in the new binary image:</p>
+<div class="dp-highlighter"><ol start="1" class="dp-c"><li class="alt"><span><span>std::vector&lt;&nbsp;std::vector&nbsp;&gt;&nbsp;contours;&nbsp;&nbsp;</span></span></li><li class=""><span>cv::findContours(img_bin,&nbsp;contours,&nbsp;CV_RETR_EXTERNAL,&nbsp;CV_CHAIN_APPROX_NONE);&nbsp;&nbsp;</span></li></ol></div><pre class="php" data-code="code" style="display: none;">std::vector&lt; std::vector &gt; contours;
+cv::findContours(img_bin, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);</pre>
+<p><strong>Step 8</strong>. Find the outline with the largest area.  <strong>Step 9</strong>. Get the bounding box for this outline:</p>
+<div class="dp-highlighter"><ol start="1" class="dp-c"><li class="alt"><span><span>cv::RotatedRect&nbsp;mr&nbsp;=&nbsp;cv::minAreaRect(cv::Mat(*maxAreaContour));&nbsp;&nbsp;</span></span></li></ol></div><pre class="php" data-code="code" style="display: none;">cv::RotatedRect mr = cv::minAreaRect(cv::Mat(*maxAreaContour));</pre>
+<p><strong>Step 10</strong>. Check that the area, aspect ratio and skew for this bounding box are within tolerable limits..  <strong>Step 11</strong>. If the above condition is true, get the relevant part of grayscale image and apply skew correction. The result is scaled to a fixed size.  The following image is passed to the segmentation stage:  <a href="./azoft_files/vehicle-license-plate-recognition-algorithm-13.jpg"><img class="alignleft size-full wp-image-3167" title="The resulting image" src="./azoft_files/vehicle-license-plate-recognition-algorithm-13.jpg" alt="The resulting image" width="500" height="99" srcset="http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-13.jpg 680w, http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-13-300x59.jpg 300w" sizes="(max-width: 500px) 100vw, 500px"></a></p>
+<h2>Character segmentation</h2>
+<p>Character segmentation is performed using horizontal projection method. The regional code and the number part are segmented separately.  First, we apply an adaptive filter of the grayscale image. It gives the least amount of noise compared to Otsu’s binarization or simple binarization (noise can appear if the plate is dirty or lit unevenly). The filter can be implemented using OpenCV with the following parameters:</p>
+<div class="dp-highlighter"><ol start="1" class="dp-c"><li class="alt"><span><span>cv::adaptiveThreshold(plate,&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;plate,&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;255,&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cv::ADAPTIVE_THRESH_MEAN_C,&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cv::THRESH_BINARY,&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;13,&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5);&nbsp;&nbsp;</span></li></ol></div><pre class="php" data-code="code" style="display: none;">cv::adaptiveThreshold(plate,
+      plate, 
+      255, 
+      cv::ADAPTIVE_THRESH_MEAN_C, 
+      cv::THRESH_BINARY, 
+     13,
+     5);</pre>
+<p>The resulting binary image is projected onto a horizontal axis (called ProjX below):  <a href="./azoft_files/vehicle-license-plate-recognition-algorithm-14.jpg"><img class="alignleft size-full wp-image-3168" title="ProjX" src="./azoft_files/vehicle-license-plate-recognition-algorithm-14.jpg" alt="ProjX" width="500" height="266" srcset="http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-14.jpg 709w, http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-14-300x159.jpg 300w" sizes="(max-width: 500px) 100vw, 500px"></a>  The regional code is separated from the number with a solid line, thus ProjX will be minimal in the corresponding histogram region. If a plate has been localized with sufficient precision we can narrow down the boundaries for searching the minimal value. This is done to avoid false matches which can appear if other vertical lines are present in the image (e.g. plate outline). The range we suggest for looking for looking for regional code separator is [0.5*l ; 0.8*l], where l is the image width.</p>
+<h3>Character segmentation in the number area</h3>
+<p>To locate the digits in the number area, we’ll use first 10 highest values in ProjX. They will correspond to spacings between the digits. Actually there are 7 spaces, but certain letters may have worn out paint or the spacings may be darkened by dirt or shadows. To increase the probability of locating the spacings we use the value of 10. The lookup loop will also break if the current value if less than the first discovered value by a certain factor. The factor value was experimentally chosen to be 0.86 in our case.  Some of the discovered positions can match a single spacing in the number or hit the digits, so the next step is to choose the 7 positions which have the highest probability of matching the actual spacings. To do that, of all the positions we choose 7 which have the lowest variance of distance between them. As the distance between 2 positions in a way matches the character width and all characters have the same width, the probability of filtering out redundant positions increases. The following illustration shows all discovered positions in colored lines. Green lines show those which have the lowest variance of distance between them.  <a href="./azoft_files/vehicle-license-plate-recognition-algorithm-15.jpg"><img class="alignleft size-full wp-image-3169" title="Discovered positions in colored lines" src="./azoft_files/vehicle-license-plate-recognition-algorithm-15.jpg" alt="Discovered positions in colored lines" width="500" height="103" srcset="http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-15.jpg 713w, http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-15-300x61.jpg 300w" sizes="(max-width: 500px) 100vw, 500px"></a>  To complete segmentation we have to find the coordinates of spaces which have a certain length, so each spacing is characterized by 2 coordinates: beginning and ending.  Then we have to find vertical position of characters. This is done by cutting out the regions with characters from binary image and detecting edges inside them. Edge detection is also performed with OpenCV, but against the inverted images, i.e. we’ll be looking for white objects on a black background.</p>
+<div class="dp-highlighter"><ol start="1" class="dp-c"><li class="alt"><span><span>croppedImage&nbsp;=&nbsp;cv::Mat::ones(croppedImage.size(),&nbsp;croppedImage.type())&nbsp;-&nbsp;croppedImage;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>std::vector&lt;std::vector&nbsp;&gt;&nbsp;v;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>findContours(croppedImage,v,CV_RETR_EXTERNAL,CV_CHAIN_APPROX_NONE);&nbsp;&nbsp;</span></li></ol></div><pre class="php" data-code="code" style="display: none;">croppedImage = cv::Mat::ones(croppedImage.size(), croppedImage.type()) - croppedImage;
+
+std::vector&lt;std::vector &gt; v;
+
+findContours(croppedImage,v,CV_RETR_EXTERNAL,CV_CHAIN_APPROX_NONE);</pre>
+<p>For every outline we’ll have to get a bounding box using OpenCV function boundingRect(v[i]) and filter them by area and aspect ratio. The area of bounding box must fall into a range between 120 and 1000 and the aspect ratio should fall somewhere between &nbsp;0.6 and 2.4.  The horizontal boundaries of the digits thus will correspond to the coordinates of spaces and vertical boundaries will correspond to vertical boundaries of bounding boxes from the last step.  We’re also looking into a possibility of vertical positioning of the characters using projection method like we do it for horizontal positioning.</p>
+<h3>Segmentation of characters in the regional code area</h3>
+<p>For horizontal positioning of characters we’ll use the projection method again. However, regional code area in Russia always contains letters “RUS” and Russian flag in the bottom part, so we can’t use the method immediately. These elements will affect horizontal projection and we won’t be able to detect spaces properly. The letters and the flag are always located in nearly the same place on number plates, so we can remove them from the projection data. To remove them, we simply exclude image data below the space between region code and the interfering letters and the flag. In the illustration below the space is green and the excluded data is red:  <a href="./azoft_files/vehicle-license-plate-recognition-algorithm-16.jpg"><img class="alignleft size-full wp-image-3170" title="The space is green and the excluded data is red" src="./azoft_files/vehicle-license-plate-recognition-algorithm-16.jpg" alt="The space is green and the excluded data is red" width="500" height="104" srcset="http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-16.jpg 710w, http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-16-300x62.jpg 300w" sizes="(max-width: 500px) 100vw, 500px"></a>  We still need to find the location of that space. We can do this by building a vertical projection of the regional code area and look for highest value. The search is again limited to some part of the image which the space might fall into. The limit also helps to exclude any extra spaces which may appear e.g. between the digits and the top outline. The vertical range for locating the space is something we need to find out now. It has to be chosen according to the lowest and highest possible region code position. In our example, vertical projection for the regional code will look like this:  <a href="./azoft_files/vehicle-license-plate-recognition-algorithm-17.jpg"><img class="alignleft size-full wp-image-3171" title="Vertical projection for the regional code" src="./azoft_files/vehicle-license-plate-recognition-algorithm-17.jpg" alt="Vertical projection for the regional code" width="395" height="205" srcset="http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-17.jpg 395w, http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-17-300x155.jpg 300w" sizes="(max-width: 395px) 100vw, 395px"></a>  Now we can go on with horizontal projection for the regional code area without worrying about anything below the digits. Maximum number of highest values will now be 5. Loop will also break if a highest value is less than first discovered maximum by a certain factor (we chose 0.825 after some experiments). Another problem is that the regional code may consist of 2 or 3 digits. The number of digits depends on the number of discovered spacings: if there are more than 3, then there are going to be 3 digits; if equal to 3, there are 2 digits. The rest of algorithm basically repeats the steps for the main part.  The result of segmentation now looks like the following figure:  <a href="./azoft_files/vehicle-license-plate-recognition-algorithm-18.jpg"><img class="alignleft size-full wp-image-3172" title="The result of segmentation" src="./azoft_files/vehicle-license-plate-recognition-algorithm-18.jpg" alt="The result of segmentation" width="500" height="103" srcset="http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-18.jpg 596w, http://rnd.azoft.com/wp-content/uploads/2014/05/vehicle-license-plate-recognition-algorithm-18-300x61.jpg 300w" sizes="(max-width: 500px) 100vw, 500px"></a>  Gray rectangles indicate the characters to be recognized.</p>
+<h3>Character recognition</h3>
+<p>The recognition is implemented using convolutional neural network. There are 2 networks for recognition of letters and digits. The difference between them is the training data set and number of neurons in the last layer: 10 neurons for digits and 12 for letters (only 12 letters are used in Russian license plates).</p>
+<h2>Conclusion</h2>
+<p>The resulting application works in real time with a frame rate of 6-10 fps, when a plate is discovered and the number is recognized and 30-40 fps otherwise. The measurement results have been obtained on an iPad Air.  Still, the prototype leaves much room for improvements, so we continue working on the project. Future improvements are planned to the localization and segmentation stages for higher success rate of plate number recognition and better performance. If you have worked on similar tasks we will appreciate if you could share your approaches and the results you received.</p>
+<p style="text-align: right;"><span style="color: #363636; font-family: Arial;"><span style="line-height: 18px;">By Ilya Kozhenkov and Anton Vitvitsky</span></span></p>
+<h2>References</h2>
+<p>1. Daniel Lélis Baggio, Shervin Emami, “Mastering OpenCV with Practical Computer Vision Projects”.  2. Kuo-Ming Hung, Ching-Tang Hsieh, “A Real-Time Mobile Vehicle License Plate Detection and Recognition”.  3. V. Karthikeyan, R. Sindhu, K. Anusha, D.S. Vijith, “VEHICLE LICENSE PLATE CHARACTER SEGMENTATION – A STUDY”.  4. Othman Khalifa, Sheroz Khan, Rafiqul Islam, Ahmad Suleiman, “Malaysian Vehicle License Plate Recognition”.  5. ONDREJ MARTINSKY, “ALGORITHMIC AND MATHEMATICAL PRINCIPLES OF AUTOMATIC NUMBER PLATE RECOGNITION SYSTEMS”.  6. Ronak P. Patel , Narendra M. Patel , Keyur Brahmbhatt, “Automatic Licenses Plate Recognition”.  7. H. Mahini, S. Kasaei, F. Dorri, "An Efficient Features–Based License Plate Localization Method"</p><div style="display: none">VN:F [1.9.22_1171]</div><div class="ratingblock "><div class="ratingheader "></div><div class="ratingstars "><div id="article_rater_3152" class="ratepost gdsr-oxygen gdsr-size-24"><div class="starsbar gdsr-size-24"><div class="gdouter gdheight"><div id="gdr_vote_a3152" style="width: 120px;" class="gdinner gdheight"></div><div id="gdr_stars_a3152" class="gdsr_rating_as"><a id="gdsrX3152X5X0XaXarticle_rater_3152Xarticle_loader_3152X10X24" title="5 / 5" class="s5" rel="nofollow"></a><a id="gdsrX3152X4X0XaXarticle_rater_3152Xarticle_loader_3152X10X24" title="4 / 5" class="s4" rel="nofollow"></a><a id="gdsrX3152X3X0XaXarticle_rater_3152Xarticle_loader_3152X10X24" title="3 / 5" class="s3" rel="nofollow"></a><a id="gdsrX3152X2X0XaXarticle_rater_3152Xarticle_loader_3152X10X24" title="2 / 5" class="s2" rel="nofollow"></a><a id="gdsrX3152X1X0XaXarticle_rater_3152Xarticle_loader_3152X10X24" title="1 / 5" class="s1" rel="nofollow"></a></div></div></div></div><div id="article_loader_3152" style="display: none; width: 120px " class="ratingloaderarticle"><div class="loader flower " style="height: 24px"><div class="loaderinner" style="padding-top: 2px">please wait...</div></div></div></div><div class="ratingtext "><div id="gdr_text_a3152">Rating: 5.0/<strong>5</strong> (12 votes cast)</div></div></div><div style="display: none">VN:F [1.9.22_1171]</div><div class="thumblock "><div id="gdsr_thumb_3152_a_up" class="gdt-size-20 gdthumb gdup"><a id="gdsrX3152XupXaX25X20XY" class="gdt-starrating" rel="nofollow"></a></div><div id="gdsr_thumb_3152_a_loader_up" style="display: none; width: 20px " class="ratingloader loadup"><div class="loader flower thumb" style="width: 20px; height: 20px;"></div></div><div id="gdsr_thumb_3152_a_dw" class="gdt-size-20 gdthumb gddw"><a id="gdsrX3152XdwXaX25X20XY" class="gdt-starrating" rel="nofollow"></a></div><div id="gdsr_thumb_3152_a_loader_dw" style="display: none; width: 20px " class="ratingloader loaddw"><div class="loader flower thumb" style="width: 20px; height: 20px;"></div></div><div class="ratingtext "><div id="gdsr_thumb_text_3152_a" class="gdt-size-20 gdthumbtext">Rating: <strong>+10</strong> (from 12 votes)</div></div><div class="raterclear"></div></div><span class="hreview-aggregate"><span class="item"><span class="fn">Real-Time Video Processing Algorithm for Instant License Plate Recognition in iOS Apps (using OpenCV &amp; GPGPU)</span></span>, <span class="rating"><span class="average">5.0</span> out of <span class="best">5</span> based on <span class="votes">12</span> ratings <span class="summary"></span></span></span>
+					</div>
+
+					<br>
+
+					<!-- <div style="float:left;height:18px;padding-top:2px;">
+
+						<script src="//platform.linkedin.com/in.js" type="text/javascript"></script>
+
+						<script type="IN/Share" data-counter="right"  data-url="http://rnd.azoft.com/instant-license-plate-recognition-in-ios-apps/"></script>
+
+					</div>        
+
+                  	<div style="float:left; height:18px; padding-left: 25px; padding-top: 2px;">
+
+                  		<iframe src="http://www.facebook.com/plugins/like.php?href=http://rnd.azoft.com/instant-license-plate-recognition-in-ios-apps/&amp;layout=button_count&amp;show_faces=true&amp;width=450&amp;action=like&amp;colorscheme=light&amp;height=21&amp;locale=en_US" style="border:none; overflow:hidden; width:90px; height:21px;" class="alignright"></iframe>
+
+                  	</div>
+
+					<div style="float:left;height:18px;padding-top:2px; padding-left:10px;">
+
+					<div class="g-plusone" data-size="medium"></div>
+
+					<script type="text/javascript">
+
+					  (function() {
+
+						var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+
+						po.src = 'https://apis.google.com/js/plusone.js';
+
+						var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+
+					  })();
+
+					</script>
+
+					</div>       	
+
+					<div style="float:left;height:18px;padding-top:2px; width: 85px;">
+
+						<a href="https://twitter.com/share" class="twitter-share-button" data-lang="eng" data-url="http://rnd.azoft.com/instant-license-plate-recognition-in-ios-apps/">Tweet</a>
+
+						<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>   
+
+					</div>
+
+
+
+					<div class="tags" style="padding-bottom:30px;">
+
+						<!--< ?php the_tags(); //st_the_tags('',' > '); ?>
+
+						<div class="more"><a href="< ?php the_permalink() ?>">Read More</a></div>
+
+					</div>
+
+					<br/> -->
+
+
+
+
+
+
+						<div class="comments">							
+
+							<div id="fbSEOComments" style="width: 505px;">	<fb:comments id="seoFacebookCommentsPlugin" href="http://rnd.azoft.com/instant-license-plate-recognition-in-ios-apps/" num_posts="10" colorscheme="light" order_by="social" width="505px" fb-xfbml-state="rendered" class="fb_iframe_widget"><span style="height: 1148px; width: 505px;"><iframe id="f33625c81aa71d4" name="f28a196e98b004" scrolling="no" title="Facebook Social Plugin" class="fb_ltr" src="./azoft_files/comments.html" style="border: none; overflow: hidden; height: 1148px; width: 505px;"></iframe></span></fb:comments></div><script>
+                            var fbSEOWrapperWidth = document.getElementById('fbSEOComments').offsetWidth;
+                            document.getElementById('fbSEOComments').style.width = fbSEOWrapperWidth + 'px';
+                            document.getElementById('seoFacebookCommentsPlugin').setAttribute('width', fbSEOWrapperWidth + 'px');
+                          </script><div id="fb-root" class=" fb_reset"><div style="position: absolute; top: -10000px; height: 0px; width: 0px;"><div><iframe name="fb_xdm_frame_http" frameborder="0" allowtransparency="true" allowfullscreen="true" scrolling="no" id="fb_xdm_frame_http" aria-hidden="true" title="Facebook Cross Domain Communication Frame" tabindex="-1" src="./azoft_files/Lcj5EtQ5qmD.html" style="border: none;"></iframe><iframe name="fb_xdm_frame_https" frameborder="0" allowtransparency="true" allowfullscreen="true" scrolling="no" id="fb_xdm_frame_https" aria-hidden="true" title="Facebook Cross Domain Communication Frame" tabindex="-1" src="./azoft_files/Lcj5EtQ5qmD(1).html" style="border: none;"></iframe></div></div><div style="position: absolute; top: -10000px; height: 0px; width: 0px;"><div></div></div></div>
+                    <script>
+                            window.fbAsyncInit = function() {
+                                FB.init({
+                                  appId      : '482862998415017', // App ID
+                                  status     : true, // check login status
+                                  cookie     : true, // enable cookies to allow the server to access the session
+                                  xfbml      : true  // parse XFBML
+                                });
+                                // Additional initialization code here
+                              };
+                                //  Load the SDK Asynchronously
+                              (function(d){
+                                 var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+                                 if (d.getElementById(id)) {return;}
+                                 js = d.createElement('script'); js.id = id; js.async = true;
+                                 js.src = "//connect.facebook.net/en_US/all.js";
+                                 ref.parentNode.insertBefore(js, ref);
+                           }(document))
+                    </script>
+<!-- You can start editing here. -->
+
+<div id="commentblock">
+
+			<!-- If comments are open, but there are no comments. -->
+
+	 
+
+
+<!--
+<p id="respond">Leave a Reply</p>
+
+
+<form action="http://rnd.azoft.com/wp-comments-post.php" method="post" id="commentform">
+
+
+<p><label for="author">Name (required)</label><br />
+<input type="text" name="author" id="author" value="" size="48" tabindex="1" /></p>
+
+<p><label for="email">Email Address(required)</label><br />
+<input type="text" name="email" id="email" value="" size="48" tabindex="2" /></p>
+
+<p><label for="url">Website</label><br />
+<input type="text" name="url" id="url" value="" size="48" tabindex="3" /></p>
+
+ -->
+
+<!--<p><small><strong>XHTML:</strong> You can use these tags: &lt;a href=&quot;&quot; title=&quot;&quot;&gt; &lt;abbr title=&quot;&quot;&gt; &lt;acronym title=&quot;&quot;&gt; &lt;b&gt; &lt;blockquote cite=&quot;&quot;&gt; &lt;cite&gt; &lt;code&gt; &lt;del datetime=&quot;&quot;&gt; &lt;em&gt; &lt;i&gt; &lt;q cite=&quot;&quot;&gt; &lt;s&gt; &lt;strike&gt; &lt;strong&gt; </small></p>-->
+<!--
+<p><label for="url">Comments</label><br />
+<textarea name="comment" id="comment" cols="47" rows="10" tabindex="4"></textarea></p>
+
+<p><input name="submit" type="submit" id="submit" tabindex="5" value="Submit Comment" />
+<input type="hidden" name="comment_post_ID" value="3152" /></p>
+
+
+</form> -->
+</div>
+
+
+
+						</div>
+
+						
+
+				</div>
+
+			
+		
+			</div>
+
+			
+			</div>			
+
+					<!-- begin r_sidebar -->
+
+	<div id="blog-r">
+	
+				<script>
+				$(document).ready(function(){
+					$("#submit_your_request").validationEngine({
+						scroll: false,
+						promptPosition : "topLeft",
+						binded: false
+					});
+				});
+			</script>
+			<div id="challange_banner">
+			<!--  <p><a href="http://www.ibm.com/smarterplanet/us/en/ibmwatson/challenge.html?company=azoft" target="_blank"><img style="width:310px;" src="http://www.azoft.com/images/challange/blog.png" /></a></p>
+-->			<!-- <p><a href="http://www.azoft.com/contact-form/" target="_blank"><img style="width:310px;" src="http://www.azoft.com/images/new_year/winter-sale.png" /></a></p> -->
+			</div>
+			<br><br>
+
+			<div class="block-form-blue block-form-contacts">
+				<form id="submit_your_request" name="submit_your_request" method="post" action="http://www.azoft.com/thank-you/">
+					<input type="hidden" id="subject" name="subject" value="Submit your request form">
+					<div class="head">
+						<div class="title">Request a Free Quote</div>
+					</div>
+					<div class="body">
+						<div class="item-list">
+							<div class="item item-name">
+								<div class="input-box">
+									<input type="text" id="name" name="name" value="" class="validate[required] input-text" placeholder="Name">
+									<span class="icon">&nbsp;</span>
+								</div>
+							</div>
+							<div class="item item-email">
+								<div class="input-box">
+									<input type="text" id="email" name="email" value="" class="validate[required,custom[email]] input-text" placeholder="Email">
+									<span class="icon">&nbsp;</span>
+								</div>
+							</div>
+							<div class="item item-phone">
+								<div class="input-box">
+									<input type="text" id="phone" name="phone" value="" class="validate[required,custom[customPhone]] input-text" placeholder="Phone">
+									<span class="icon">&nbsp;</span>
+								</div>
+							</div>
+							<div class="item item-companyname">
+								<div class="input-box">
+									<input type="text" id="company" name="company" value="" class="validate[required] input-text" placeholder="Company Web Site">
+									<span class="icon">&nbsp;</span>
+								</div>
+							</div>
+							<div class="item">
+								<textarea name="comments" cols="2" rows="2" class="validate[required]" placeholder="Please describe your project"></textarea>
+							</div>
+							<style>
+								.email-field, .captcha-table {
+									position: absolute;
+									height: 1px;
+									width: 1px;
+									left: -100px;
+									top: -100px;
+								}
+								.email-field-box, .captcha-table-box {
+									position: relative;
+									height: 1px;
+									width: 1px;
+									overflow: hidden;
+								}
+							</style>
+							<div class="email-field-box">
+								<input type="text" class="email-field" name="email-field" value="">
+							</div>
+
+							<div class="captcha-table-box">
+								<div class="captcha-table">
+									<div class="block-capcha">
+										<p>Please enter the result and submit the form</p>
+										<table>
+											<tbody><tr>
+												<td style="width:170px;">
+													<img id="captcha_image" src="./azoft_files/show_captcha.php" alt="">
+												</td>
+												<td>
+													<div style="width: 84px;">
+														<input type="text" id="captcha" name="captcha_keystring" class="input-text">
+													</div>
+												</td>
+											</tr>
+										</tbody></table>
+									</div>
+								</div>
+							</div>
+
+							<input type="hidden" id="path_for_mail" name="path_for_mail" value="">
+							<input type="hidden" id="uri" name="uri" value="">
+							<div class="item">
+								<div class="btn-block">
+									<button class="btn-orange" type="submit" value="Submit">Submit</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+	
+		
+	<ul>
+	<li id="facebooklikebox-3" class="widget widget_FacebookLikeBox"><h2 class="widgettitle">Find us on Facebook</h2>
+<script src="./azoft_files/all(1).js"></script><fb:like-box href="http://www.facebook.com/azoft.company" width="292" show_faces="true" border_color="AAAAAA" stream="false" header="true" class=" fb_iframe_widget" fb-xfbml-state="rendered" fb-iframe-plugin-query="app_id=482862998415017&amp;container_width=0&amp;header=true&amp;href=http%3A%2F%2Fwww.facebook.com%2Fazoft.company&amp;locale=en_US&amp;sdk=joey&amp;show_faces=true&amp;stream=false&amp;width=292"><span style="vertical-align: bottom; width: 292px; height: 214px;"><iframe name="f17ad92182caa4" width="292px" height="1000px" frameborder="0" allowtransparency="true" allowfullscreen="true" scrolling="no" title="fb:like_box Facebook Social Plugin" src="./azoft_files/like_box.html" style="border: none; visibility: visible; width: 292px; height: 214px;" class=""></iframe></span></fb:like-box></li>
+		<li id="recent-posts-3" class="widget widget_recent_entries">		<h2 class="widgettitle">Recent Case Studies</h2>
+		<ul>
+					<li>
+				<a href="http://rnd.azoft.com/applying-ocr-technology-receipt-recognition/">Applying OCR Technology for Receipt Recognition</a>
+						</li>
+					<li>
+				<a href="http://rnd.azoft.com/convolutional-neural-networks-object-detection/">Convolutional Neural Networks for Object Detection</a>
+						</li>
+					<li>
+				<a href="http://rnd.azoft.com/classification-eeg-signals-brain-computer-interface/">Classification of EEG Signals for Brain-Computer Interface</a>
+						</li>
+					<li>
+				<a href="http://rnd.azoft.com/machine-learning-methods-video-annotation/">Machine Learning Methods in Video Annotation</a>
+						</li>
+					<li>
+				<a href="http://rnd.azoft.com/developing-face-recognition-system-convolutional-neural-network/">Developing a Face Recognition System Using Convolutional Neural Network</a>
+						</li>
+				</ul>
+		</li>
+			</ul>
+	
+	
+			
+</div>
+
+<!-- end r_sidebar -->
+				</div>
+
+			</div>
+
+			<a class="copyright" href="https://plus.google.com/u/0/102597241389553265118?rel=author" target="_blank">Content created by Ilya Kozhenkov</a>
+		</div>
+
+	</div>
+
+	</div><div id="_atssh" style="visibility: hidden; height: 1px; width: 1px; position: absolute; top: -9999px; z-index: 100000;"><iframe id="_atssh783" title="AddThis utility frame" style="height: 1px; width: 1px; position: absolute; top: 0px; z-index: 100000; border: 0px; left: 0px;" src="./azoft_files/sh.173601bb04600d0af1d2c66a.html"></iframe></div><style id="service-icons-0"></style>
+
+	
+
+<div id="footer" class="footer" style="clear: both;">
+		<div class="cr"></div><div class="cl"></div>	
+		<!-- <div class="hr"></div>  -->
+		
+		
+		<!-- <div class="all_rights_reserved">
+			&copy; 2011 Azoft. All rights reserved. AzoftProjects, Project Management Software<br />We provide onsite, nearshore & offshore technology support and IT outsourcing services for almost 50 companies on a long-term basis.<br />Our clients are located in USA, Canada, UK, Europe & Australia.
+			<center>
+				<ul>
+					<li class="last"><a href="/contacts/">Contact Us</a></li>
+					<li><a href="/privacy-policy/">Privacy Policy</a></li>
+					<li><a href="/sitemap/">Site Map</a></li>
+				</ul>
+			</center>
+			<br/>
+			
+		</div>	-->
+		
+		
+	<!-- <div class="copyright">Copyright &copy; 2012 <a href="http://rnd.azoft.com">Azoft</a> LLC. All rights reserved.</div> -->
+		<!-- <ul style="float:right;">
+			<li class="last"><a href="/contacts/">Contact Us</a></li>
+			<li><a href="mailto:info@azoft.com?subject=Send RFP">Send RFP</a></li>
+			<li><a href="/privacy-policy/">Privacy Policy</a></li>
+			<li><a href="/sitemap/">Site map</a></li>
+		</ul>	
+		
+		<br/> -->
+		
+		<div class="footer_right">
+			<ul>
+				<li><a href="http://www.azoft.ru/">Russian Site</a></li>
+				<li class="sep">|</li>
+				<!--<li><a href="#"><img src="/images/2012/flag.png" width="24" height="19" border="0"></a></li>-->
+				<li><a href="http://www.azoft.com/sitemap/">Site map</a></li>
+				<li class="sep">|</li>
+				<li><a href="http://www.azoft.com/privacy-policy/">Privacy Policy</a></li>
+				<li class="sep">|</li>
+				<li><a href="http://www.azoft.com/contacts/">Contact Us</a></li>
+			</ul>
+		</div>
+		<div class="footer_copy">Copyright © 2016 <a href="http://www.azoft.com/">Azoft</a>. All rights reserved.</div>
+	</div>
+<!--<div id="footer">
+	<div class="cr"></div><div class="cl"></div>
+	<div class="copyright">Copyright &copy; 2010 &laquo;<a href="/">Azoft</a>&raquo;</div>
+	<ul>
+		<li class="last"><a href="/contacts/">Contact Us</a></li>
+		<li><a href="/privacy-policy">Privacy Policy</a></li>
+		<li><a href="/sitemap/">Site map</a></li>
+	</ul>
+
+</div>-->
+
+<!-- Google Code for Remarketing Tag -->
+<!--------------------------------------------------
+Remarketing tags may not be associated with personally identifiable information or placed on pages related to sensitive categories. See more information and instructions on how to setup the tag on: http://google.com/ads/remarketingsetup
+--------------------------------------------------->
+<script type="text/javascript">
+	/* <![CDATA[ */
+	var google_conversion_id = 1071949163;
+	var google_custom_params = window.google_tag_params;
+	var google_remarketing_only = true;
+	/* ]]> */
+</script>
+<script type="text/javascript" src="./azoft_files/conversion.js">
+</script><iframe name="google_conversion_frame" title="Google conversion frame" width="300" height="13" src="./azoft_files/saved_resource(1).html" frameborder="0" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no"></iframe>
+<noscript>
+	&lt;div style="display:inline;"&gt;
+		&lt;img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/1071949163/?value=0&amp;amp;guid=ON&amp;amp;script=0"/&gt;
+	&lt;/div&gt;
+</noscript>
+
+<script class="javascript" src="./azoft_files/shCore.js"></script>
+<script class="javascript" src="./azoft_files/shBrushCSharp.js"></script>
+<script class="javascript" src="./azoft_files/shBrushPhp.js"></script>
+<script class="javascript" src="./azoft_files/shBrushJScript.js"></script>
+<script class="javascript" src="./azoft_files/shBrushJava.js"></script>
+<script class="javascript" src="./azoft_files/shBrushVb.js"></script>
+<script class="javascript" src="./azoft_files/shBrushSql.js"></script>
+<script class="javascript" src="./azoft_files/shBrushXml.js"></script>
+<script class="javascript" src="./azoft_files/shBrushDelphi.js"></script>
+<script class="javascript" src="./azoft_files/shBrushPython.js"></script>
+<script class="javascript" src="./azoft_files/shBrushRuby.js"></script>
+<script class="javascript" src="./azoft_files/shBrushCss.js"></script>
+<script class="javascript" src="./azoft_files/shBrushCpp.js"></script>
+<script class="javascript">
+dp.SyntaxHighlighter.ClipboardSwf = 'http://rnd.azoft.com/wp-content/plugins/google-syntax-highlighter/Scripts/clipboard.swf';
+dp.SyntaxHighlighter.HighlightAll('code');
+</script>
+<script type="text/javascript" src="./azoft_files/wp-embed.min.js"></script>
+  
+
+
+
+
+
+<!-- Dynamic page generated in 0.966 seconds. -->
+<!-- Cached page generated by WP-Super-Cache on 2016-08-06 22:27:28 -->
+
+<!-- super cache --><iframe name="oauth2relay757432589" id="oauth2relay757432589" src="./azoft_files/postmessageRelay.html" tabindex="-1" style="width: 1px; height: 1px; position: absolute; top: -100px;"></iframe><iframe id="rufous-sandbox" scrolling="no" frameborder="0" allowtransparency="true" allowfullscreen="true" style="position: absolute; visibility: hidden; display: none; width: 0px; height: 0px; padding: 0px; border: none;" src="./azoft_files/saved_resource(2).html"></iframe><div class="jivo-iframe-container-right jivo-state-widget jivo-collapsed jivo_shadow jivo_rounded_corners jivo_gradient" id="jivo-iframe-container" style="visibility: visible; width: 38px; margin-bottom: -140px; padding-top: 0px; height: 280px; margin-right: 0px; left: auto; right: 0px; bottom: 50%;"><iframe src="javascript:false" title="" name="jivo_container" id="jivo_container" frameborder="no" style="width: 100%; height: 100%; border: 0px;" src="./azoft_files/saved_resource(3).html"></iframe><style type="text/css">div#jivo-iframe-container *{max-height:100%}body#jivo_outer_body div#jivo-iframe-container.jivo-custom-label{z-index:2147483645 !important;-webkit-transition:all .3s cubic-bezier(.39, .24, .21, .99) !important;transition:all .3s cubic-bezier(.39, .24, .21, .99) !important;-webkit-animation-fill-mode:forwards !important}div#jivo-iframe-container{z-index:2147483645;-webkit-transition:all .3s cubic-bezier(.39, .24, .21, .99) !important;transition:all .3s cubic-bezier(.39, .24, .21, .99) !important;-webkit-animation-fill-mode:forwards !important;animation-fill-mode:forwards !important;position:fixed !important;transform:scale(1);transform-origin:0 100%;font-size:0 !important;min-width:38px !important;max-width:100% !important;display:inline-block !important;overflow:visible !important;background:transparent !important;max-height:100% !important;box-sizing:initial;padding:0;margin:0;top:auto}div#jivo-iframe-container #jivo-action-container{display:block !important;position:static !important;left:0 !important;right:0 !important;bottom:0 !important;padding:0 !important;margin:0 !important;opacity:1 !important}div#jivo-iframe-container.jivo-c-mobile{transition:none !important;-webkit-transition:none !important;max-width:100%;position:fixed !important}div#jivo-iframe-container.jivo-c-mobile.jivo-c-mobile-absolute{position:absolute !important}div#jivo-iframe-container.jivo-c-mobile.jivo-c-mobile-absolute.jivo-no-transition.jivo-transition-opacity{-webkit-transition:opacity .3s cubic-bezier(.39, .24, .21, .99) !important;transition:opacity .3s cubic-bezier(.39, .24, .21, .99) !important}div#jivo-iframe-container.jivo-custom-label{transition:none !important}div#jivo-iframe-container.jivo-custom-label.jivo-state-widget{display:none !important}div#jivo-iframe-container.jivo_shadow.jivo-opening div#jivo-iframe-container.jivo_shadow:after{height:100% !important}div#jivo-iframe-container.jivo_shadow.jivo-state-widget div#jivo-iframe-container.jivo_shadow.jivo-iframe-container-bottom:after,div#jivo-iframe-container.jivo_shadow.jivo-state-widget div#jivo-iframe-container.jivo_shadow.jivo-iframe-container-top:after{height:38px}div#jivo-iframe-container.jivo_shadow:after{position:absolute !important;width:100%;bottom:0 !important;right:0 !important;border-radius:3px 30px 0 0 !important;content:" "}div#jivo-iframe-container.jivo-expanded{overflow:visible !important}div#jivo-iframe-container.jivo-expanded #jivo_close_button{opacity:1}div#jivo-iframe-container.jivo-expanded:after{background:transparent;position:absolute !important;width:100% !important;bottom:0 !important;right:0 !important;border-radius:3px 30px 0 0 !important;content:" " !important;height:100% !important}div#jivo-iframe-container iframe body{overflow:hidden}div#jivo-iframe-container.jivo-ie8{border-top-width:2px;border-left-width:2px;border-right-width:2px;border-bottom-width:0;border-style:solid}div#jivo-iframe-container.jivo-ie8:after{display:none;border-width:0}iframe#jivo_container{z-index:2147483647 !important;position:relative !important;padding:0 !important;margin:auto !important;left:auto !important;right:auto !important;width:100% !important;height:100% !important;max-width:100% !important;min-width:100% !important;min-height:0 !important;max-height:100% !important;display:block !important;background:transparent !important;top:0 !important;bottom:0 !important;opacity:1;visibility:visible}div#jivo-iframe-container.jivo-iframe-container-bottom{right:30px;bottom:0;border-radius:3px 30px 0 0 !important;min-width:300px !important}div#jivo-iframe-container.jivo-iframe-container-bottom.jivo_shadow.jivo-expanded:after,div#jivo-iframe-container.jivo-iframe-container-bottom.jivo_shadow.jivo-state-widget:after{height:38px;-webkit-box-shadow:0 12px 25px 8px rgba(0,0,0,0.17);-moz-box-shadow:0 12px 25px 8px rgba(0,0,0,0.17);box-shadow:0 12px 25px 8px rgba(0,0,0,0.17)}div#jivo-iframe-container.jivo-iframe-container-bottom.jivo_shadow:after{height:100%;-webkit-box-shadow:0 12px 25px 8px rgba(0,0,0,0.17);-moz-box-shadow:0 12px 25px 8px rgba(0,0,0,0.17);box-shadow:0 12px 25px 8px rgba(0,0,0,0.17)}div#jivo-iframe-container.jivo-iframe-container-bottom.jivo-expanded{bottom:0}div#jivo-iframe-container.jivo-iframe-container-bottom.jivo-c-mobile{min-width:175px !important}div#jivo-iframe-container.jivo-iframe-container-bottom.jivo-ie8{min-width:auto !important;width:300px}div#jivo-iframe-container.jivo-iframe-container-bottom.jivo-ie8.jivo-state-widget-expanded{border-top-width:0;border-left-width:0;border-right-width:0;border-bottom-width:0}div#jivo-iframe-container.jivo-iframe-container-bottom.jivo-wp{bottom:5px !important}div#jivo-iframe-container.jivo-iframe-container-left{left:-48px;bottom:10px}div#jivo-iframe-container.jivo-iframe-container-left.jivo-collapsed{min-height:124px}div#jivo-iframe-container.jivo-iframe-container-left.jivo-state-widget{border-radius:0 30px 3px 0 !important}div#jivo-iframe-container.jivo-iframe-container-left.jivo_shadow.jivo-state-widget:after{width:38px;height:100%}div#jivo-iframe-container.jivo-iframe-container-left.jivo_shadow.jivo-expanded:after{width:100%}div#jivo-iframe-container.jivo-iframe-container-left.jivo_shadow.jivo-collapsed:after{width:38px;height:100%}div#jivo-iframe-container.jivo-iframe-container-left.jivo_shadow:after{border-radius:0 30px 3px 0 !important;right:auto !important;left:0 !important;-webkit-box-shadow:0 12px 25px 8px rgba(0,0,0,0.17);-moz-box-shadow:0 12px 25px 8px rgba(0,0,0,0.17);box-shadow:0 12px 25px 8px rgba(0,0,0,0.17)}div#jivo-iframe-container.jivo-iframe-container-left.jivo_shadow.jivo-opening:after,div#jivo-iframe-container.jivo-iframe-container-left.jivo_shadow.jivo-closing:after{-webkit-box-shadow:none !important;-moz-box-shadow:none !important;box-shadow:none !important}div#jivo-iframe-container.jivo-iframe-container-left.jivo-expanded{left:0}div#jivo-iframe-container.jivo-iframe-container-right{right:-48px;bottom:10px}div#jivo-iframe-container.jivo-iframe-container-right.jivo-collapsed{min-height:124px}div#jivo-iframe-container.jivo-iframe-container-right.jivo-state-widget{border-radius:30px 0 0 3px !important}div#jivo-iframe-container.jivo-iframe-container-right.jivo_shadow.jivo-expanded:after{border-radius:3px 30px 0 3px !important;width:100%;visibility:visible}div#jivo-iframe-container.jivo-iframe-container-right.jivo_shadow:after{top:1px;border-radius:30px 0 0 3px !important;width:38px !important;height:99% !important;-webkit-box-shadow:0 12px 25px 8px rgba(0,0,0,0.17);-moz-box-shadow:0 12px 25px 8px rgba(0,0,0,0.17);box-shadow:0 12px 25px 8px rgba(0,0,0,0.17)}div#jivo-iframe-container.jivo-iframe-container-right.jivo-opening:after,div#jivo-iframe-container.jivo-iframe-container-right.jivo-closing:after{-webkit-box-shadow:none !important;-moz-box-shadow:none !important;box-shadow:none !important}div#jivo-iframe-container.jivo-iframe-container-right.jivo-expanded{right:0}div#jivo-iframe-container.jivo-iframe-container-top{right:30px;min-width:300px !important}div#jivo-iframe-container.jivo-iframe-container-top.jivo-cbenabled{min-width:300px !important}div#jivo-iframe-container.jivo-iframe-container-top.jivo_shadow.jivo-expanded:after{border-radius:0 30px 3px 0 !important}div#jivo-iframe-container.jivo-iframe-container-top.jivo_shadow.jivo-opening:after{border-radius:3px 30px 0 0 !important}div#jivo-iframe-container.jivo-iframe-container-top.jivo_shadow.jivo-closing:after{border-radius:0 0 3px 30px !important}div#jivo-iframe-container.jivo-iframe-container-top.jivo_shadow:after{top:0 !important;border-radius:0 0 3px 30px !important;-webkit-box-shadow:0 12px 25px 8px rgba(0,0,0,0.17);-moz-box-shadow:0 12px 25px 8px rgba(0,0,0,0.17);box-shadow:0 12px 25px 8px rgba(0,0,0,0.17);height:38px}div#jivo-iframe-container.jivo-iframe-container-top.jivo-expanded{top:0}div#jivo-iframe-container.jivo-iframe-container-topdiv.jivo-resizing{top:auto}div#jivo-iframe-container.jivo-no-transition{transition:none !important}div#jivo_action{position:absolute !important;top:0 !important;bottom:0 !important;left:-10px !important;right:0 !important;display:block;overflow:visible;max-height:initial !important;-webkit-touch-callout:none !important;user-select:none !important;-webkit-user-select:none !important;-moz-user-select:none !important;-ms-user-select:none !important;direction:ltr !important}div#jivo_action:hover{opacity:.9 !important}div.jivo-visible{left:-25px !important;display:block !important}div#jivo_close_button{margin-top:0 !important;margin-left:-20px !important;width:23px !important;height:23px !important;cursor:pointer !important;overflow:visible !important;opacity:0;-webkit-transition:all .3s cubic-bezier(.39, .24, .21, .99) !important;transition:all .3s cubic-bezier(.39, .24, .21, .99) !important;transition-delay:.3s}div#jivo_close_button svg{width:23px !important;height:23px !important;position:relative !important;top:0 !important;left:0 !important;margin:0 !important;padding:0;display:block !important;opacity:1;visibility:visible !important}div#jivo-mouse-tracker{position:fixed !important;width:auto !important;height:auto !important;max-height:initial !important;z-index:2147483647 !important;left:-300px !important;right:-300px !important;top:-200px !important;bottom:0 !important;display:block;background-color:transparent !important;opacity:0 !important;-webkit-touch-callout:none !important;-webkit-user-select:none !important;-khtml-user-select:none !important;-moz-user-select:none !important;-ms-user-select:none !important;-o-user-select:none !important;user-select:none !important}div#jivo-drag-handle{position:absolute !important;top:0 !important;left:0 !important;width:79% !important;height:70px !important;background-color:transparent !important;z-index:2147483647 !important;cursor:move !important;-webkit-touch-callout:none !important;-webkit-user-select:none !important;-khtml-user-select:none !important;-moz-user-select:none !important;-ms-user-select:none !important;-o-user-select:none !important;user-select:none !important}#jivo_magic_iframe{width:100%;height:100%;position:fixed;margin:0;padding:0;left:0;top:0;border:0;z-index:200000;background-color:white;-webkit-overflow-scrolling:touch;overflow:auto;filter:none}.jivo-frame-visible{display:block;visibility:visible}.jivo-frame-hidden{display:block;visibility:hidden;width:100%;height:100%;position:absolute;left:-10000px;top:-10000px}.jivo_cobrowsing_element{border:8px solid #c8f70c;-webkit-border-radius:10px;-khtml-border-radius:10px;-moz-border-radius:10px;-ms-border-radius:10px;-o-border-radius:10px;border-radius:10px;behavior:url(corners.htc);box-shadow:0 3px 11px rgba(0,0,0,0.2);-webkit-box-shadow:0 3px 11px rgba(0,0,0,0.2);position:absolute;z-index:199998;pointer-events:none;margin-top:-10px}.jivo_cobrowsing_element .jivo_cobrowsing_element_inner{width:100%;height:100%;background-color:rgba(200,247,12,0.15)}.jivo_cobrowsing_tooltip{position:absolute;width:300px;z-index:199999}.jivo_cobrowsing_tooltip #jivo_action{height:15px !important;z-index:auto}.jivo_cobrowsing_tooltip #jivo_action #jivo_close_button{margin-left:25px}.jivo_cobrowsing_tooltip>div{font-family:"Arial",sans-serif;font-size:13px;background-color:#3cb868;color:#fff;padding:10px;border:0;-webkit-border-radius:15px;-moz-border-radius:15px;border-radius:15px}.jivo_cobrowsing_tooltip>div:after{width:0;height:0;position:absolute;content:" ";border-left:9px solid transparent;border-right:9px solid transparent;border-top:9px solid #3cb868;left:50%;bottom:-9px;margin-left:-9px}.jivo_cobrowsing_tooltip>div.jivo-top:after{border-top-color:transparent;border-bottom:9px solid #3cb868;top:-17px;bottom:auto}.jivo_cobrowsing_tooltip>div.jivo-top.jivo-left #jivo_action{right:-45px !important;left:initial}.jivo_cobrowsing_tooltip>div.jivo-left #jivo_action{right:-25px !important;left:initial}.jivo_cobrowsing_tooltip>div.jivo-left:after{left:20px;margin:0}.jivo_cobrowsing_tooltip>div.jivo-right:after{right:20px;left:auto;margin:0}.jivo_cobrowsing_tooltip>div .jivo_cobrowsing_tooltip_agent{font-weight:bold;padding-bottom:2px}</style><div id="jivo-action-container"><div dir="ltr" id="jivo_action" style="display: none; height: 70px;" classname="jivo-desktop"><div id="jivo_close_button"><svg id="jivo-icon-closewidget" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><style>.jivo-st0{opacity:.4;fill:#FFF;stroke:#000;enable-background:new}.jivo-st0,.jivo-st1{stroke-width:1.5;stroke-linecap:round}.jivo-st1{fill:none;stroke:#383d45}</style><circle class="jivo-st0" cx="12" cy="12" r="11"></circle><path class="jivo-st1" d="M7.5 16.5l9-9M16.5 16.5l-9-9"></path></svg></div></div><div id="jivo-drag-handle" style="display: none; height: 70px; cursor: move;"></div></div></div><div id="jivo-mouse-tracker" style="display: none;"></div></body></html>

@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.v4.app.ShareCompat;
 import android.support.v4.util.DebugUtils;
 import android.util.Log;
 import android.view.SurfaceView;
@@ -30,33 +31,36 @@ import org.opencv.video.BackgroundSubtractorMOG2;
 
 import java.io.Console;
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Marco on 21-04-2016.
  */
 public class ImageViewer extends Activity {
 
+    Map<Integer, Integer> patentIndexInImage = new HashMap<Integer, Integer>();
     String TAG = "iw";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cameraview);
+        fillMap();
 
 
-        int image = R.drawable.vehicle_ex2;
+        int image = R.drawable.vehicle_ex7;
         ImageView imgFp = (ImageView) findViewById(R.id.imageView);
 
-        Mat src = new Mat();
-        Utils.bitmapToMat(BitmapFactory.decodeResource(getResources(), image) , src);
-
-
-
+        CandidatesFinder candidatesFinder = new CandidatesFinder(BitmapFactory.decodeResource(getResources(), image));
 
         Mat mat = new Mat();
-        Mat dest = src.clone();
-        mat = src.clone();
+        Mat dest = candidatesFinder.OriginalImage.clone();
+        mat = candidatesFinder.OriginalImage.clone();
         Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
+
+
 
         // Start dilation section
         float dilatationAmplifier = 1.4f;
@@ -76,11 +80,11 @@ public class ImageViewer extends Activity {
         // Start sustraction
         //Core.absdiff(src, mat, dest);
 
-        for (int j= 0; j<src.cols(); ++j)
+        for (int j= 0; j<candidatesFinder.OriginalImage.cols(); ++j)
         {
-            for (int i=0; i<src.rows(); ++i)
+            for (int i=0; i<candidatesFinder.OriginalImage.rows(); ++i)
             {
-                byte valor = (byte)Math.abs(src.get(i,j)[0] - mat.get(i,j)[0]);
+                byte valor = (byte)Math.abs(candidatesFinder.OriginalImage.get(i,j)[0] - mat.get(i,j)[0]);
                 byte[] b = new byte[4];
                 b[0] = valor;
                 b[1] = valor;
@@ -174,9 +178,12 @@ public class ImageViewer extends Activity {
         }
         // end selecting outlines
 
-        // DRAWING GREEN AND BLUE LINES
-        drawContornsToMatInBitmap(src.clone(), contours, debugContourns, imgFp);
 
+        if (false) {
+            // DRAWING GREEN AND BLUE LINES
+            drawContornsToMatInBitmap(candidatesFinder.OriginalImage.clone(), contours, debugContourns, imgFp);
+            return;
+        }
 
 
 
@@ -185,9 +192,6 @@ public class ImageViewer extends Activity {
         //STEP 3: loop
         for (int i=0; i<rects.size(); ++i)
         {
-            if (i!=i)
-                continue;
-
             //STEP 4:
 
             double dx = 0.15126 * rects.get(i).boundingRect().size().width;
@@ -196,19 +200,24 @@ public class ImageViewer extends Activity {
             int newHeight = (int)(rects.get(i).boundingRect().size().height + dy);
 
             //STEP 5:
-            Mat uncropped = src.clone();
+            Mat uncropped = candidatesFinder.OriginalImage.clone();
 
             // si excedimos el ancho de la imagen, lo truncamos
-            if (src.width() < rects.get(i).boundingRect().x + newWidth)
-                newWidth = newWidth -  ((rects.get(i).boundingRect().x + newWidth) - src.width());
+            if (candidatesFinder.OriginalImage.width() < rects.get(i).boundingRect().x + newWidth)
+                newWidth = newWidth -  ((rects.get(i).boundingRect().x + newWidth) - candidatesFinder.OriginalImage.width());
             // si excedimos el alto de la imagen, lo truncamos
-            if (src.height() < rects.get(i).boundingRect().y + newHeight)
-                newHeight = newHeight -  ((rects.get(i).boundingRect().y + newHeight) - src.height());
+            if (candidatesFinder.OriginalImage.height() < rects.get(i).boundingRect().y + newHeight)
+                newHeight = newHeight -  ((rects.get(i).boundingRect().y + newHeight) - candidatesFinder.OriginalImage.height());
 
             Rect roi = new Rect(rects.get(i).boundingRect().x, rects.get(i).boundingRect().y, newWidth, newHeight);
             Mat cropped = new Mat(uncropped, roi);
             Mat croppedColor = cropped.clone();
-            //drawContornsToMatInBitmap(uncropped, null, null, imgFp);
+
+            if (false && i==patentIndexInImage.get(image)) {
+                // DRAW START DE INVENCION
+                drawContornsToMatInBitmap(cropped, null, null, imgFp );
+                break;
+            }
 
 
 
@@ -236,21 +245,32 @@ public class ImageViewer extends Activity {
 
             // Start dilation section
             float dilationAmplifier3 = 1f;
+            float horizontalDilatationAmplifier = calculateHorizontalAmplifier(cropped.size(), i==patentIndexInImage.get(image));
             Mat element5 = Imgproc.getStructuringElement( Imgproc.MORPH_RECT,
-                    new Size( 9*dilationAmplifier3, 3*dilationAmplifier3 ));
+                    new Size( Math.round(9*dilationAmplifier3*horizontalDilatationAmplifier), 3*dilationAmplifier3 ));
             Imgproc.dilate( cropped, cropped, element5 );
             // End dilation section
 
+            if (false && i==patentIndexInImage.get(image)) {
+                // DRAW INVENCION DILATION
+                drawContornsToMatInBitmap(cropped, null, null, imgFp );
+                break;
+            }
 
 
             // Start erotion section
             float erotionAmplifier3 = 1f;
-            Mat element6 = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 9*erotionAmplifier3, 3*erotionAmplifier3 ));
+            Mat element6 = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( Math.round(9*erotionAmplifier3*horizontalDilatationAmplifier), 3*erotionAmplifier3 ));
             Imgproc.erode( cropped, cropped, element6 );
             // End erotion section
 
             ////////////////////////////// END INVENCION MIA //////////////////////////////
 
+            if (false && i==patentIndexInImage.get(image)) {
+                // DRAW FINAL DE INVENCION
+                drawContornsToMatInBitmap(cropped, null, null, imgFp );
+                break;
+            }
 
 
 
@@ -263,10 +283,12 @@ public class ImageViewer extends Activity {
             Mat hierarchy2 = new Mat();
             Imgproc.findContours(cropped.clone(), contours2, hierarchy2, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE );
 
-            // DRAW A SECTION WITH ITS CONTOURS
-            //Imgproc.cvtColor(cropped, cropped, Imgproc.COLOR_GRAY2RGB); //Convert to gray scale
-            //drawContornsToMatInBitmap(cropped, contours2, null, imgFp );
-
+            if (false && i==patentIndexInImage.get(image)) {
+                // DRAW A SECTION WITH ITS CONTOURS
+                Imgproc.cvtColor(cropped, cropped, Imgproc.COLOR_GRAY2RGB); //Convert to gray scale
+                drawContornsToMatInBitmap(cropped, contours2, null, imgFp );
+                break;
+            }
 
 
 
@@ -287,10 +309,10 @@ public class ImageViewer extends Activity {
                 }
             }
 
-            Imgproc.cvtColor(cropped, cropped, Imgproc.COLOR_GRAY2RGB); //Convert to gray scale
-            drawContornsToMatInBitmap(cropped, contours2.get(maxAreaIndex), imgFp );
-            if (i==1)
-                break;
+            // DRAW PATENT IN GRAYSCALE
+            //Imgproc.cvtColor(cropped, cropped, Imgproc.COLOR_GRAY2RGB); //Convert to gray scale
+            //drawContornsToMatInBitmap(cropped, contours2.get(maxAreaIndex), imgFp );
+
 
 
 
@@ -300,11 +322,12 @@ public class ImageViewer extends Activity {
             //MatOfPoint2f mop2f = new MatOfPoint2f(mop);
             RotatedRect mr2 = Imgproc.minAreaRect(mop2f2);
 
-            // DRAWING ROTATED RECTANGLE
-            //Imgproc.cvtColor(cropped, cropped, Imgproc.COLOR_GRAY2RGB);
-            //drawContornsToMatInBitmap(drawRotatedRectInMat(mr2, croppedColor), null, null, imgFp);
-            //if (i==1)
-            //    break;
+            if (false && i==patentIndexInImage.get(image)) {
+                // DRAWING ROTATED RECTANGLE
+                Imgproc.cvtColor(cropped, cropped, Imgproc.COLOR_GRAY2RGB);
+                drawContornsToMatInBitmap(drawRotatedRectInMat(mr2, croppedColor), null, null, imgFp);
+                break;
+            }
 
             //STEP 10:
             //checks
@@ -324,7 +347,7 @@ public class ImageViewer extends Activity {
             double imageRatio = rect_size.width / rect_size.height;//Math.max(mr2.size.width,mr2.size.height)/Math.min(mr2.size.width,mr2.size.height);
             final double OFFICIAL_RATIO = 36f/13f;
             final double MIN_RATIO = 2.2f;
-            final double MAX_RATIO = 3.3f;
+            final double MAX_RATIO = 5.7f;
             boolean ratioCorrect = false;
             if (imageRatio >= MIN_RATIO && imageRatio <= MAX_RATIO)
                 ratioCorrect = true;
@@ -334,9 +357,9 @@ public class ImageViewer extends Activity {
             {
                 // AREAS Y PORCENTAJE DE AREAS
                 double area = rect_size.width*rect_size.height;
-                double maxAreaImage = src.size().width * src.size().height;
+                double maxAreaImage = candidatesFinder.OriginalImage.size().width * candidatesFinder.OriginalImage.size().height;
                 double percentajeImage = area/maxAreaImage;
-                final double MIN_AREA = 2000;
+                final double MIN_AREA = 950;
                 final double MAX_PERCENTAJE_AREA = 0.15;
                 if (area >= MIN_AREA && percentajeImage <= MAX_PERCENTAJE_AREA)
                     areaCorrect = true;
@@ -362,19 +385,16 @@ public class ImageViewer extends Activity {
 
 
             // Paso 11 sin rotación.
-            //Mat sinCortar = src.clone();
+            //Mat sinCortar = candidatesFinder.OriginalImage.clone();
             //Rect roi2 = new Rect(rects.get(i).boundingRect().x + mr2.boundingRect().x,
             //        rects.get(i).boundingRect().y + mr2.boundingRect().y, (int)mr2.boundingRect().width, (int)mr2.boundingRect().height);
             //Mat cropped2 = new Mat(sinCortar, roi2);
 
 
-            if (i==0) {
-                // mostrar en pantalla
-                Mat finalMat1 = cropped2;
-                Bitmap bm1 = Bitmap.createBitmap(finalMat1.cols(), finalMat1.rows(), Bitmap.Config.ARGB_8888);
-                Utils.matToBitmap(finalMat1, bm1);
-                imgFp.setImageBitmap(bm1);
-
+            if (true && i==patentIndexInImage.get(image)) {
+                //Mostrar en pantalla resultado de la iteración
+                drawContornsToMatInBitmap(cropped2, null, imgFp);
+                break; // IMPORTANTE, PROBLEMA DE THREAD PARECE, SI NO HAY BREAK LA LÍNEA ANTERIOR SE CAE.
             }
 
             // Apply Gray Scale, Skew Correction, Fixed Size.
@@ -399,6 +419,30 @@ public class ImageViewer extends Activity {
 
 
         //savedFuncion();
+    }
+
+    private void fillMap() {
+        patentIndexInImage.put(R.drawable.vehicle_ex, 2);
+        patentIndexInImage.put(R.drawable.vehicle_ex2, 1);
+        patentIndexInImage.put(R.drawable.vehicle_ex3, 0);
+        patentIndexInImage.put(R.drawable.vehicle_ex4, 0);
+        //patentIndexInImage.put(R.drawable.vehicle_ex5, ?);
+        patentIndexInImage.put(R.drawable.vehicle_ex6, 0);
+        patentIndexInImage.put(R.drawable.vehicle_ex7, 0);
+        patentIndexInImage.put(R.drawable.vehicle_ex8, 4);
+    }
+
+
+    private float calculateHorizontalAmplifier(Size size, boolean debugPrint) {
+        // CODIGO EN PRUEBA, QUIZAS NO FUNCIONA Y NO TIENE REAL RELACION CON EL TAMAÑO DE LA IMAGEN
+        final float MIN_VALUE = 0.3f;
+        final float MAX_VALUE = 10f;
+        float val = 1;
+        if (size.width > 150)
+            val = (float)(size.width* 13.0/744.0-1663.0/744.0);
+        if (debugPrint)
+            Log.d("test", "WIDTH: " + String.valueOf(size.width));
+        return val;//Math.max(val, MIN_VALUE);
     }
 
     private void drawContornsToMatInBitmap(Mat m, List<MatOfPoint> cs, List<MatOfPoint> csRefine, ImageView imgFp) {
