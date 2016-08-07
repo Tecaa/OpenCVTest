@@ -54,162 +54,62 @@ public class ImageViewer extends Activity {
         ImageView imgFp = (ImageView) findViewById(R.id.imageView);
 
         CandidatesFinder candidatesFinder = new CandidatesFinder(BitmapFactory.decodeResource(getResources(), image));
+        candidatesFinder.ToGrayScale();
+        candidatesFinder.Dilate();
+        candidatesFinder.Erode();
+        candidatesFinder.Substraction();
 
-        Mat mat = new Mat();
-        Mat dest = candidatesFinder.OriginalImage.clone();
-        mat = candidatesFinder.OriginalImage.clone();
-        Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
-
-
-
-        // Start dilation section
-        float dilatationAmplifier = 1.4f;
-        Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 9*dilatationAmplifier, 3*dilatationAmplifier ));
-        Imgproc.dilate( mat, mat, element );
-        // End dilation section
-
-        float erotionAmplifier = 1;
-        // Start erotion section
-        Mat element2 = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 9*erotionAmplifier, 3*erotionAmplifier ));
-        Imgproc.erode( mat, mat, element2 );
-        // End erotion section
+        candidatesFinder.Sobel();
+        candidatesFinder.GaussianBlur();
+        candidatesFinder.Dilate2();
+        candidatesFinder.Erode2();
 
 
-
-
-        // Start sustraction
-        //Core.absdiff(src, mat, dest);
-
-        for (int j= 0; j<candidatesFinder.OriginalImage.cols(); ++j)
-        {
-            for (int i=0; i<candidatesFinder.OriginalImage.rows(); ++i)
-            {
-                byte valor = (byte)Math.abs(candidatesFinder.OriginalImage.get(i,j)[0] - mat.get(i,j)[0]);
-                byte[] b = new byte[4];
-                b[0] = valor;
-                b[1] = valor;
-                b[2] = valor;
-                b[3] = (byte)(255 & 0xFF);
-                dest.put(i,j, b);
-            }
-        }
-
-        // End sustraction
-
-
-
-        //START sobel
-        //Imgproc.Sobel(dest, dest, CvType.CV_8U, 0, 1); almost work
-        Mat grad_x = new Mat();
-        Mat abs_grad_x = new Mat();
-        Imgproc.Sobel(dest, grad_x, CvType.CV_8U, 1, 0, 3, 1, Core.BORDER_DEFAULT);
-        //Imgproc.Sobel(dest, grad_y, CvType.CV_16S, 0, 1, 3, 1, Core.BORDER_DEFAULT);
-
-
-        Core.convertScaleAbs(grad_x, abs_grad_x);
-        //Core.convertScaleAbs(grad_y, abs_grad_y);
-        Core.addWeighted(abs_grad_x, 1, abs_grad_x, 0, 0, dest); // or? Core.addWeighted(abs_grad_x, 0.5, abs_grad_x, 0, 0, dest);
-        //END sobel
-
-
-
-
-        //Start Gaussian Blur
-        Imgproc.GaussianBlur(dest, dest, new Size(5,5), 2);
-        //End Gaussian Blur
-
-
-
-        // Start dilation section
-        float dilationAmplifier2 = 2.9f;
-        Mat element3 = Imgproc.getStructuringElement( Imgproc.MORPH_RECT,
-                new Size( 9*dilationAmplifier2, 3*dilationAmplifier2 ));
-        Imgproc.dilate( dest, dest, element3 );
-        // End dilation section
-
-
-
-        // Start erotion section
-        Mat element4 = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 9, 3 ));
-        Imgproc.erode( dest, dest, element4 );
-        // End erotion section
-
-
-
-
-
-        //start OTSU's threshold
-        Imgproc.cvtColor(dest, dest, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
-        Imgproc.threshold(dest, dest, 0, 255, Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU); //aca se cae
-        //end OTSU's threshold
+        candidatesFinder.ToGrayScale();
+        candidatesFinder.OtsusThreshold();
+        Mat dest = candidatesFinder.CurrentImage;
 
 
         //STEP 1: start Finding outlines in the binary image
-        List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-        Mat hierarchy = new Mat();
-        //cv::findContours(inputImg, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
-        Mat temp = dest.clone();
-        Imgproc.findContours(temp, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE );
-        // end Finding outlines in the binary image
-
-
-
-
+        candidatesFinder.FindOutlines();
 
         //STEP 2: start selecting outlines
-        List<RotatedRect> rects = new ArrayList<RotatedRect>();
-        List<MatOfPoint> debugContourns = new ArrayList<MatOfPoint>();
-        for(int i=0; i<contours.size(); ++i)//while (itc != contours.end())
-        {
-            MatOfPoint mop = contours.get(i);
-            MatOfPoint2f mop2f = mopToMop2f(mop);
-            RotatedRect mr = Imgproc.minAreaRect(mop2f); // SE CAE EN ESTA LINEA
+        candidatesFinder.OutlinesSelection();
 
-            double area = Math.abs(Imgproc.contourArea(contours.get(i)));
-            double bbArea=mr.size.width * mr.size.height;
-            float ratio = (float)(area/bbArea);
-
-            if( (ratio < 0.45) || (bbArea < 400) ){
-                ;// do nothing
-            }else{
-                rects.add(mr);
-                debugContourns.add(contours.get(i));
-            }
-        }
-        // end selecting outlines
 
 
         if (false) {
             // DRAWING GREEN AND BLUE LINES
-            drawContornsToMatInBitmap(candidatesFinder.OriginalImage.clone(), contours, debugContourns, imgFp);
+            drawContornsToMatInBitmap(candidatesFinder.OriginalImage.clone(), candidatesFinder.GreenCandidates,
+                    candidatesFinder.BlueCandidates, imgFp);
             return;
         }
 
 
 
-
+        List<RotatedRect> outlines = candidatesFinder.BlueCandidatesRR;
 
         //STEP 3: loop
-        for (int i=0; i<rects.size(); ++i)
+        for (int i=0; i<outlines.size(); ++i)
         {
             //STEP 4:
 
-            double dx = 0.15126 * rects.get(i).boundingRect().size().width;
-            double dy = 0.625* rects.get(i).boundingRect().size().height;;
-            int newWidth = (int)(rects.get(i).boundingRect().size().width + dx);
-            int newHeight = (int)(rects.get(i).boundingRect().size().height + dy);
+            double dx = 0.15126 * outlines.get(i).boundingRect().size().width;
+            double dy = 0.625* outlines.get(i).boundingRect().size().height;;
+            int newWidth = (int)(outlines.get(i).boundingRect().size().width + dx);
+            int newHeight = (int)(outlines.get(i).boundingRect().size().height + dy);
 
             //STEP 5:
             Mat uncropped = candidatesFinder.OriginalImage.clone();
 
             // si excedimos el ancho de la imagen, lo truncamos
-            if (candidatesFinder.OriginalImage.width() < rects.get(i).boundingRect().x + newWidth)
-                newWidth = newWidth -  ((rects.get(i).boundingRect().x + newWidth) - candidatesFinder.OriginalImage.width());
+            if (candidatesFinder.OriginalImage.width() < outlines.get(i).boundingRect().x + newWidth)
+                newWidth = newWidth -  ((outlines.get(i).boundingRect().x + newWidth) - candidatesFinder.OriginalImage.width());
             // si excedimos el alto de la imagen, lo truncamos
-            if (candidatesFinder.OriginalImage.height() < rects.get(i).boundingRect().y + newHeight)
-                newHeight = newHeight -  ((rects.get(i).boundingRect().y + newHeight) - candidatesFinder.OriginalImage.height());
+            if (candidatesFinder.OriginalImage.height() < outlines.get(i).boundingRect().y + newHeight)
+                newHeight = newHeight -  ((outlines.get(i).boundingRect().y + newHeight) - candidatesFinder.OriginalImage.height());
 
-            Rect roi = new Rect(rects.get(i).boundingRect().x, rects.get(i).boundingRect().y, newWidth, newHeight);
+            Rect roi = new Rect(outlines.get(i).boundingRect().x, outlines.get(i).boundingRect().y, newWidth, newHeight);
             Mat cropped = new Mat(uncropped, roi);
             Mat croppedColor = cropped.clone();
 
@@ -481,9 +381,7 @@ public class ImageViewer extends Activity {
         }
         return mat;
     }
-    private MatOfPoint2f mopToMop2f(MatOfPoint mop) {
-        return new MatOfPoint2f( mop.toArray() );
-    }
+
 
     private void sub(Mat src1, Mat src2, Mat src3)
     {
@@ -547,6 +445,9 @@ public class ImageViewer extends Activity {
                 imgFp.setImageBitmap(bmFinal);
             }
         }, 2000);*/
+    }
+    private MatOfPoint2f mopToMop2f(MatOfPoint mop) {
+        return new MatOfPoint2f( mop.toArray() );
     }
     Bitmap bmFinal;
 }
