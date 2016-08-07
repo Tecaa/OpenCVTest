@@ -38,7 +38,7 @@ public class ImageViewer extends Activity {
         fillMap();
 
 
-        int image = R.drawable.vehicle_ex;
+        int image = R.drawable.vehicle_ex11;
         ImageView imgFp = (ImageView) findViewById(R.id.imageView);
 
         long time1 = System.currentTimeMillis();
@@ -70,7 +70,7 @@ public class ImageViewer extends Activity {
         long time11 = System.currentTimeMillis();
         candidatesFinder.OtsusThreshold();
         long time12 = System.currentTimeMillis();
-        if (false) {
+        if (true) {
             // DRAWING
             drawContornsToMatInBitmap(candidatesFinder.CurrentImage, null, null, imgFp);
             return;
@@ -80,6 +80,7 @@ public class ImageViewer extends Activity {
         //STEP 1: start Finding outlines in the binary image
         candidatesFinder.FindOutlines();
         long time13 = System.currentTimeMillis();
+
 
         //STEP 2: start selecting outlines
         candidatesFinder.OutlinesSelection();
@@ -245,18 +246,6 @@ public class ImageViewer extends Activity {
             }
         }
 
-
-
-/*
-
-        Mat finalMat = dest;
-        Bitmap bm = Bitmap.createBitmap(finalMat.cols(), finalMat.rows(), Bitmap.Config.ARGB_8888);
-        Utils.matToBitmap(finalMat, bm);
-        imgFp.setImageBitmap(bm);
-
-*/
-
-
     }
 
     private void fillMap() {
@@ -270,20 +259,8 @@ public class ImageViewer extends Activity {
         patentIndexInImage.put(R.drawable.vehicle_ex8, 4);
         patentIndexInImage.put(R.drawable.vehicle_ex9, 4);
         patentIndexInImage.put(R.drawable.vehicle_ex10, 10);//?
-        patentIndexInImage.put(R.drawable.vehicle_ex12, 3);
-    }
-
-
-    private float calculateHorizontalAmplifier(Size size, boolean debugPrint) {
-        // CODIGO EN PRUEBA, QUIZAS NO FUNCIONA Y NO TIENE REAL RELACION CON EL TAMAÑO DE LA IMAGEN
-        final float MIN_VALUE = 0.3f;
-        final float MAX_VALUE = 10f;
-        float val = 1;
-        if (size.width > 150)
-            val = (float)(size.width* 13.0/744.0-1663.0/744.0);
-        if (debugPrint)
-            Log.d("test", "WIDTH: " + String.valueOf(size.width));
-        return val;//Math.max(val, MIN_VALUE);
+        patentIndexInImage.put(R.drawable.vehicle_ex11, 2); // ?
+        patentIndexInImage.put(R.drawable.vehicle_ex12, 2);
     }
 
     private void drawContornsToMatInBitmap(Mat m, List<MatOfPoint> cs, List<MatOfPoint> csRefine, ImageView imgFp) {
@@ -322,73 +299,4 @@ public class ImageViewer extends Activity {
         }
         return mat;
     }
-
-
-    private void sub(Mat src1, Mat src2, Mat src3)
-    {
-        Core.subtract(src1, src2, src3);
-    }
-    private void savedFuncion()
-    {
-
-        int image = R.mipmap.bin_im;
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        ImageView imgFp = (ImageView) findViewById(R.id.imageView);
-        // imgFp.setImageResource(image);
-
-
-        Mat src = new Mat();
-        Mat eyeMat = new Mat();
-        Mat eyeMat2 = new Mat();
-        Utils.bitmapToMat(BitmapFactory.decodeResource(getResources(), image) , src);
-
-        Imgproc.GaussianBlur(src, eyeMat, new Size(3, 3), 2, 2);
-
-        //   eyeMat.convertTo(eyeMat, CvType.CV_8UC1);
-        Imgproc.cvtColor(eyeMat, eyeMat, Imgproc.COLOR_RGB2GRAY);
-
-        Imgproc.threshold(eyeMat, eyeMat, 10, 255, Imgproc.THRESH_BINARY);
-
-
-
-        List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-        Mat hierarchy = new Mat();
-        Imgproc.Canny(src, eyeMat, 80, 100);
-
-        Imgproc.findContours(eyeMat, contours, hierarchy, Imgproc.RETR_TREE,Imgproc.CHAIN_APPROX_SIMPLE);
-        Imgproc.drawContours(src, contours, -1, new Scalar(0, 255, 0), 3);
-        Bitmap bm = Bitmap.createBitmap(src.cols(), src.rows(),Bitmap.Config.ARGB_8888);
-        Utils.matToBitmap(src, bm);
-        imgFp.setImageBitmap(bm);
-
-
-        //drawing
-        //Mat contourImg = new Mat(eyeMat.size(), eyeMat.type());
-        //Imgproc.drawContours(src, contours, -1, new Scalar(0, 255, 0), 3);
-/*
-        for (int i = 0; i < contours.size(); i++) {
-            Imgproc.drawContours(src, contours, i, new Scalar(200, 160, 140), -1);
-        }*/
-        //Imgproc.cvtColor(src, src, Imgproc.COLOR_GRAY2RGB);
-
-
-        /*
-        bmFinal = Bitmap.createBitmap(src.cols(), src.rows(),Bitmap.Config.RGB_565);
-        Utils.matToBitmap(src, bmFinal);
-
-
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                ImageView imgFp = (ImageView) findViewById(R.id.imageView);
-                imgFp.setImageBitmap(bmFinal);
-            }
-        }, 2000);*/
-    }
-    private MatOfPoint2f mopToMop2f(MatOfPoint mop) {
-        return new MatOfPoint2f( mop.toArray() );
-    }
-    Bitmap bmFinal;
 }
