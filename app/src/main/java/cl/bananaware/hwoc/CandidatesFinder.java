@@ -57,7 +57,7 @@ public class CandidatesFinder {
         Imgproc.cvtColor(OriginalImage, temp, Imgproc.COLOR_RGB2GRAY);
         Core.absdiff(temp, CurrentImage, CurrentImage); // This function should replace this section. But it doesn't work!
         // NOW IT WORKS!!!
-/*
+        /*
         Mat dest = OriginalImage.clone();
         byte[] b = new byte[4];
         for (int j= 0; j<OriginalImage.cols(); ++j)

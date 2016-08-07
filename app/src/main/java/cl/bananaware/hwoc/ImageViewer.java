@@ -3,35 +3,23 @@ package cl.bananaware.hwoc;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.SystemClock;
-import android.support.v4.app.ShareCompat;
-import android.support.v4.util.DebugUtils;
 import android.util.Log;
-import android.view.SurfaceView;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
-import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
-import org.opencv.core.Rect;
 import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.video.BackgroundSubtractorMOG2;
 
-import java.io.Console;
 import java.util.ArrayList;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -126,203 +114,99 @@ public class ImageViewer extends Activity {
         //STEP 3: loop
         for (int i=0; i<outlines.size(); ++i)
         {
+            CandidateSelector candidateSelector = new CandidateSelector(candidatesFinder.OriginalImage, outlines.get(i));
             //STEP 4:
             time14 = System.currentTimeMillis();
-            double dx = 0.15126 * outlines.get(i).boundingRect().size().width;
-            double dy = 0.625* outlines.get(i).boundingRect().size().height;;
-            int newWidth = (int)(outlines.get(i).boundingRect().size().width + dx);
-            int newHeight = (int)(outlines.get(i).boundingRect().size().height + dy);
+            candidateSelector.CalculateBounds();
             long time15 = System.currentTimeMillis();
 
             //STEP 5:
-            Mat uncropped = candidatesFinder.OriginalImage.clone();
-
-            // si excedimos el ancho de la imagen, lo truncamos
-            if (candidatesFinder.OriginalImage.width() < outlines.get(i).boundingRect().x + newWidth)
-                newWidth = newWidth -  ((outlines.get(i).boundingRect().x + newWidth) - candidatesFinder.OriginalImage.width());
-            // si excedimos el alto de la imagen, lo truncamos
-            if (candidatesFinder.OriginalImage.height() < outlines.get(i).boundingRect().y + newHeight)
-                newHeight = newHeight -  ((outlines.get(i).boundingRect().y + newHeight) - candidatesFinder.OriginalImage.height());
-
-            Rect roi = new Rect(outlines.get(i).boundingRect().x, outlines.get(i).boundingRect().y, newWidth, newHeight);
-            Mat cropped = new Mat(uncropped, roi);
-            Mat croppedColor = cropped.clone();
+            candidateSelector.TruncateBounds();
+            candidateSelector.CropExtraBoundingBox();
 
             if (false && i==patentIndexInImage.get(image)) {
                 // DRAW START DE INVENCION
-                drawContornsToMatInBitmap(cropped, null, null, imgFp );
+                drawContornsToMatInBitmap(candidateSelector.CurrentImage, null, null, imgFp );
                 break;
             }
             long time16 = System.currentTimeMillis();
 
 
 
-
-
             ////////////////////////////// START INVENCION MIA //////////////////////////////
+            candidateSelector.Sobel();
+            candidateSelector.GaussianBlur();
+            candidateSelector.Dilate(i==patentIndexInImage.get(image));
 
-            Mat grad_x2 = new Mat();
-            Mat abs_grad_x2 = new Mat();
-            Imgproc.Sobel(cropped, grad_x2, CvType.CV_8U, 1, 0, 3, 1, Core.BORDER_DEFAULT);
-
-
-            Core.convertScaleAbs(grad_x2, abs_grad_x2);
-            //Core.convertScaleAbs(grad_y, abs_grad_y);
-            Core.addWeighted(abs_grad_x2, 1, abs_grad_x2, 0, 0, cropped); // or? Core.addWeighted(abs_grad_x, 0.5, abs_grad_x, 0, 0, dest);
-            //END sobel
-
-
-
-
-            //Start Gaussian Blur
-            Imgproc.GaussianBlur(cropped, cropped, new Size(5,5), 2);
-            //End Gaussian Blur
-
-
-            // Start dilation section
-            float dilationAmplifier3 = 1f;
-            float horizontalDilatationAmplifier = calculateHorizontalAmplifier(cropped.size(), i==patentIndexInImage.get(image));
-            Mat element5 = Imgproc.getStructuringElement( Imgproc.MORPH_RECT,
-                    new Size( Math.round(9*dilationAmplifier3*horizontalDilatationAmplifier), 3*dilationAmplifier3 ));
-            Imgproc.dilate( cropped, cropped, element5 );
-            // End dilation section
 
             if (false && i==patentIndexInImage.get(image)) {
                 // DRAW INVENCION DILATION
-                drawContornsToMatInBitmap(cropped, null, null, imgFp );
+                drawContornsToMatInBitmap(candidateSelector.CurrentImage, null, null, imgFp );
                 break;
             }
 
-
-            // Start erotion section
-            float erotionAmplifier3 = 1f;
-            Mat element6 = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( Math.round(9*erotionAmplifier3*horizontalDilatationAmplifier), 3*erotionAmplifier3 ));
-            Imgproc.erode( cropped, cropped, element6 );
-            // End erotion section
+            candidateSelector.Erode();
             long time17 = System.currentTimeMillis();
 
             ////////////////////////////// END INVENCION MIA //////////////////////////////
 
             if (false && i==patentIndexInImage.get(image)) {
                 // DRAW FINAL DE INVENCION
-                drawContornsToMatInBitmap(cropped, null, null, imgFp );
+                drawContornsToMatInBitmap(candidateSelector.CurrentImage, null, null, imgFp );
                 break;
             }
 
 
 
             //STEP 6:
-            Imgproc.cvtColor(cropped, cropped, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
-            Imgproc.threshold(cropped, cropped, 0, 255, Imgproc.THRESH_OTSU | Imgproc.THRESH_BINARY);
+            candidateSelector.OtsusThreshold();
             long time18 = System.currentTimeMillis();
 
+
             //STEP 7:
-            List<MatOfPoint> contours2 = new ArrayList<MatOfPoint>();
-            Mat hierarchy2 = new Mat();
-            Imgproc.findContours(cropped.clone(), contours2, hierarchy2, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE );
+            candidateSelector.FindOutlines();
+
             long time19 = System.currentTimeMillis();
 
             if (false && i==patentIndexInImage.get(image)) {
                 // DRAW A SECTION WITH ITS CONTOURS
-                Imgproc.cvtColor(cropped, cropped, Imgproc.COLOR_GRAY2RGB); //Convert to gray scale
-                drawContornsToMatInBitmap(cropped, contours2, null, imgFp );
+                Mat colorCurrentImage = candidateSelector.CurrentImage.clone();
+                Imgproc.cvtColor(colorCurrentImage, colorCurrentImage, Imgproc.COLOR_GRAY2RGB);
+                drawContornsToMatInBitmap(colorCurrentImage, candidateSelector.GreenCandidatesPro, null, imgFp );
                 break;
             }
 
 
 
             //STEP 8:
-            double maxArea = 0;
-            int maxAreaIndex = 0;
-            for(int j=0; j<contours2.size(); ++j)
-            {
-                MatOfPoint mop = contours2.get(j);
-                MatOfPoint2f mop2f = mopToMop2f(mop);
-                RotatedRect mr = Imgproc.minAreaRect(mop2f);
-
-                double currentArea=mr.size.width * mr.size.height;
-                if (currentArea > maxArea) {
-                    maxArea = currentArea;
-                    maxAreaIndex = j;
-                }
-            }
+            candidateSelector.FindMaxAreaCandidatePro();
             long time20 = System.currentTimeMillis();
-
-            // DRAW PATENT IN GRAYSCALE
-            //Imgproc.cvtColor(cropped, cropped, Imgproc.COLOR_GRAY2RGB); //Convert to gray scale
-            //drawContornsToMatInBitmap(cropped, contours2.get(maxAreaIndex), imgFp );
-
-
 
 
             //STEP 9:
-            MatOfPoint mop2 = contours2.get(maxAreaIndex);
-            MatOfPoint2f mop2f2 = mopToMop2f(mop2);
-            //MatOfPoint2f mop2f = new MatOfPoint2f(mop);
-            RotatedRect mr2 = Imgproc.minAreaRect(mop2f2);
+            candidateSelector.FindMinAreaRectInMaxArea();
             long time21 = System.currentTimeMillis();
 
             if (false && i==patentIndexInImage.get(image)) {
                 // DRAWING ROTATED RECTANGLE
-                Imgproc.cvtColor(cropped, cropped, Imgproc.COLOR_GRAY2RGB);
-                drawContornsToMatInBitmap(drawRotatedRectInMat(mr2, croppedColor), null, null, imgFp);
+                Mat tempCurrentImage = candidateSelector.CurrentImage.clone();
+                Imgproc.cvtColor(tempCurrentImage, tempCurrentImage, Imgproc.COLOR_GRAY2RGB);
+                drawContornsToMatInBitmap(drawRotatedRectInMat(candidateSelector.MinAreaRect,
+                        tempCurrentImage), null, null, imgFp);
                 break;
             }
 
-            //STEP 10:
-            //checks
-            // Autos chilenos 36cm x 13cm Concentrarse en éstos
-            // Motos chilenas nuevas 14,5cm x 12cm.
-            // Motos chilenas antiguas 14,5cm x 8cm.
-            double angle = mr2.angle;
-            Size rect_size = mr2.size;
-            if (mr2.angle < -45.) {
-                angle += 90.0;
-                //swaping height and width
-                double widthTemp = rect_size.width;
-                rect_size.width = rect_size.height;
-                rect_size.height = widthTemp;
-            }
 
-            double imageRatio = rect_size.width / rect_size.height;//Math.max(mr2.size.width,mr2.size.height)/Math.min(mr2.size.width,mr2.size.height);
-            final double OFFICIAL_RATIO = 36f/13f;
-            final double MIN_RATIO = 2.2f;
-            final double MAX_RATIO = 5.7f;
-            boolean ratioCorrect = false;
-            if (imageRatio >= MIN_RATIO && imageRatio <= MAX_RATIO)
-                ratioCorrect = true;
 
-            boolean areaCorrect = false;
-            if (ratioCorrect)
-            {
-                // AREAS Y PORCENTAJE DE AREAS
-                double area = rect_size.width*rect_size.height;
-                double maxAreaImage = candidatesFinder.OriginalImage.size().width * candidatesFinder.OriginalImage.size().height;
-                double percentajeImage = area/maxAreaImage;
-                final double MIN_AREA = 950;
-                final double MAX_PERCENTAJE_AREA = 0.15;
-                if (area >= MIN_AREA && percentajeImage <= MAX_PERCENTAJE_AREA)
-                    areaCorrect = true;
-            }
+            //STEP 10 and 11
             long time22 = System.currentTimeMillis();
-
-
-
-
-            //STEP 11:
-            if (!areaCorrect)
+            if (!candidateSelector.DoChecks()) {
+                time22 = System.currentTimeMillis();
                 continue;
+            }
 
-            // get the rotation matrix
-            Mat matrix = Imgproc.getRotationMatrix2D(mr2.center, angle, 1.0);
-            // perform the affine transformation
-            Mat rotated = new Mat();
-            Mat cropped2 = new Mat();
-            Mat precrop = croppedColor.clone();
-            Imgproc.cvtColor(precrop, precrop, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
-            Imgproc.warpAffine(precrop, rotated, matrix, precrop.size(), Imgproc.INTER_CUBIC);
-            // crop the resulting image
-            Imgproc.getRectSubPix(rotated, rect_size, mr2.center, cropped2);
+
+            candidateSelector.CropMinRotatedRect();
             long time23 = System.currentTimeMillis();
 
 
@@ -333,11 +217,7 @@ public class ImageViewer extends Activity {
             //Mat cropped2 = new Mat(sinCortar, roi2);
 
 
-            if (true && i==patentIndexInImage.get(image)) {
-                //Mostrar en pantalla resultado de la iteración
-                drawContornsToMatInBitmap(cropped2, null, imgFp);
-                break; // IMPORTANTE, PROBLEMA DE THREAD PARECE, SI NO HAY BREAK LA LÍNEA ANTERIOR SE CAE.
-            }
+
 
             // Apply Gray Scale, Skew Correction, Fixed Size.
             //Mat resizeimage = new Mat();
@@ -357,6 +237,12 @@ public class ImageViewer extends Activity {
             Log.d("Times", "Time 21-22: " + String.valueOf(time22-time21) + " Suma: " + String.valueOf(time22-time1));
             Log.d("Times", "Time 22-23: " + String.valueOf(time23-time22) + " Suma: " + String.valueOf(time23-time1));
             Log.d("Times", "----------------------------");
+
+            if (true && i==patentIndexInImage.get(image)) {
+                //Mostrar en pantalla resultado de la iteración
+                drawContornsToMatInBitmap(candidateSelector.CurrentImage, null, imgFp);
+                break; // IMPORTANTE, PROBLEMA DE THREAD PARECE, SI NO HAY BREAK LA LÍNEA ANTERIOR SE CAE.
+            }
         }
 
 
@@ -378,7 +264,7 @@ public class ImageViewer extends Activity {
         patentIndexInImage.put(R.drawable.vehicle_ex2, 1);
         patentIndexInImage.put(R.drawable.vehicle_ex3, 0);
         patentIndexInImage.put(R.drawable.vehicle_ex4, 0);
-        //patentIndexInImage.put(R.drawable.vehicle_ex5, ?);
+        patentIndexInImage.put(R.drawable.vehicle_ex5, 6);
         patentIndexInImage.put(R.drawable.vehicle_ex6, 0);
         patentIndexInImage.put(R.drawable.vehicle_ex7, 0);
         patentIndexInImage.put(R.drawable.vehicle_ex8, 4);
