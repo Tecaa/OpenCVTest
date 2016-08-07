@@ -78,7 +78,7 @@ public class ImageViewer extends Activity {
 
 
 
-        candidatesFinder.ToGrayScale();
+        //candidatesFinder.ToGrayScale();
         long time11 = System.currentTimeMillis();
         candidatesFinder.OtsusThreshold();
         long time12 = System.currentTimeMillis();

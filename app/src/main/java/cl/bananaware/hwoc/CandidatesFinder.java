@@ -53,8 +53,11 @@ public class CandidatesFinder {
     }
 
     public void Substraction() {
-        //Core.absdiff(CurrentImage, CurrentImage, CurrentImage); // This function should replace this section. But it doesn't work!
-
+        Mat temp = new Mat();
+        Imgproc.cvtColor(OriginalImage, temp, Imgproc.COLOR_RGB2GRAY);
+        Core.absdiff(temp, CurrentImage, CurrentImage); // This function should replace this section. But it doesn't work!
+        // NOW IT WORKS!!!
+/*
         Mat dest = OriginalImage.clone();
         byte[] b = new byte[4];
         for (int j= 0; j<OriginalImage.cols(); ++j)
@@ -68,7 +71,7 @@ public class CandidatesFinder {
                 dest.put(i,j, b);
             }
         }
-        CurrentImage = dest;
+        CurrentImage = dest;*/
     }
 
     public void Sobel() {
