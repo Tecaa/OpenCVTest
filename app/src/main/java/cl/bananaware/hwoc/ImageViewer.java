@@ -1,12 +1,24 @@
 package cl.bananaware.hwoc;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.Gallery;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.Toast;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
@@ -30,6 +42,7 @@ import java.util.Map;
 public class ImageViewer extends Activity {
 
     Map<Integer, Integer> patentIndexInImage = new HashMap<Integer, Integer>();
+    List<Mat> finalCandidates = new ArrayList<Mat>();
     String TAG = "iw";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,9 +50,8 @@ public class ImageViewer extends Activity {
         setContentView(R.layout.cameraview);
         fillMap();
 
-
-        int image = R.drawable.vehicle_ex11;
-        ImageView imgFp = (ImageView) findViewById(R.id.imageView);
+        int image = R.drawable.vehicle_ex9;
+        //ImageView imgFp = (ImageView) findViewById(R.id.imageView);
 
         long time1 = System.currentTimeMillis();
         CandidatesFinder candidatesFinder = new CandidatesFinder(BitmapFactory.decodeResource(getResources(), image));
@@ -74,7 +86,7 @@ public class ImageViewer extends Activity {
             long time12 = System.currentTimeMillis();
             if (false && is == ImageSize.GRANDE) {
                 // DRAWING
-                drawContornsToMatInBitmap(candidatesFinder.CurrentImage, null, null, imgFp);
+                drawContornsToMatInBitmap(candidatesFinder.CurrentImage, null, null);
                 return;
             }
 
@@ -91,16 +103,16 @@ public class ImageViewer extends Activity {
             if (false && is == ImageSize.GRANDE) {
                 // DRAWING GREEN AND BLUE LINES IN COLOR IMAGE
                 drawContornsToMatInBitmap(candidatesFinder.OriginalImage.clone(), candidatesFinder.LastGreenCandidates,
-                        candidatesFinder.LastBlueCandidates, imgFp);
+                        candidatesFinder.LastBlueCandidates);
                 return;
             }
 
-            if (true && is == ImageSize.GRANDE) {
+            if (false && is == ImageSize.GRANDE) {
                 // DRAWING GREEN AND BLUE LINES IN GRAY SCALE IMAGE
                 Mat temp = candidatesFinder.CurrentImage.clone();
                 Imgproc.cvtColor(temp, temp, Imgproc.COLOR_GRAY2RGB);
                 drawContornsToMatInBitmap(temp, candidatesFinder.LastGreenCandidates,
-                        candidatesFinder.LastBlueCandidates, imgFp);
+                        candidatesFinder.LastBlueCandidates);
                 return;
             }
 
@@ -133,13 +145,23 @@ public class ImageViewer extends Activity {
             candidateSelector.CalculateBounds();
             long time15 = System.currentTimeMillis();
 
+            if (false && i==patentIndexInImage.get(image)) {
+                // DRAW START DE INVENCION
+                Mat temp = candidateSelector.OriginalImage.clone();
+                Imgproc.cvtColor(temp, temp, Imgproc.COLOR_RGB2GRAY);
+                Imgproc.cvtColor(temp, temp, Imgproc.COLOR_GRAY2RGB);
+                drawContornsToMatInBitmap(drawRotatedRectInMat(candidateSelector.CandidateRect,
+                        temp), null, null);
+                break;
+            }
+
             //STEP 5:
             candidateSelector.TruncateBounds();
             candidateSelector.CropExtraBoundingBox();
 
             if (false && i==patentIndexInImage.get(image)) {
                 // DRAW START DE INVENCION
-                drawContornsToMatInBitmap(candidateSelector.CurrentImage, null, null, imgFp );
+                drawContornsToMatInBitmap(candidateSelector.CurrentImage, null, null);
                 break;
             }
             long time16 = System.currentTimeMillis();
@@ -154,7 +176,7 @@ public class ImageViewer extends Activity {
 
             if (false && i==patentIndexInImage.get(image)) {
                 // DRAW INVENCION DILATION
-                drawContornsToMatInBitmap(candidateSelector.CurrentImage, null, null, imgFp );
+                drawContornsToMatInBitmap(candidateSelector.CurrentImage, null, null);
                 break;
             }
 
@@ -165,7 +187,7 @@ public class ImageViewer extends Activity {
 
             if (false && i==patentIndexInImage.get(image)) {
                 // DRAW FINAL DE INVENCION
-                drawContornsToMatInBitmap(candidateSelector.CurrentImage, null, null, imgFp );
+                drawContornsToMatInBitmap(candidateSelector.CurrentImage, null, null);
                 break;
             }
 
@@ -185,7 +207,7 @@ public class ImageViewer extends Activity {
                 // DRAW A SECTION WITH ITS CONTOURS
                 Mat colorCurrentImage = candidateSelector.CurrentImage.clone();
                 Imgproc.cvtColor(colorCurrentImage, colorCurrentImage, Imgproc.COLOR_GRAY2RGB);
-                drawContornsToMatInBitmap(colorCurrentImage, candidateSelector.GreenCandidatesPro, null, imgFp );
+                drawContornsToMatInBitmap(colorCurrentImage, candidateSelector.GreenCandidatesPro, null);
                 break;
             }
 
@@ -205,7 +227,7 @@ public class ImageViewer extends Activity {
                 Mat tempCurrentImage = candidateSelector.CurrentImage.clone();
                 Imgproc.cvtColor(tempCurrentImage, tempCurrentImage, Imgproc.COLOR_GRAY2RGB);
                 drawContornsToMatInBitmap(drawRotatedRectInMat(candidateSelector.MinAreaRect,
-                        tempCurrentImage), null, null, imgFp);
+                        tempCurrentImage), null, null);
                 break;
             }
 
@@ -250,14 +272,54 @@ public class ImageViewer extends Activity {
             Log.d("Times", "Time 21-22: " + String.valueOf(time22-time21) + " Suma: " + String.valueOf(time22-time1));
             Log.d("Times", "Time 22-23: " + String.valueOf(time23-time22) + " Suma: " + String.valueOf(time23-time1));
             Log.d("Times", "----------------------------");
-
-            if (true && i==patentIndexInImage.get(image)) {
+            finalCandidates.add(candidateSelector.CurrentImage);
+            if (false && i==patentIndexInImage.get(image)) {
                 //Mostrar en pantalla resultado de la iteración
-                drawContornsToMatInBitmap(candidateSelector.CurrentImage, null, imgFp);
+                drawContornsToMatInBitmap(candidateSelector.CurrentImage, null);
                 break; // IMPORTANTE, PROBLEMA DE THREAD PARECE, SI NO HAY BREAK LA LÍNEA ANTERIOR SE CAE.
             }
         }
 
+        InitializeGallery();
+        //DrawImages();
+    }
+
+    private void InitializeGallery() {
+        // Note that Gallery view is deprecated in Android 4.1---
+        Gallery gallery = (Gallery) findViewById(R.id.gallery1);
+        gallery.setAdapter(new ImageAdapter(this));
+        gallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View v, int position,long id)
+            {
+                SetGalleryImage(position);
+            }
+        });
+        SetGalleryImage(0);
+    }
+
+    private void SetGalleryImage(int position)
+    {
+        //Toast.makeText(getBaseContext(),"pic" + (position + 1) + " selected",
+        //      Toast.LENGTH_SHORT).show();
+        // display the images selected
+
+        Bitmap bm = Bitmap.createBitmap(finalCandidates.get(position).cols(),
+                finalCandidates.get(position).rows(), Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(finalCandidates.get(position), bm);
+        ImageView ii = (ImageView) findViewById(R.id.image1);
+        ii.setImageBitmap(bm);
+    }
+    protected void DrawImages(){
+        LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
+        for(int i=0;i<finalCandidates.size();++i)
+        {
+            Bitmap bm = Bitmap.createBitmap(finalCandidates.get(i).cols(), finalCandidates.get(i).rows(), Bitmap.Config.ARGB_8888);
+            Utils.matToBitmap(finalCandidates.get(i), bm);
+            ImageView ii= new ImageView(this);
+            //ii.setBackgroundResource(R.drawable.ic_action_search);
+            ii.setImageBitmap(bm);
+            ll.addView(ii);
+        }
     }
 
     private void fillMap() {
@@ -275,7 +337,7 @@ public class ImageViewer extends Activity {
         patentIndexInImage.put(R.drawable.vehicle_ex12, 2);
     }
 
-    private void drawContornsToMatInBitmap(Mat m, List<MatOfPoint> cs, List<MatOfPoint> csRefine, ImageView imgFp) {
+    private void drawContornsToMatInBitmap(Mat m, List<MatOfPoint> cs, List<MatOfPoint> csRefine) {
         Mat finalMat = m.clone();
         //Imgproc.cvtColor(finalMat, finalMat, Imgproc.COLOR_GRAY2RGB); //USAR SI APLICA, SI SE CAE LA APP, Convert to RGB
         if (cs != null)
@@ -292,14 +354,18 @@ public class ImageViewer extends Activity {
         }
         Bitmap bm = Bitmap.createBitmap(finalMat.cols(), finalMat.rows(), Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(finalMat, bm);
-        imgFp.setImageBitmap(bm);
+        ImageView ii= new ImageView(this);
+        ii.setImageBitmap(bm);
+        //TableRow ll = (TableRow)findViewById(R.id.rows);
+
+//        ll.addView(ii);
     }
 
-    private void drawContornsToMatInBitmap(Mat m, MatOfPoint cs, ImageView imgFp) {
+    private void drawContornsToMatInBitmap(Mat m, MatOfPoint cs) {
         List<MatOfPoint> l = new ArrayList<MatOfPoint>();
         if (cs != null)
             l.add(cs);
-        drawContornsToMatInBitmap(m, l, null, imgFp);
+        drawContornsToMatInBitmap(m, l, null);
     }
 
     private Mat drawRotatedRectInMat(RotatedRect rRect, Mat mat)
@@ -310,5 +376,43 @@ public class ImageViewer extends Activity {
             Imgproc.line(mat, vertices[j], vertices[(j+1)%4], new Scalar(255,0,0));
         }
         return mat;
+    }
+
+
+    public class ImageAdapter extends BaseAdapter {
+        private Context context;
+        private int itemBackground;
+        public ImageAdapter(Context c)
+        {
+            context = c;
+            // sets a grey background; wraps around the images
+            TypedArray a =obtainStyledAttributes(R.styleable.MyGallery);
+            itemBackground = a.getResourceId(R.styleable.MyGallery_android_galleryItemBackground, 0);
+            a.recycle();
+        }
+        // returns the number of images
+        public int getCount() {
+            return finalCandidates.size();
+        }
+        // returns the ID of an item
+        public Object getItem(int position) {
+            return position;
+        }
+        // returns the ID of an item
+        public long getItemId(int position) {
+            return position;
+        }
+        // returns an ImageView view
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ImageView imageView = new ImageView(context);
+
+            Bitmap bm = Bitmap.createBitmap(finalCandidates.get(position).cols(),
+                    finalCandidates.get(position).rows(), Bitmap.Config.ARGB_8888);
+            Utils.matToBitmap(finalCandidates.get(position), bm);
+            imageView.setImageBitmap(bm);
+            imageView.setLayoutParams(new Gallery.LayoutParams(250, 250));
+            imageView.setBackgroundResource(itemBackground);
+            return imageView;
+        }
     }
 }

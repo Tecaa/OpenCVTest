@@ -56,7 +56,8 @@ public class CandidateSelector {
     }
 
     public void CropExtraBoundingBox() {
-        Rect roi = new Rect(CandidateRect.boundingRect().x, CandidateRect.boundingRect().y, newWidth, newHeight);
+        Rect roi = new Rect(Math.max(CandidateRect.boundingRect().x, 0),
+                Math.max(CandidateRect.boundingRect().y,0), newWidth, newHeight);
         CurrentImage = new Mat(OriginalImage.clone(), roi);
         CroppedExtraBoundingBox = CurrentImage.clone();
     }
