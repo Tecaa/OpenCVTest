@@ -50,32 +50,52 @@ public class ImageViewer extends Activity {
         fillMap();
 
 
-        int image = R.drawable.vehicle_ex7;
+        int image = R.drawable.vehicle_ex;
         ImageView imgFp = (ImageView) findViewById(R.id.imageView);
 
+        long time1 = System.currentTimeMillis();
         CandidatesFinder candidatesFinder = new CandidatesFinder(BitmapFactory.decodeResource(getResources(), image));
+        long time2 = System.currentTimeMillis();
         candidatesFinder.ToGrayScale();
+        long time3 = System.currentTimeMillis();
         candidatesFinder.Dilate();
+        long time4 = System.currentTimeMillis();
         candidatesFinder.Erode();
+        long time5 = System.currentTimeMillis();
         candidatesFinder.Substraction();
+        long time6 = System.currentTimeMillis();
+
+
 
         candidatesFinder.Sobel();
+        long time7 = System.currentTimeMillis();
         candidatesFinder.GaussianBlur();
+        long time8 = System.currentTimeMillis();
         candidatesFinder.Dilate2();
+        long time9 = System.currentTimeMillis();
         candidatesFinder.Erode2();
+        long time10 = System.currentTimeMillis();
+
 
 
         candidatesFinder.ToGrayScale();
+        long time11 = System.currentTimeMillis();
         candidatesFinder.OtsusThreshold();
-        Mat dest = candidatesFinder.CurrentImage;
+        long time12 = System.currentTimeMillis();
+        if (false) {
+            // DRAWING
+            drawContornsToMatInBitmap(candidatesFinder.CurrentImage, null, null, imgFp);
+            return;
+        }
 
 
         //STEP 1: start Finding outlines in the binary image
         candidatesFinder.FindOutlines();
+        long time13 = System.currentTimeMillis();
 
         //STEP 2: start selecting outlines
         candidatesFinder.OutlinesSelection();
-
+        long time14 = System.currentTimeMillis();
 
 
         if (false) {
@@ -87,17 +107,32 @@ public class ImageViewer extends Activity {
 
 
 
+        Log.d("Times", "Time 1-2: " + String.valueOf(time2-time1) + " Suma: " + String.valueOf(time2-time1));
+        Log.d("Times", "Time 2-3: " + String.valueOf(time3-time2) + " Suma: " + String.valueOf(time3-time1));
+        Log.d("Times", "Time 3-4: " + String.valueOf(time4-time3) + " Suma: " + String.valueOf(time4-time1));
+        Log.d("Times", "Time 4-5: " + String.valueOf(time5-time4) + " Suma: " + String.valueOf(time5-time1));
+        Log.d("Times", "Time 5-6: " + String.valueOf(time6-time5) + " Suma: " + String.valueOf(time6-time1));
+        Log.d("Times", "Time 6-7: " + String.valueOf(time7-time6) + " Suma: " + String.valueOf(time7-time1));
+        Log.d("Times", "Time 7-8: " + String.valueOf(time8-time7) + " Suma: " + String.valueOf(time8-time1));
+        Log.d("Times", "Time 8-9: " + String.valueOf(time9-time8) + " Suma: " + String.valueOf(time9-time1));
+        Log.d("Times", "Time 9-10: " + String.valueOf(time10-time9) + " Suma: " + String.valueOf(time10-time1));
+        Log.d("Times", "Time 10-11: " + String.valueOf(time11-time10) + " Suma: " + String.valueOf(time11-time1));
+        Log.d("Times", "Time 11-12: " + String.valueOf(time12-time11) + " Suma: " + String.valueOf(time12-time1));
+        Log.d("Times", "Time 12-13: " + String.valueOf(time13-time12) + " Suma: " + String.valueOf(time13-time1));
+        Log.d("Times", "Time 13-14: " + String.valueOf(time14-time13) + " Suma: " + String.valueOf(time14-time1));
+
         List<RotatedRect> outlines = candidatesFinder.BlueCandidatesRR;
 
         //STEP 3: loop
         for (int i=0; i<outlines.size(); ++i)
         {
             //STEP 4:
-
+            time14 = System.currentTimeMillis();
             double dx = 0.15126 * outlines.get(i).boundingRect().size().width;
             double dy = 0.625* outlines.get(i).boundingRect().size().height;;
             int newWidth = (int)(outlines.get(i).boundingRect().size().width + dx);
             int newHeight = (int)(outlines.get(i).boundingRect().size().height + dy);
+            long time15 = System.currentTimeMillis();
 
             //STEP 5:
             Mat uncropped = candidatesFinder.OriginalImage.clone();
@@ -118,6 +153,7 @@ public class ImageViewer extends Activity {
                 drawContornsToMatInBitmap(cropped, null, null, imgFp );
                 break;
             }
+            long time16 = System.currentTimeMillis();
 
 
 
@@ -163,6 +199,7 @@ public class ImageViewer extends Activity {
             Mat element6 = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( Math.round(9*erotionAmplifier3*horizontalDilatationAmplifier), 3*erotionAmplifier3 ));
             Imgproc.erode( cropped, cropped, element6 );
             // End erotion section
+            long time17 = System.currentTimeMillis();
 
             ////////////////////////////// END INVENCION MIA //////////////////////////////
 
@@ -177,11 +214,13 @@ public class ImageViewer extends Activity {
             //STEP 6:
             Imgproc.cvtColor(cropped, cropped, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
             Imgproc.threshold(cropped, cropped, 0, 255, Imgproc.THRESH_OTSU | Imgproc.THRESH_BINARY);
+            long time18 = System.currentTimeMillis();
 
             //STEP 7:
             List<MatOfPoint> contours2 = new ArrayList<MatOfPoint>();
             Mat hierarchy2 = new Mat();
             Imgproc.findContours(cropped.clone(), contours2, hierarchy2, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE );
+            long time19 = System.currentTimeMillis();
 
             if (false && i==patentIndexInImage.get(image)) {
                 // DRAW A SECTION WITH ITS CONTOURS
@@ -199,7 +238,6 @@ public class ImageViewer extends Activity {
             {
                 MatOfPoint mop = contours2.get(j);
                 MatOfPoint2f mop2f = mopToMop2f(mop);
-                //MatOfPoint2f mop2f = new MatOfPoint2f(mop);
                 RotatedRect mr = Imgproc.minAreaRect(mop2f);
 
                 double currentArea=mr.size.width * mr.size.height;
@@ -208,6 +246,7 @@ public class ImageViewer extends Activity {
                     maxAreaIndex = j;
                 }
             }
+            long time20 = System.currentTimeMillis();
 
             // DRAW PATENT IN GRAYSCALE
             //Imgproc.cvtColor(cropped, cropped, Imgproc.COLOR_GRAY2RGB); //Convert to gray scale
@@ -221,6 +260,7 @@ public class ImageViewer extends Activity {
             MatOfPoint2f mop2f2 = mopToMop2f(mop2);
             //MatOfPoint2f mop2f = new MatOfPoint2f(mop);
             RotatedRect mr2 = Imgproc.minAreaRect(mop2f2);
+            long time21 = System.currentTimeMillis();
 
             if (false && i==patentIndexInImage.get(image)) {
                 // DRAWING ROTATED RECTANGLE
@@ -264,6 +304,7 @@ public class ImageViewer extends Activity {
                 if (area >= MIN_AREA && percentajeImage <= MAX_PERCENTAJE_AREA)
                     areaCorrect = true;
             }
+            long time22 = System.currentTimeMillis();
 
 
 
@@ -282,6 +323,7 @@ public class ImageViewer extends Activity {
             Imgproc.warpAffine(precrop, rotated, matrix, precrop.size(), Imgproc.INTER_CUBIC);
             // crop the resulting image
             Imgproc.getRectSubPix(rotated, rect_size, mr2.center, cropped2);
+            long time23 = System.currentTimeMillis();
 
 
             // Paso 11 sin rotación.
@@ -303,6 +345,18 @@ public class ImageViewer extends Activity {
             //Imgproc.resize( croppedimage, resizeimage, sz );
             //
             //
+
+            Log.d("Times", "i=" + i + "----------------------------");
+            Log.d("Times", "Time 14-15: " + String.valueOf(time15-time14) + " Suma: " + String.valueOf(time15-time1));
+            Log.d("Times", "Time 15-16: " + String.valueOf(time16-time15) + " Suma: " + String.valueOf(time16-time1));
+            Log.d("Times", "Time 16-17: " + String.valueOf(time17-time16) + " Suma: " + String.valueOf(time17-time1));
+            Log.d("Times", "Time 17-18: " + String.valueOf(time18-time17) + " Suma: " + String.valueOf(time18-time1));
+            Log.d("Times", "Time 18-19: " + String.valueOf(time19-time18) + " Suma: " + String.valueOf(time19-time1));
+            Log.d("Times", "Time 19-20: " + String.valueOf(time20-time19) + " Suma: " + String.valueOf(time20-time1));
+            Log.d("Times", "Time 20-21: " + String.valueOf(time21-time20) + " Suma: " + String.valueOf(time21-time1));
+            Log.d("Times", "Time 21-22: " + String.valueOf(time22-time21) + " Suma: " + String.valueOf(time22-time1));
+            Log.d("Times", "Time 22-23: " + String.valueOf(time23-time22) + " Suma: " + String.valueOf(time23-time1));
+            Log.d("Times", "----------------------------");
         }
 
 
@@ -317,8 +371,6 @@ public class ImageViewer extends Activity {
 */
 
 
-
-        //savedFuncion();
     }
 
     private void fillMap() {
@@ -330,6 +382,9 @@ public class ImageViewer extends Activity {
         patentIndexInImage.put(R.drawable.vehicle_ex6, 0);
         patentIndexInImage.put(R.drawable.vehicle_ex7, 0);
         patentIndexInImage.put(R.drawable.vehicle_ex8, 4);
+        patentIndexInImage.put(R.drawable.vehicle_ex9, 4);
+        patentIndexInImage.put(R.drawable.vehicle_ex10, 10);//?
+        patentIndexInImage.put(R.drawable.vehicle_ex12, 3);
     }
 
 

@@ -53,19 +53,18 @@ public class CandidatesFinder {
     }
 
     public void Substraction() {
-        //Core.absdiff(src, mat, dest); // This function should replace this section. But it doesn't work!
-        Mat original = OriginalImage.clone();
-        Mat dest = original.clone();
-        for (int j= 0; j<original.cols(); ++j)
+        //Core.absdiff(CurrentImage, CurrentImage, CurrentImage); // This function should replace this section. But it doesn't work!
+
+        Mat dest = OriginalImage.clone();
+        byte[] b = new byte[4];
+        for (int j= 0; j<OriginalImage.cols(); ++j)
         {
-            for (int i=0; i<original.rows(); ++i)
+            for (int i=0; i<OriginalImage.rows(); ++i)
             {
-                byte valor = (byte)Math.abs(original.get(i,j)[0] - CurrentImage.get(i,j)[0]);
-                byte[] b = new byte[4];
-                b[0] = valor;
-                b[1] = valor;
-                b[2] = valor;
-                b[3] = (byte)(255 & 0xFF);
+                b[0] = (byte)Math.abs(OriginalImage.get(i,j)[0] - CurrentImage.get(i,j)[0]);
+                //b[1] = valor;
+                //b[2] = valor;
+                //b[3] = (byte)(255 & 0xFF);
                 dest.put(i,j, b);
             }
         }
@@ -90,6 +89,8 @@ public class CandidatesFinder {
     }
 
     public void Dilate2() {
+        //evaluar hacer una interpolacion lineal o algo similar con el amplifier ya que falla en ex10 y ex2 (unno bien o el otro mal)
+        //Poniendolo en 2 se corrige
         float DILATATION_AMPLIFIER = 2.9f;
         Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT,
                 new Size( 9*DILATATION_AMPLIFIER, 3*DILATATION_AMPLIFIER));
