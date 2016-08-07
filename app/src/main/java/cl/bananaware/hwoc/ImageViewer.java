@@ -59,65 +59,77 @@ public class ImageViewer extends Activity {
         long time7 = System.currentTimeMillis();
         candidatesFinder.GaussianBlur();
         long time8 = System.currentTimeMillis();
-        candidatesFinder.Dilate2();
-        long time9 = System.currentTimeMillis();
-        candidatesFinder.Erode2();
-        long time10 = System.currentTimeMillis();
+        List<RotatedRect> outlines = new ArrayList<RotatedRect>();
+        for (ImageSize is : ImageSize.values()) {
+            candidatesFinder.Dilate2(is);
+            long time9 = System.currentTimeMillis();
+            candidatesFinder.Erode2();
+            long time10 = System.currentTimeMillis();
 
 
 
-        //candidatesFinder.ToGrayScale();
-        long time11 = System.currentTimeMillis();
-        candidatesFinder.OtsusThreshold();
-        long time12 = System.currentTimeMillis();
-        if (true) {
-            // DRAWING
-            drawContornsToMatInBitmap(candidatesFinder.CurrentImage, null, null, imgFp);
-            return;
+            //candidatesFinder.ToGrayScale();
+            long time11 = System.currentTimeMillis();
+            candidatesFinder.OtsusThreshold();
+            long time12 = System.currentTimeMillis();
+            if (false && is == ImageSize.GRANDE) {
+                // DRAWING
+                drawContornsToMatInBitmap(candidatesFinder.CurrentImage, null, null, imgFp);
+                return;
+            }
+
+
+            //STEP 1: start Finding outlines in the binary image
+            candidatesFinder.FindOutlines();
+            long time13 = System.currentTimeMillis();
+
+
+            //STEP 2: start selecting outlines
+            candidatesFinder.OutlinesSelection();
+            long time14 = System.currentTimeMillis();
+
+            if (false && is == ImageSize.GRANDE) {
+                // DRAWING GREEN AND BLUE LINES IN COLOR IMAGE
+                drawContornsToMatInBitmap(candidatesFinder.OriginalImage.clone(), candidatesFinder.LastGreenCandidates,
+                        candidatesFinder.LastBlueCandidates, imgFp);
+                return;
+            }
+
+            if (true && is == ImageSize.GRANDE) {
+                // DRAWING GREEN AND BLUE LINES IN GRAY SCALE IMAGE
+                Mat temp = candidatesFinder.CurrentImage.clone();
+                Imgproc.cvtColor(temp, temp, Imgproc.COLOR_GRAY2RGB);
+                drawContornsToMatInBitmap(temp, candidatesFinder.LastGreenCandidates,
+                        candidatesFinder.LastBlueCandidates, imgFp);
+                return;
+            }
+
+
+
+            Log.d("Times", "Size=" + is.name() + " Time 1-2: " + String.valueOf(time2-time1) + " Suma: " + String.valueOf(time2-time1));
+            Log.d("Times", "Size=" + is.name() + " Time 2-3: " + String.valueOf(time3-time2) + " Suma: " + String.valueOf(time3-time1));
+            Log.d("Times", "Size=" + is.name() + " Time 3-4: " + String.valueOf(time4-time3) + " Suma: " + String.valueOf(time4-time1));
+            Log.d("Times", "Size=" + is.name() + " Time 4-5: " + String.valueOf(time5-time4) + " Suma: " + String.valueOf(time5-time1));
+            Log.d("Times", "Size=" + is.name() + " Time 5-6: " + String.valueOf(time6-time5) + " Suma: " + String.valueOf(time6-time1));
+            Log.d("Times", "Size=" + is.name() + " Time 6-7: " + String.valueOf(time7-time6) + " Suma: " + String.valueOf(time7-time1));
+            Log.d("Times", "Size=" + is.name() + " Time 7-8: " + String.valueOf(time8-time7) + " Suma: " + String.valueOf(time8-time1));
+            Log.d("Times", "Size=" + is.name() + " Time 8-9: " + String.valueOf(time9-time8) + " Suma: " + String.valueOf(time9-time1));
+            Log.d("Times", "Size=" + is.name() + " Time 9-10: " + String.valueOf(time10-time9) + " Suma: " + String.valueOf(time10-time1));
+            Log.d("Times", "Size=" + is.name() + " Time 10-11: " + String.valueOf(time11-time10) + " Suma: " + String.valueOf(time11-time1));
+            Log.d("Times", "Size=" + is.name() + " Time 11-12: " + String.valueOf(time12-time11) + " Suma: " + String.valueOf(time12-time1));
+            Log.d("Times", "Size=" + is.name() + " Time 12-13: " + String.valueOf(time13-time12) + " Suma: " + String.valueOf(time13-time1));
+            Log.d("Times", "Size=" + is.name() + " Time 13-14: " + String.valueOf(time14-time13) + " Suma: " + String.valueOf(time14-time1));
+
+
         }
-
-
-        //STEP 1: start Finding outlines in the binary image
-        candidatesFinder.FindOutlines();
-        long time13 = System.currentTimeMillis();
-
-
-        //STEP 2: start selecting outlines
-        candidatesFinder.OutlinesSelection();
-        long time14 = System.currentTimeMillis();
-
-
-        if (false) {
-            // DRAWING GREEN AND BLUE LINES
-            drawContornsToMatInBitmap(candidatesFinder.OriginalImage.clone(), candidatesFinder.GreenCandidates,
-                    candidatesFinder.BlueCandidates, imgFp);
-            return;
-        }
-
-
-
-        Log.d("Times", "Time 1-2: " + String.valueOf(time2-time1) + " Suma: " + String.valueOf(time2-time1));
-        Log.d("Times", "Time 2-3: " + String.valueOf(time3-time2) + " Suma: " + String.valueOf(time3-time1));
-        Log.d("Times", "Time 3-4: " + String.valueOf(time4-time3) + " Suma: " + String.valueOf(time4-time1));
-        Log.d("Times", "Time 4-5: " + String.valueOf(time5-time4) + " Suma: " + String.valueOf(time5-time1));
-        Log.d("Times", "Time 5-6: " + String.valueOf(time6-time5) + " Suma: " + String.valueOf(time6-time1));
-        Log.d("Times", "Time 6-7: " + String.valueOf(time7-time6) + " Suma: " + String.valueOf(time7-time1));
-        Log.d("Times", "Time 7-8: " + String.valueOf(time8-time7) + " Suma: " + String.valueOf(time8-time1));
-        Log.d("Times", "Time 8-9: " + String.valueOf(time9-time8) + " Suma: " + String.valueOf(time9-time1));
-        Log.d("Times", "Time 9-10: " + String.valueOf(time10-time9) + " Suma: " + String.valueOf(time10-time1));
-        Log.d("Times", "Time 10-11: " + String.valueOf(time11-time10) + " Suma: " + String.valueOf(time11-time1));
-        Log.d("Times", "Time 11-12: " + String.valueOf(time12-time11) + " Suma: " + String.valueOf(time12-time1));
-        Log.d("Times", "Time 12-13: " + String.valueOf(time13-time12) + " Suma: " + String.valueOf(time13-time1));
-        Log.d("Times", "Time 13-14: " + String.valueOf(time14-time13) + " Suma: " + String.valueOf(time14-time1));
-
-        List<RotatedRect> outlines = candidatesFinder.BlueCandidatesRR;
+        outlines.addAll(candidatesFinder.BlueCandidatesRR);
 
         //STEP 3: loop
         for (int i=0; i<outlines.size(); ++i)
         {
             CandidateSelector candidateSelector = new CandidateSelector(candidatesFinder.OriginalImage, outlines.get(i));
             //STEP 4:
-            time14 = System.currentTimeMillis();
+            long time14_5 = System.currentTimeMillis();
             candidateSelector.CalculateBounds();
             long time15 = System.currentTimeMillis();
 
@@ -228,7 +240,7 @@ public class ImageViewer extends Activity {
             //
 
             Log.d("Times", "i=" + i + "----------------------------");
-            Log.d("Times", "Time 14-15: " + String.valueOf(time15-time14) + " Suma: " + String.valueOf(time15-time1));
+            Log.d("Times", "Time 14_5-15: " + String.valueOf(time15-time14_5) + " Suma: " + String.valueOf(time15-time1));
             Log.d("Times", "Time 15-16: " + String.valueOf(time16-time15) + " Suma: " + String.valueOf(time16-time1));
             Log.d("Times", "Time 16-17: " + String.valueOf(time17-time16) + " Suma: " + String.valueOf(time17-time1));
             Log.d("Times", "Time 17-18: " + String.valueOf(time18-time17) + " Suma: " + String.valueOf(time18-time1));

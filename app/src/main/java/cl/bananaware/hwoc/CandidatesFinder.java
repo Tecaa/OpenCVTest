@@ -22,18 +22,22 @@ import java.util.List;
 public class CandidatesFinder {
     public Mat OriginalImage;
     public Mat CurrentImage;
-    public List<MatOfPoint> BlueCandidates;
+    public Mat PreMultiDilationImage;
+    public List<MatOfPoint> BlueCandidates, LastBlueCandidates;
     public List<RotatedRect> BlueCandidatesRR;
-    public List<MatOfPoint> GreenCandidates;
+    public List<MatOfPoint> GreenCandidates, LastGreenCandidates;
 
     public CandidatesFinder(Bitmap bm)
     {
         OriginalImage = new Mat();
+        PreMultiDilationImage = new Mat();
         Utils.bitmapToMat(bm, OriginalImage);
         CurrentImage = OriginalImage.clone();
         BlueCandidates = new ArrayList<MatOfPoint>();
         BlueCandidatesRR = new ArrayList<RotatedRect>();
         GreenCandidates = new ArrayList<MatOfPoint>();
+        LastGreenCandidates = new ArrayList<MatOfPoint>();
+        LastBlueCandidates = new ArrayList<MatOfPoint>();
     }
 
     public void ToGrayScale() {
@@ -88,16 +92,16 @@ public class CandidatesFinder {
     }
 
     public void GaussianBlur() {
-        Imgproc.GaussianBlur(CurrentImage, CurrentImage, new Size(5,5), 2);
+        Imgproc.GaussianBlur(CurrentImage, PreMultiDilationImage, new Size(5,5), 2);
     }
 
-    public void Dilate2() {
+    public void Dilate2(ImageSize imSize) {
         //evaluar hacer una interpolacion lineal o algo similar con el amplifier ya que falla en ex10 y ex2 (unno bien o el otro mal)
         //Poniendolo en 2 se corrige
-        float DILATATION_AMPLIFIER = 2.9f;
+        //float DILATATION_AMPLIFIER = 2.9f;
         Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT,
-                new Size( 9*DILATATION_AMPLIFIER, 3*DILATATION_AMPLIFIER));
-        Imgproc.dilate( CurrentImage, CurrentImage, element);
+                new Size( 9*imSize.DilationAmplifier, 3*imSize.DilationAmplifier));
+        Imgproc.dilate( PreMultiDilationImage, CurrentImage, element);
     }
 
     public void Erode2() {
@@ -112,11 +116,14 @@ public class CandidatesFinder {
     public void FindOutlines() {
         Mat hierarchy = new Mat();
         Mat temp = CurrentImage.clone();
-        Imgproc.findContours(temp, GreenCandidates, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE );
+        LastGreenCandidates = new ArrayList<MatOfPoint>();
+        Imgproc.findContours(temp, LastGreenCandidates, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE );
+        GreenCandidates.addAll(LastGreenCandidates);
     }
 
     public void OutlinesSelection() {
-        List<MatOfPoint> contours = GreenCandidates;
+        List<MatOfPoint> contours = LastGreenCandidates;
+        LastBlueCandidates = new ArrayList<MatOfPoint>();
         for(int i=0; i<contours.size(); ++i)
         {
             MatOfPoint mop = contours.get(i);
@@ -131,9 +138,11 @@ public class CandidatesFinder {
                 ;// do nothing
             }else{
                 BlueCandidatesRR.add(mr);
-                BlueCandidates.add(contours.get(i));
+                LastBlueCandidates.add(contours.get(i));
             }
         }
+
+        BlueCandidates.addAll(LastBlueCandidates);
     }
     private MatOfPoint2f mopToMop2f(MatOfPoint mop) {
         return new MatOfPoint2f( mop.toArray() );
