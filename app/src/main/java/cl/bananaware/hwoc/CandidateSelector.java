@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class CandidateSelector {
     public RotatedRect CandidateRect, MinAreaRect;
-    public Mat OriginalImage, CurrentImage;
+    public Mat OriginalImage, CurrentImage, OriginalImageRealSize;
     public Mat CroppedExtraBoundingBox;
     private double MinAreaRectAngle;
     private Size MinAreaRectSize;
@@ -31,9 +31,10 @@ public class CandidateSelector {
     private float horizontalDilatationAmplifier;
     public List<MatOfPoint> GreenCandidatesPro;
 
-    public CandidateSelector(Mat OriginalImage, RotatedRect candidate)
+    public CandidateSelector(Mat OriginalImage, Mat OriginalImageRealSize, RotatedRect candidate)
     {
         this.OriginalImage = OriginalImage;
+        this.OriginalImageRealSize = OriginalImageRealSize;
         this.CandidateRect = candidate;
         GreenCandidatesPro = new ArrayList<MatOfPoint>();
     }
@@ -58,7 +59,10 @@ public class CandidateSelector {
     public void CropExtraBoundingBox() {
         Rect roi = new Rect(Math.max(CandidateRect.boundingRect().x, 0),
                 Math.max(CandidateRect.boundingRect().y,0), newWidth, newHeight);
-        CurrentImage = new Mat(OriginalImage.clone(), roi);
+        double scale = OriginalImageRealSize.size().width/OriginalImage.size().width;
+        Rect roiScaled = new Rect((int)(roi.x*scale),
+                (int)(roi.y*scale), (int)(roi.width*scale), (int)(roi.height*scale));
+        CurrentImage = new Mat(OriginalImageRealSize.clone(), roiScaled);
         CroppedExtraBoundingBox = CurrentImage.clone();
     }
 
@@ -76,9 +80,9 @@ public class CandidateSelector {
         Imgproc.GaussianBlur(CurrentImage, CurrentImage, new Size(5,5), 2);
     }
 
-    public void Dilate(boolean printWidth) {
+    public void Dilate() {
         float DILATION_AMPLIFIER = 1f;
-        horizontalDilatationAmplifier = calculateHorizontalAmplifier(CurrentImage.size(), printWidth);
+        horizontalDilatationAmplifier = calculateHorizontalAmplifier(CurrentImage.size());
         Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT,
                 new Size( Math.round(9*DILATION_AMPLIFIER*horizontalDilatationAmplifier), 3*DILATION_AMPLIFIER ));
         Imgproc.dilate( CurrentImage, CurrentImage, element );
@@ -91,15 +95,15 @@ public class CandidateSelector {
         Imgproc.erode( CurrentImage, CurrentImage, element);
     }
 
-    private float calculateHorizontalAmplifier(Size size, boolean debugPrint) {
+    private float calculateHorizontalAmplifier(Size size) {
         // CODIGO EN PRUEBA, QUIZAS NO FUNCIONA Y NO TIENE REAL RELACION CON EL TAMAÑO DE LA IMAGEN
         final float MIN_VALUE = 0.3f;
         final float MAX_VALUE = 10f;
         float val = 1;
         if (size.width > 150)
             val = (float)(size.width* 13.0/744.0-1663.0/744.0);
-        if (debugPrint)
-            Log.d("test", "WIDTH: " + String.valueOf(size.width));
+
+        Log.d("test", "WIDTH: " + String.valueOf(size.width));
         return val;//Math.max(val, MIN_VALUE);
     }
 
@@ -169,7 +173,7 @@ public class CandidateSelector {
             double area = MinAreaRectSize.width*MinAreaRectSize.height;
             double maxAreaImage = OriginalImage.size().width * OriginalImage.size().height;
             double percentajeImage = area/maxAreaImage;
-            final double MIN_AREA = 950;
+            final double MIN_AREA = 420; //950 is a good value
             final double MAX_PERCENTAJE_AREA = 0.15;
             if (area >= MIN_AREA && percentajeImage <= MAX_PERCENTAJE_AREA)
                 passChecks = true;
@@ -188,5 +192,12 @@ public class CandidateSelector {
         Imgproc.warpAffine(precrop, rotated, matrix, precrop.size(), Imgproc.INTER_CUBIC);
         // crop the resulting image
         Imgproc.getRectSubPix(rotated, MinAreaRectSize, MinAreaRect.center, CurrentImage);
+    }
+
+    public boolean PercentajeAreaCandidateCheck(double v) {
+        double area1 = OriginalImage.size().area();
+        double area2 = newHeight * newWidth;
+        double div = area2/area1;
+        return div<=v;
     }
 }

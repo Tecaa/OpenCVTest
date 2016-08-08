@@ -13,8 +13,8 @@
 
     <ImageView
         android:id="@+id/image1"
-        android:layout_width="300dp"
-        android:layout_height="400dp"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
         android:layout_gravity="center_horizontal"
         android:background="#cfcfcf"
         android:paddingTop="5dp"

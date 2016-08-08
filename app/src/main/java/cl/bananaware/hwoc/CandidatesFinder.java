@@ -20,7 +20,7 @@ import java.util.List;
  * Created by fergu on 06-08-2016.
  */
 public class CandidatesFinder {
-    public Mat OriginalImage;
+    public Mat OriginalImage, OriginalImageRealSize;
     public Mat CurrentImage;
     public Mat PreMultiDilationImage;
     public List<MatOfPoint> BlueCandidates, LastBlueCandidates;
@@ -32,12 +32,35 @@ public class CandidatesFinder {
         OriginalImage = new Mat();
         PreMultiDilationImage = new Mat();
         Utils.bitmapToMat(bm, OriginalImage);
+        OriginalImageRealSize = OriginalImage.clone();
+        OriginalImage = Resize(OriginalImage);
         CurrentImage = OriginalImage.clone();
         BlueCandidates = new ArrayList<MatOfPoint>();
         BlueCandidatesRR = new ArrayList<RotatedRect>();
         GreenCandidates = new ArrayList<MatOfPoint>();
         LastGreenCandidates = new ArrayList<MatOfPoint>();
         LastBlueCandidates = new ArrayList<MatOfPoint>();
+    }
+
+    private Mat Resize(Mat originalImage) {
+        final int MAX_PIXELS = 1000;
+        Size s = originalImage.size();
+        Size newSize = new Size();
+        double ratio = s.width/s.height;
+        if (s.width>s.height &&  s.width > MAX_PIXELS)
+        {
+
+            newSize.width = MAX_PIXELS;
+            newSize.height = newSize.width / ratio;
+            Imgproc.resize(originalImage, originalImage, newSize);
+        }
+        if (s.height>s.width && s.height > MAX_PIXELS)
+        {
+            newSize.height = MAX_PIXELS;
+            newSize.width = newSize.height * ratio;
+            Imgproc.resize(originalImage, originalImage, newSize);
+        }
+        return originalImage;
     }
 
     public void ToGrayScale() {

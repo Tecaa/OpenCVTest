@@ -21,7 +21,6 @@
         <activity android:name=".ImageViewer">
         </activity>
     </application>
-
     <uses-permission android:name="android.permission.CAMERA"/>
 
 

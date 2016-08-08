@@ -1,33 +1,23 @@
 package cl.bananaware.hwoc;
 
 import android.content.Intent;
-import android.support.v4.view.MotionEventCompat;
+import android.graphics.Bitmap;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.MotionEvent;
-import android.view.MenuItem;
 import android.util.Log;
-import android.view.SurfaceView;
-import android.view.WindowManager;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
-import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
-import org.opencv.core.Scalar;
 
 public class MainActivity extends AppCompatActivity implements CvCameraViewListener2
 {
+    public static final boolean TAKE_PICTURE = false;
     private static final String TAG = "OCVSample::Activity";
-
-    private CameraBridgeViewBase mOpenCvCameraView;
-    private boolean              mIsJavaCamera = true;
-    private MenuItem             mItemSwitchCamera = null;
 
     public MainActivity() {
         Log.i(TAG, "Instantiated new " + this.getClass());
@@ -40,7 +30,6 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
                 case LoaderCallbackInterface.SUCCESS:
                 {
                     Log.i(TAG, "OpenCV loaded successfully :)");
-                    mOpenCvCameraView.enableView();
                 } break;
                 default:
                 {
@@ -52,18 +41,8 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, "called onCreate");
         super.onCreate(savedInstanceState);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
         setContentView(R.layout.show_camera);
-
-        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.show_camera_activity_java_surface_view);
-
-        mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
-
-        mOpenCvCameraView.setCvCameraViewListener(this);
-
 
     }
 
@@ -86,8 +65,6 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     public void onPause()
     {
         super.onPause();
-        if (mOpenCvCameraView != null)
-            mOpenCvCameraView.disableView();
     }
 
     @Override
@@ -104,40 +81,45 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
 
     }
+
+    public static boolean CameraCapturerFixer = true;
     @Override
-    public boolean onTouchEvent(MotionEvent event){
+    public void onStart()
+    {
+        super.onStart();
 
-        int action = MotionEventCompat.getActionMasked(event);
-
-        switch(action) {
-            case (MotionEvent.ACTION_DOWN) :
-                Log.d(TAG,"Action was DOWN");
-                return true;
-            case (MotionEvent.ACTION_MOVE) :
-                Log.d(TAG,"Action was MOVE");
-                return true;
-            case (MotionEvent.ACTION_UP) :
-                Log.d(TAG,"Action was UP");
+        if (CameraCapturerFixer) {
+            if (TAKE_PICTURE) {
+                dispatchTakePictureIntent();
+            } else {
                 Intent i = new Intent(this, ImageViewer.class);
                 startActivity(i);
-                return true;
-            case (MotionEvent.ACTION_CANCEL) :
-                Log.d(TAG,"Action was CANCEL");
-                return true;
-            case (MotionEvent.ACTION_OUTSIDE) :
-                Log.d(TAG,"Movement occurred outside bounds " +
-                        "of current screen element");
-                return true;
-            default :
-                return super.onTouchEvent(event);
+            }
         }
+        CameraCapturerFixer = false;
+    }
+    static final int REQUEST_IMAGE_CAPTURE = 1;
 
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+
+            Intent intent = new Intent(this, ImageViewer.class);
+            intent.putExtra("photo", imageBitmap);
+            startActivity(intent);
+        }
+    }
 
     public void onDestroy() {
         super.onDestroy();
-        if (mOpenCvCameraView != null)
-            mOpenCvCameraView.disableView();
     }
 }

@@ -1,36 +1,38 @@
 package cl.bananaware.hwoc;
 
 import android.app.Activity;
+import android.app.IntentService;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.Toast;
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
-import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
-import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.PipedOutputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,21 +42,67 @@ import java.util.Map;
  * Created by Marco on 21-04-2016.
  */
 public class ImageViewer extends Activity {
-
+    int image = R.drawable.vehicle_ex11;
     Map<Integer, Integer> patentIndexInImage = new HashMap<Integer, Integer>();
     List<Mat> finalCandidates = new ArrayList<Mat>();
-    String TAG = "iw";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cameraview);
         fillMap();
+        MainActivity.CameraCapturerFixer = true;
+    }
+    public void onResume()
+    {
+        super.onResume();
+        //new DoAll().execute();
+        CodePostOpenCVLoaded();
 
-        int image = R.drawable.vehicle_ex9;
+        /*
+        if (!OpenCVLoader.initDebug()) {
+            Log.d("OpenCV", "Internal OpenCV library not found. Using OpenCV Manager for initialization");
+            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, this, mLoaderCallback);
+        } else {
+            Log.d("OpenCV", "OpenCV library found inside package. Using it!");
+            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+        }*/
+    }
+/*
+    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
+
+        @Override
+        public void onManagerConnected(int status) {
+            switch (status) {
+                case LoaderCallbackInterface.SUCCESS:
+                {
+                    Log.i("OpenCV", "OpenCV loaded successfully");
+                    CodePostOpenCVLoaded();
+                } break;
+                default:
+                {
+                    super.onManagerConnected(status);
+                } break;
+            }
+        }
+    };
+*/
+    private void CodePostOpenCVLoaded() {
         //ImageView imgFp = (ImageView) findViewById(R.id.imageView);
 
         long time1 = System.currentTimeMillis();
-        CandidatesFinder candidatesFinder = new CandidatesFinder(BitmapFactory.decodeResource(getResources(), image));
+        CandidatesFinder candidatesFinder;
+
+        Bitmap b;
+        if (MainActivity.TAKE_PICTURE)
+        {
+            Intent intent = getIntent();
+            b = (Bitmap) intent.getParcelableExtra("photo");
+
+        }
+        else {
+            b = BitmapFactory.decodeResource(getResources(), image);
+        }
+        candidatesFinder = new CandidatesFinder(b);
         long time2 = System.currentTimeMillis();
         candidatesFinder.ToGrayScale();
         long time3 = System.currentTimeMillis();
@@ -102,7 +150,7 @@ public class ImageViewer extends Activity {
 
             if (false && is == ImageSize.GRANDE) {
                 // DRAWING GREEN AND BLUE LINES IN COLOR IMAGE
-                drawContornsToMatInBitmap(candidatesFinder.OriginalImage.clone(), candidatesFinder.LastGreenCandidates,
+                drawContornsToMatInBitmap(candidatesFinder.OriginalImage.clone(), null,
                         candidatesFinder.LastBlueCandidates);
                 return;
             }
@@ -111,13 +159,13 @@ public class ImageViewer extends Activity {
                 // DRAWING GREEN AND BLUE LINES IN GRAY SCALE IMAGE
                 Mat temp = candidatesFinder.CurrentImage.clone();
                 Imgproc.cvtColor(temp, temp, Imgproc.COLOR_GRAY2RGB);
-                drawContornsToMatInBitmap(temp, candidatesFinder.LastGreenCandidates,
+                drawContornsToMatInBitmap(temp, null,
                         candidatesFinder.LastBlueCandidates);
                 return;
             }
 
 
-
+/*
             Log.d("Times", "Size=" + is.name() + " Time 1-2: " + String.valueOf(time2-time1) + " Suma: " + String.valueOf(time2-time1));
             Log.d("Times", "Size=" + is.name() + " Time 2-3: " + String.valueOf(time3-time2) + " Suma: " + String.valueOf(time3-time1));
             Log.d("Times", "Size=" + is.name() + " Time 3-4: " + String.valueOf(time4-time3) + " Suma: " + String.valueOf(time4-time1));
@@ -131,7 +179,7 @@ public class ImageViewer extends Activity {
             Log.d("Times", "Size=" + is.name() + " Time 11-12: " + String.valueOf(time12-time11) + " Suma: " + String.valueOf(time12-time1));
             Log.d("Times", "Size=" + is.name() + " Time 12-13: " + String.valueOf(time13-time12) + " Suma: " + String.valueOf(time13-time1));
             Log.d("Times", "Size=" + is.name() + " Time 13-14: " + String.valueOf(time14-time13) + " Suma: " + String.valueOf(time14-time1));
-
+*/
 
         }
         outlines.addAll(candidatesFinder.BlueCandidatesRR);
@@ -139,11 +187,19 @@ public class ImageViewer extends Activity {
         //STEP 3: loop
         for (int i=0; i<outlines.size(); ++i)
         {
-            CandidateSelector candidateSelector = new CandidateSelector(candidatesFinder.OriginalImage, outlines.get(i));
+            Log.d("TEST", "i="+i);
+            CandidateSelector candidateSelector =
+                    new CandidateSelector(candidatesFinder.OriginalImage, candidatesFinder.OriginalImageRealSize, outlines.get(i));
             //STEP 4:
             long time14_5 = System.currentTimeMillis();
             candidateSelector.CalculateBounds();
             long time15 = System.currentTimeMillis();
+/*
+            if (!candidateSelector.PercentajeAreaCandidateCheck(0.3)) {
+                Log.d("test", "pass " + i+ "=i");
+                continue;
+            }*/
+
 
             if (false && i==patentIndexInImage.get(image)) {
                 // DRAW START DE INVENCION
@@ -169,9 +225,10 @@ public class ImageViewer extends Activity {
 
 
             ////////////////////////////// START INVENCION MIA //////////////////////////////
+
             candidateSelector.Sobel();
             candidateSelector.GaussianBlur();
-            candidateSelector.Dilate(i==patentIndexInImage.get(image));
+            candidateSelector.Dilate();
 
 
             if (false && i==patentIndexInImage.get(image)) {
@@ -262,7 +319,7 @@ public class ImageViewer extends Activity {
             //
 
             Log.d("Times", "i=" + i + "----------------------------");
-            Log.d("Times", "Time 14_5-15: " + String.valueOf(time15-time14_5) + " Suma: " + String.valueOf(time15-time1));
+  /*          Log.d("Times", "Time 14_5-15: " + String.valueOf(time15-time14_5) + " Suma: " + String.valueOf(time15-time1));
             Log.d("Times", "Time 15-16: " + String.valueOf(time16-time15) + " Suma: " + String.valueOf(time16-time1));
             Log.d("Times", "Time 16-17: " + String.valueOf(time17-time16) + " Suma: " + String.valueOf(time17-time1));
             Log.d("Times", "Time 17-18: " + String.valueOf(time18-time17) + " Suma: " + String.valueOf(time18-time1));
@@ -271,8 +328,10 @@ public class ImageViewer extends Activity {
             Log.d("Times", "Time 20-21: " + String.valueOf(time21-time20) + " Suma: " + String.valueOf(time21-time1));
             Log.d("Times", "Time 21-22: " + String.valueOf(time22-time21) + " Suma: " + String.valueOf(time22-time1));
             Log.d("Times", "Time 22-23: " + String.valueOf(time23-time22) + " Suma: " + String.valueOf(time23-time1));
-            Log.d("Times", "----------------------------");
+            Log.d("Times", "----------------------------");*/
+
             finalCandidates.add(candidateSelector.CurrentImage);
+
             if (false && i==patentIndexInImage.get(image)) {
                 //Mostrar en pantalla resultado de la iteración
                 drawContornsToMatInBitmap(candidateSelector.CurrentImage, null);
@@ -299,9 +358,13 @@ public class ImageViewer extends Activity {
 
     private void SetGalleryImage(int position)
     {
-        //Toast.makeText(getBaseContext(),"pic" + (position + 1) + " selected",
-        //      Toast.LENGTH_SHORT).show();
-        // display the images selected
+        if (position >= finalCandidates.size()) {
+            Toast.makeText(getBaseContext(),"Position " + position + " not found.",
+                  Toast.LENGTH_SHORT).show();
+            // display the images selected
+            return;
+        }
+
 
         Bitmap bm = Bitmap.createBitmap(finalCandidates.get(position).cols(),
                 finalCandidates.get(position).rows(), Bitmap.Config.ARGB_8888);
@@ -349,16 +412,18 @@ public class ImageViewer extends Activity {
         if (csRefine != null)
         {
             for (int cId = 0; cId < csRefine.size(); cId++) {
-                Imgproc.drawContours(finalMat, csRefine, cId, new Scalar(0, 0, 255), 1);
+                Imgproc.drawContours(finalMat, csRefine, cId, new Scalar(0, 0, 255), 6);
             }
         }
+        // Rotating 90 clock degrees
+        finalMat = finalMat.t();
+        Core.flip(finalMat, finalMat, 2);
+
         Bitmap bm = Bitmap.createBitmap(finalMat.cols(), finalMat.rows(), Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(finalMat, bm);
-        ImageView ii= new ImageView(this);
-        ii.setImageBitmap(bm);
-        //TableRow ll = (TableRow)findViewById(R.id.rows);
 
-//        ll.addView(ii);
+        ImageView ll = (ImageView)findViewById(R.id.image1);
+        ll.setImageBitmap(bm);
     }
 
     private void drawContornsToMatInBitmap(Mat m, MatOfPoint cs) {
@@ -413,6 +478,24 @@ public class ImageViewer extends Activity {
             imageView.setLayoutParams(new Gallery.LayoutParams(250, 250));
             imageView.setBackgroundResource(itemBackground);
             return imageView;
+        }
+    }
+
+    private class DoAll extends AsyncTask<Void, Void, Void> {
+        // Do the long-running work in here
+        protected Void doInBackground(Void ... params) {
+            CodePostOpenCVLoaded();
+            return null;
+        }
+
+        // This is called each time you call publishProgress()
+        protected void onProgressUpdate() {
+
+        }
+
+        // This is called when doInBackground() is finished
+        protected void onPostExecute() {
+            Log.d("test","finished!!!");
         }
     }
 }
