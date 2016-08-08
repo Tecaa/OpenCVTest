@@ -62,8 +62,19 @@ public class CandidateSelector {
         double scale = OriginalImageRealSize.size().width/OriginalImage.size().width;
         Rect roiScaled = new Rect((int)(roi.x*scale),
                 (int)(roi.y*scale), (int)(roi.width*scale), (int)(roi.height*scale));
-        CurrentImage = new Mat(OriginalImageRealSize.clone(), roiScaled);
+        if (roiScaled.x+roiScaled.width > OriginalImageRealSize.width()) {
+            roiScaled.width = OriginalImageRealSize.width() - roiScaled.x;
+        }
+        if (roiScaled.y + roiScaled.height > OriginalImageRealSize.height())
+            roiScaled.height = OriginalImageRealSize.height() - roiScaled.y;
+        Log.d("caida", "check 2.2.6");
+        Log.d("caida", roiScaled.x + " " + roiScaled.y + " " + roiScaled.width + " " + roiScaled.height + " | "
+                + (roiScaled.x + roiScaled.width) + "x"+ (roiScaled.y + roiScaled.height) + " ||"
+                + OriginalImageRealSize.width() + " " + OriginalImageRealSize.height());
+        CurrentImage = new Mat(OriginalImageRealSize, roiScaled);
+        Log.d("caida", "check 2.2.7");
         CroppedExtraBoundingBox = CurrentImage.clone();
+        Log.d("caida", "check 2.2.8");
     }
 
     public void Sobel() {

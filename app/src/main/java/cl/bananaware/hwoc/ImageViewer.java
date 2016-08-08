@@ -7,8 +7,10 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +33,8 @@ import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.PipedOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -42,7 +46,7 @@ import java.util.Map;
  * Created by Marco on 21-04-2016.
  */
 public class ImageViewer extends Activity {
-    int image = R.drawable.vehicle_ex11;
+    int image = R.drawable.vehicle_ex43;
     Map<Integer, Integer> patentIndexInImage = new HashMap<Integer, Integer>();
     List<Mat> finalCandidates = new ArrayList<Mat>();
     @Override
@@ -50,12 +54,12 @@ public class ImageViewer extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cameraview);
         fillMap();
-        MainActivity.CameraCapturerFixer = true;
     }
     public void onResume()
     {
         super.onResume();
         //new DoAll().execute();
+        MainActivity.CameraCapturerFixer = true;
         CodePostOpenCVLoaded();
 
         /*
@@ -96,13 +100,27 @@ public class ImageViewer extends Activity {
         if (MainActivity.TAKE_PICTURE)
         {
             Intent intent = getIntent();
-            b = (Bitmap) intent.getParcelableExtra("photo");
+            //b = (Bitmap) intent.getParcelableExtra("photo");
+            String abs = intent.getExtras().getString("uri");
+            try {
+                BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+                b = BitmapFactory.decodeFile(abs,bmOptions);
+            } catch (Exception e) {
+                e.printStackTrace();
+
+                Toast.makeText(getBaseContext(),"Error cargando la imagen",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+
 
         }
         else {
             b = BitmapFactory.decodeResource(getResources(), image);
         }
         candidatesFinder = new CandidatesFinder(b);
+
+        Log.d("image",candidatesFinder.OriginalImageRealSize.width() + " " + candidatesFinder.OriginalImageRealSize.height());
         long time2 = System.currentTimeMillis();
         candidatesFinder.ToGrayScale();
         long time3 = System.currentTimeMillis();
@@ -121,6 +139,7 @@ public class ImageViewer extends Activity {
         long time8 = System.currentTimeMillis();
         List<RotatedRect> outlines = new ArrayList<RotatedRect>();
         for (ImageSize is : ImageSize.values()) {
+
             candidatesFinder.Dilate2(is);
             long time9 = System.currentTimeMillis();
             candidatesFinder.Erode2();
@@ -148,7 +167,7 @@ public class ImageViewer extends Activity {
             candidatesFinder.OutlinesSelection();
             long time14 = System.currentTimeMillis();
 
-            if (false && is == ImageSize.GRANDE) {
+            if (false && is == ImageSize.MEDIANA) {
                 // DRAWING GREEN AND BLUE LINES IN COLOR IMAGE
                 drawContornsToMatInBitmap(candidatesFinder.OriginalImage.clone(), null,
                         candidatesFinder.LastBlueCandidates);
@@ -187,21 +206,17 @@ public class ImageViewer extends Activity {
         //STEP 3: loop
         for (int i=0; i<outlines.size(); ++i)
         {
-            Log.d("TEST", "i="+i);
             CandidateSelector candidateSelector =
                     new CandidateSelector(candidatesFinder.OriginalImage, candidatesFinder.OriginalImageRealSize, outlines.get(i));
             //STEP 4:
             long time14_5 = System.currentTimeMillis();
             candidateSelector.CalculateBounds();
             long time15 = System.currentTimeMillis();
-/*
-            if (!candidateSelector.PercentajeAreaCandidateCheck(0.3)) {
-                Log.d("test", "pass " + i+ "=i");
+            if (!candidateSelector.PercentajeAreaCandidateCheck(0.4)) {
                 continue;
-            }*/
+            }
 
-
-            if (false && i==patentIndexInImage.get(image)) {
+            if (    false && i==patentIndexInImage.get(image)) {
                 // DRAW START DE INVENCION
                 Mat temp = candidateSelector.OriginalImage.clone();
                 Imgproc.cvtColor(temp, temp, Imgproc.COLOR_RGB2GRAY);
@@ -210,7 +225,6 @@ public class ImageViewer extends Activity {
                         temp), null, null);
                 break;
             }
-
             //STEP 5:
             candidateSelector.TruncateBounds();
             candidateSelector.CropExtraBoundingBox();
@@ -221,7 +235,6 @@ public class ImageViewer extends Activity {
                 break;
             }
             long time16 = System.currentTimeMillis();
-
 
 
             ////////////////////////////// START INVENCION MIA //////////////////////////////
@@ -241,7 +254,6 @@ public class ImageViewer extends Activity {
             long time17 = System.currentTimeMillis();
 
             ////////////////////////////// END INVENCION MIA //////////////////////////////
-
             if (false && i==patentIndexInImage.get(image)) {
                 // DRAW FINAL DE INVENCION
                 drawContornsToMatInBitmap(candidateSelector.CurrentImage, null, null);
@@ -274,11 +286,9 @@ public class ImageViewer extends Activity {
             candidateSelector.FindMaxAreaCandidatePro();
             long time20 = System.currentTimeMillis();
 
-
             //STEP 9:
             candidateSelector.FindMinAreaRectInMaxArea();
             long time21 = System.currentTimeMillis();
-
             if (false && i==patentIndexInImage.get(image)) {
                 // DRAWING ROTATED RECTANGLE
                 Mat tempCurrentImage = candidateSelector.CurrentImage.clone();
@@ -297,10 +307,8 @@ public class ImageViewer extends Activity {
                 continue;
             }
 
-
             candidateSelector.CropMinRotatedRect();
             long time23 = System.currentTimeMillis();
-
 
             // Paso 11 sin rotación.
             //Mat sinCortar = candidatesFinder.OriginalImage.clone();
@@ -318,7 +326,7 @@ public class ImageViewer extends Activity {
             //
             //
 
-            Log.d("Times", "i=" + i + "----------------------------");
+            //Log.d("Times", "i=" + i + "----------------------------");
   /*          Log.d("Times", "Time 14_5-15: " + String.valueOf(time15-time14_5) + " Suma: " + String.valueOf(time15-time1));
             Log.d("Times", "Time 15-16: " + String.valueOf(time16-time15) + " Suma: " + String.valueOf(time16-time1));
             Log.d("Times", "Time 16-17: " + String.valueOf(time17-time16) + " Suma: " + String.valueOf(time17-time1));
@@ -330,7 +338,7 @@ public class ImageViewer extends Activity {
             Log.d("Times", "Time 22-23: " + String.valueOf(time23-time22) + " Suma: " + String.valueOf(time23-time1));
             Log.d("Times", "----------------------------");*/
 
-            finalCandidates.add(candidateSelector.CurrentImage);
+            finalCandidates.add(candidateSelector.CurrentImage.clone());
 
             if (false && i==patentIndexInImage.get(image)) {
                 //Mostrar en pantalla resultado de la iteración
@@ -415,10 +423,12 @@ public class ImageViewer extends Activity {
                 Imgproc.drawContours(finalMat, csRefine, cId, new Scalar(0, 0, 255), 6);
             }
         }
-        // Rotating 90 clock degrees
-        finalMat = finalMat.t();
-        Core.flip(finalMat, finalMat, 2);
 
+        if (true) {
+            // Rotating 90 clock degrees
+            finalMat = finalMat.t();
+            Core.flip(finalMat, finalMat, 2);
+        }
         Bitmap bm = Bitmap.createBitmap(finalMat.cols(), finalMat.rows(), Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(finalMat, bm);
 

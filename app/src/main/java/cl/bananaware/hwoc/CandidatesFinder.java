@@ -2,6 +2,7 @@ package cl.bananaware.hwoc;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
@@ -33,6 +34,7 @@ public class CandidatesFinder {
         PreMultiDilationImage = new Mat();
         Utils.bitmapToMat(bm, OriginalImage);
         OriginalImageRealSize = OriginalImage.clone();
+
         OriginalImage = Resize(OriginalImage);
         CurrentImage = OriginalImage.clone();
         BlueCandidates = new ArrayList<MatOfPoint>();
