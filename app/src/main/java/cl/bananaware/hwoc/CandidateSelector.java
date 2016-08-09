@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class CandidateSelector {
     public RotatedRect CandidateRect, MinAreaRect;
-    public Mat OriginalImage, CurrentImage, OriginalImageRealSize;
+    public Mat OriginalEqualizedImage, CurrentImage, OriginalImageRealSize;
     public Mat CroppedExtraBoundingBox;
     private double MinAreaRectAngle;
     private Size MinAreaRectSize;
@@ -30,11 +30,12 @@ public class CandidateSelector {
     private int maxAreaCandidateProIndex;
     private float horizontalDilatationAmplifier;
     public List<MatOfPoint> GreenCandidatesPro;
-
-    public CandidateSelector(Mat OriginalImage, Mat OriginalImageRealSize, RotatedRect candidate)
+    private double scale;
+    public CandidateSelector(Mat OriginalEqualizedImage, Mat OriginalImageRealSize, RotatedRect candidate)
     {
-        this.OriginalImage = OriginalImage;
+        this.OriginalEqualizedImage = OriginalEqualizedImage;
         this.OriginalImageRealSize = OriginalImageRealSize;
+        scale = OriginalImageRealSize.size().width/OriginalEqualizedImage.size().width;
         this.CandidateRect = candidate;
         GreenCandidatesPro = new ArrayList<MatOfPoint>();
     }
@@ -49,29 +50,38 @@ public class CandidateSelector {
 
     public void TruncateBounds() {
         // si excedimos el ancho de la imagen, lo truncamos
-        if (OriginalImage.width() < CandidateRect.boundingRect().x + newWidth)
-            newWidth = newWidth -  ((CandidateRect.boundingRect().x + newWidth) - OriginalImage.width());
+        if (OriginalEqualizedImage.width() < CandidateRect.boundingRect().x + newWidth)
+            newWidth = newWidth -  ((CandidateRect.boundingRect().x + newWidth) - OriginalEqualizedImage.width());
         // si excedimos el alto de la imagen, lo truncamos
-        if (OriginalImage.height() < CandidateRect.boundingRect().y + newHeight)
-            newHeight = newHeight -  ((CandidateRect.boundingRect().y + newHeight) - OriginalImage.height());
+        if (OriginalEqualizedImage.height() < CandidateRect.boundingRect().y + newHeight)
+            newHeight = newHeight -  ((CandidateRect.boundingRect().y + newHeight) - OriginalEqualizedImage.height());
     }
 
-    public void CropExtraBoundingBox() {
+    public void CropExtraBoundingBox(boolean realSizeCrop) {
         Rect roi = new Rect(Math.max(CandidateRect.boundingRect().x, 0),
                 Math.max(CandidateRect.boundingRect().y,0), newWidth, newHeight);
-        double scale = OriginalImageRealSize.size().width/OriginalImage.size().width;
-        Rect roiScaled = new Rect((int)(roi.x*scale),
-                (int)(roi.y*scale), (int)(roi.width*scale), (int)(roi.height*scale));
-        if (roiScaled.x+roiScaled.width > OriginalImageRealSize.width()) {
-            roiScaled.width = OriginalImageRealSize.width() - roiScaled.x;
+        if (realSizeCrop) {
+            Rect roiScaled = new Rect((int) (roi.x * scale),
+                    (int) (roi.y * scale), (int) (roi.width * scale), (int) (roi.height * scale));
+            if (roiScaled.x + roiScaled.width > OriginalImageRealSize.width()) {
+                roiScaled.width = OriginalImageRealSize.width() - roiScaled.x;
+            }
+            if (roiScaled.y + roiScaled.height > OriginalImageRealSize.height())
+                roiScaled.height = OriginalImageRealSize.height() - roiScaled.y;
+            Log.d("caida", "check 2.2.6");
+            Log.d("caida", roiScaled.x + " " + roiScaled.y + " " + roiScaled.width + " " + roiScaled.height + " | "
+                    + (roiScaled.x + roiScaled.width) + "x" + (roiScaled.y + roiScaled.height) + " ||"
+                    + OriginalImageRealSize.width() + " " + OriginalImageRealSize.height());
+            CurrentImage = new Mat(OriginalImageRealSize, roiScaled);
         }
-        if (roiScaled.y + roiScaled.height > OriginalImageRealSize.height())
-            roiScaled.height = OriginalImageRealSize.height() - roiScaled.y;
-        Log.d("caida", "check 2.2.6");
-        Log.d("caida", roiScaled.x + " " + roiScaled.y + " " + roiScaled.width + " " + roiScaled.height + " | "
-                + (roiScaled.x + roiScaled.width) + "x"+ (roiScaled.y + roiScaled.height) + " ||"
-                + OriginalImageRealSize.width() + " " + OriginalImageRealSize.height());
-        CurrentImage = new Mat(OriginalImageRealSize, roiScaled);
+        else {
+            if (roi.x + roi.width > OriginalEqualizedImage.width()) {
+                roi.width = OriginalEqualizedImage.width() - roi.x;
+            }
+            if (roi.y + roi.height > OriginalEqualizedImage.height())
+                roi.height = OriginalEqualizedImage.height() - roi.y;
+            CurrentImage = new Mat(OriginalEqualizedImage, roi);
+        }
         Log.d("caida", "check 2.2.7");
         CroppedExtraBoundingBox = CurrentImage.clone();
         Log.d("caida", "check 2.2.8");
@@ -155,6 +165,8 @@ public class CandidateSelector {
         MinAreaRect = Imgproc.minAreaRect(mop2f2);
     }
 
+    final double MIN_AREA = 420; //950 is a good value
+    final double MAX_PERCENTAJE_AREA = 0.15;
     public boolean DoChecks() {
         // Autos chilenos 36cm x 13cm Concentrarse en éstos
         // Motos chilenas nuevas 14,5cm x 12cm.
@@ -182,22 +194,24 @@ public class CandidateSelector {
         {
             // AREAS Y PORCENTAJE DE AREAS
             double area = MinAreaRectSize.width*MinAreaRectSize.height;
-            double maxAreaImage = OriginalImage.size().width * OriginalImage.size().height;
+            double maxAreaImage = OriginalEqualizedImage.size().width * OriginalEqualizedImage.size().height;
             double percentajeImage = area/maxAreaImage;
-            final double MIN_AREA = 420; //950 is a good value
-            final double MAX_PERCENTAJE_AREA = 0.15;
             if (area >= MIN_AREA && percentajeImage <= MAX_PERCENTAJE_AREA)
                 passChecks = true;
         }
         return passChecks;
     }
-
-    public void CropMinRotatedRect() {
+    public void CropMinRotatedRect(boolean realSizeCrop) {
         // get the rotation matrix
+        if (realSizeCrop) {
+            MinAreaRect.center.x *= scale;
+            MinAreaRect.center.y *= scale;
+            MinAreaRect.size.width *= scale;
+            MinAreaRect.size.height *= scale;
+        }
         Mat matrix = Imgproc.getRotationMatrix2D(MinAreaRect.center, MinAreaRectAngle, 1.0);
         // perform the affine transformation
         Mat rotated = new Mat();
-        Mat cropped2 = new Mat();
         Mat precrop = CroppedExtraBoundingBox.clone();
         Imgproc.cvtColor(precrop, precrop, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
         Imgproc.warpAffine(precrop, rotated, matrix, precrop.size(), Imgproc.INTER_CUBIC);
@@ -205,10 +219,19 @@ public class CandidateSelector {
         Imgproc.getRectSubPix(rotated, MinAreaRectSize, MinAreaRect.center, CurrentImage);
     }
 
-    public boolean PercentajeAreaCandidateCheck(double v) {
-        double area1 = OriginalImage.size().area();
+    public boolean PercentajeAreaCandidateCheck() {
+        double area1 = OriginalEqualizedImage.size().area();
         double area2 = newHeight * newWidth;
-        double div = area2/area1;
-        return div<=v;
+        double perc = area2/area1;
+        return area2>= MIN_AREA && perc<=MAX_PERCENTAJE_AREA;
+    }
+
+    public Mat GetFinalImage(boolean realSizeCrop) {
+        if (realSizeCrop)
+        {
+            CropExtraBoundingBox(true);
+            CropMinRotatedRect(true);
+        }
+        return CurrentImage;//o CurrentImage.clone()?
     }
 }

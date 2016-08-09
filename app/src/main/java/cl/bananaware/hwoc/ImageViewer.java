@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,7 +47,7 @@ import java.util.Map;
  * Created by Marco on 21-04-2016.
  */
 public class ImageViewer extends Activity {
-    int image = R.drawable.vehicle_ex43;
+    int image = R.drawable.vehicle_ex3;
     Map<Integer, Integer> patentIndexInImage = new HashMap<Integer, Integer>();
     List<Mat> finalCandidates = new ArrayList<Mat>();
     @Override
@@ -58,38 +59,19 @@ public class ImageViewer extends Activity {
     public void onResume()
     {
         super.onResume();
-        //new DoAll().execute();
         MainActivity.CameraCapturerFixer = true;
-        CodePostOpenCVLoaded();
+//        CodePostOpenCVLoaded();
 
-        /*
+
         if (!OpenCVLoader.initDebug()) {
             Log.d("OpenCV", "Internal OpenCV library not found. Using OpenCV Manager for initialization");
             OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, this, mLoaderCallback);
         } else {
             Log.d("OpenCV", "OpenCV library found inside package. Using it!");
             mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
-        }*/
-    }
-/*
-    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
-
-        @Override
-        public void onManagerConnected(int status) {
-            switch (status) {
-                case LoaderCallbackInterface.SUCCESS:
-                {
-                    Log.i("OpenCV", "OpenCV loaded successfully");
-                    CodePostOpenCVLoaded();
-                } break;
-                default:
-                {
-                    super.onManagerConnected(status);
-                } break;
-            }
         }
-    };
-*/
+    }
+
     private void CodePostOpenCVLoaded() {
         //ImageView imgFp = (ImageView) findViewById(R.id.imageView);
 
@@ -120,9 +102,24 @@ public class ImageViewer extends Activity {
         }
         candidatesFinder = new CandidatesFinder(b);
 
-        Log.d("image",candidatesFinder.OriginalImageRealSize.width() + " " + candidatesFinder.OriginalImageRealSize.height());
         long time2 = System.currentTimeMillis();
         candidatesFinder.ToGrayScale();
+
+        if (false) {
+            // DRAWING IMAGE BEFORE EQUALIZING
+            drawContornsToMatInBitmap(candidatesFinder.CurrentImage, null,
+                    null);
+            return;
+        }
+        long time2_5 = System.currentTimeMillis();
+        candidatesFinder.EqualizeHistOriginalImage();
+
+        if (false) {
+            // DRAWING IMAGE AFTER EQUALIZING
+            drawContornsToMatInBitmap(candidatesFinder.CurrentImage, null,
+                    null);
+            return;
+        }
         long time3 = System.currentTimeMillis();
         candidatesFinder.Dilate();
         long time4 = System.currentTimeMillis();
@@ -138,8 +135,19 @@ public class ImageViewer extends Activity {
         candidatesFinder.GaussianBlur();
         long time8 = System.currentTimeMillis();
         List<RotatedRect> outlines = new ArrayList<RotatedRect>();
-        for (ImageSize is : ImageSize.values()) {
 
+
+        Log.d("Times", "Time 1-2: " + String.valueOf(time2-time1) + " Suma: " + String.valueOf(time2-time1));
+        Log.d("Times", "Time 2-2_5: " + String.valueOf(time2_5-time2) + " Suma: " + String.valueOf(time2_5-time1));
+        Log.d("Times", "Time 2_5-3: " + String.valueOf(time3-time2_5) + " Suma: " + String.valueOf(time3-time2_5));
+        Log.d("Times", "Time 3-4: " + String.valueOf(time4-time3) + " Suma: " + String.valueOf(time4-time1));
+        Log.d("Times", "Time 4-5: " + String.valueOf(time5-time4) + " Suma: " + String.valueOf(time5-time1));
+        Log.d("Times", "Time 5-6: " + String.valueOf(time6-time5) + " Suma: " + String.valueOf(time6-time1));
+        Log.d("Times", "Time 6-7: " + String.valueOf(time7-time6) + " Suma: " + String.valueOf(time7-time1));
+        Log.d("Times", "Time 7-8: " + String.valueOf(time8-time7) + " Suma: " + String.valueOf(time8-time1));
+        for (ImageSize is : ImageSize.values())
+        {
+            long time8_5 = System.currentTimeMillis();
             candidatesFinder.Dilate2(is);
             long time9 = System.currentTimeMillis();
             candidatesFinder.Erode2();
@@ -167,9 +175,9 @@ public class ImageViewer extends Activity {
             candidatesFinder.OutlinesSelection();
             long time14 = System.currentTimeMillis();
 
-            if (false && is == ImageSize.MEDIANA) {
+            if (true && is == ImageSize.MEDIANA) {
                 // DRAWING GREEN AND BLUE LINES IN COLOR IMAGE
-                drawContornsToMatInBitmap(candidatesFinder.OriginalImage.clone(), null,
+                drawContornsToMatInBitmap(candidatesFinder.OriginalImage.clone(), candidatesFinder.LastGreenCandidates,
                         candidatesFinder.LastBlueCandidates);
                 return;
             }
@@ -184,21 +192,14 @@ public class ImageViewer extends Activity {
             }
 
 
-/*
-            Log.d("Times", "Size=" + is.name() + " Time 1-2: " + String.valueOf(time2-time1) + " Suma: " + String.valueOf(time2-time1));
-            Log.d("Times", "Size=" + is.name() + " Time 2-3: " + String.valueOf(time3-time2) + " Suma: " + String.valueOf(time3-time1));
-            Log.d("Times", "Size=" + is.name() + " Time 3-4: " + String.valueOf(time4-time3) + " Suma: " + String.valueOf(time4-time1));
-            Log.d("Times", "Size=" + is.name() + " Time 4-5: " + String.valueOf(time5-time4) + " Suma: " + String.valueOf(time5-time1));
-            Log.d("Times", "Size=" + is.name() + " Time 5-6: " + String.valueOf(time6-time5) + " Suma: " + String.valueOf(time6-time1));
-            Log.d("Times", "Size=" + is.name() + " Time 6-7: " + String.valueOf(time7-time6) + " Suma: " + String.valueOf(time7-time1));
-            Log.d("Times", "Size=" + is.name() + " Time 7-8: " + String.valueOf(time8-time7) + " Suma: " + String.valueOf(time8-time1));
-            Log.d("Times", "Size=" + is.name() + " Time 8-9: " + String.valueOf(time9-time8) + " Suma: " + String.valueOf(time9-time1));
+            Log.d("Times", "Size=" +is.name() + " Count=" + candidatesFinder.LastBlueCandidates.size());
+            Log.d("Times", "Size=" + is.name() + " Time 8_5-9: " + String.valueOf(time9-time8_5) + " Suma: " + String.valueOf(time9-time1));
             Log.d("Times", "Size=" + is.name() + " Time 9-10: " + String.valueOf(time10-time9) + " Suma: " + String.valueOf(time10-time1));
             Log.d("Times", "Size=" + is.name() + " Time 10-11: " + String.valueOf(time11-time10) + " Suma: " + String.valueOf(time11-time1));
             Log.d("Times", "Size=" + is.name() + " Time 11-12: " + String.valueOf(time12-time11) + " Suma: " + String.valueOf(time12-time1));
             Log.d("Times", "Size=" + is.name() + " Time 12-13: " + String.valueOf(time13-time12) + " Suma: " + String.valueOf(time13-time1));
             Log.d("Times", "Size=" + is.name() + " Time 13-14: " + String.valueOf(time14-time13) + " Suma: " + String.valueOf(time14-time1));
-*/
+
 
         }
         outlines.addAll(candidatesFinder.BlueCandidatesRR);
@@ -207,18 +208,20 @@ public class ImageViewer extends Activity {
         for (int i=0; i<outlines.size(); ++i)
         {
             CandidateSelector candidateSelector =
-                    new CandidateSelector(candidatesFinder.OriginalImage, candidatesFinder.OriginalImageRealSize, outlines.get(i));
+                    new CandidateSelector(candidatesFinder.OriginalEqualizedImage, candidatesFinder.OriginalImageRealSize, outlines.get(i));
             //STEP 4:
             long time14_5 = System.currentTimeMillis();
             candidateSelector.CalculateBounds();
             long time15 = System.currentTimeMillis();
-            if (!candidateSelector.PercentajeAreaCandidateCheck(0.4)) {
+            if (!candidateSelector.PercentajeAreaCandidateCheck()) {
+                Log.d("Times", "i=" + i + " Time 14_5-15: " + String.valueOf(time15-time14_5) + " Suma: " + String.valueOf(time15-time1));
+                Log.d("Times", "----------------------------");
                 continue;
             }
 
             if (    false && i==patentIndexInImage.get(image)) {
                 // DRAW START DE INVENCION
-                Mat temp = candidateSelector.OriginalImage.clone();
+                Mat temp = candidateSelector.OriginalEqualizedImage.clone();
                 Imgproc.cvtColor(temp, temp, Imgproc.COLOR_RGB2GRAY);
                 Imgproc.cvtColor(temp, temp, Imgproc.COLOR_GRAY2RGB);
                 drawContornsToMatInBitmap(drawRotatedRectInMat(candidateSelector.CandidateRect,
@@ -227,7 +230,7 @@ public class ImageViewer extends Activity {
             }
             //STEP 5:
             candidateSelector.TruncateBounds();
-            candidateSelector.CropExtraBoundingBox();
+            candidateSelector.CropExtraBoundingBox(false);
 
             if (false && i==patentIndexInImage.get(image)) {
                 // DRAW START DE INVENCION
@@ -240,8 +243,11 @@ public class ImageViewer extends Activity {
             ////////////////////////////// START INVENCION MIA //////////////////////////////
 
             candidateSelector.Sobel();
+            long time16_1 = System.currentTimeMillis();
             candidateSelector.GaussianBlur();
+            long time16_2 = System.currentTimeMillis();
             candidateSelector.Dilate();
+            long time16_3 = System.currentTimeMillis();
 
 
             if (false && i==patentIndexInImage.get(image)) {
@@ -302,12 +308,27 @@ public class ImageViewer extends Activity {
 
             //STEP 10 and 11
             long time22 = System.currentTimeMillis();
+            long time22_5;
             if (!candidateSelector.DoChecks()) {
-                time22 = System.currentTimeMillis();
+                time22_5 = System.currentTimeMillis();
+                Log.d("Times", "i=" + i + " Time 14_5-15: " + String.valueOf(time15-time14_5) + " Suma: " + String.valueOf(time15-time1));
+                Log.d("Times", "i=" + i + " Time 15-16: " + String.valueOf(time16-time15) + " Suma: " + String.valueOf(time16-time1));
+                Log.d("Times", "i=" + i + " Time 16-16_1: " + String.valueOf(time16_1-time16) + " Suma: " + String.valueOf(time16_1-time1));
+                Log.d("Times", "i=" + i + " Time 16_1-16_2: " + String.valueOf(time16_2-time16_1) + " Suma: " + String.valueOf(time16_2-time1));
+                Log.d("Times", "i=" + i + " Time 16_2-16_3: " + String.valueOf(time16_3-time16_2) + " Suma: " + String.valueOf(time16_3-time1));
+                Log.d("Times", "i=" + i + " Time 16_3-17: " + String.valueOf(time17-time16_3) + " Suma: " + String.valueOf(time17-time1));
+                Log.d("Times", "i=" + i + " Time 17-18: " + String.valueOf(time18-time17) + " Suma: " + String.valueOf(time18-time1));
+                Log.d("Times", "i=" + i + " Time 18-19: " + String.valueOf(time19-time18) + " Suma: " + String.valueOf(time19-time1));
+                Log.d("Times", "i=" + i + " Time 19-20: " + String.valueOf(time20-time19) + " Suma: " + String.valueOf(time20-time1));
+                Log.d("Times", "i=" + i + " Time 20-21: " + String.valueOf(time21-time20) + " Suma: " + String.valueOf(time21-time1));
+                Log.d("Times", "i=" + i + " Time 21-22: " + String.valueOf(time22-time21) + " Suma: " + String.valueOf(time22-time1));
+                Log.d("Times", "i=" + i + " Time 22-22_5: " + String.valueOf(time22_5-time22) + " Suma: " + String.valueOf(time22_5-time1));
+                Log.d("Times", "----------------------------");
                 continue;
             }
 
-            candidateSelector.CropMinRotatedRect();
+            time22_5 = System.currentTimeMillis();
+            candidateSelector.CropMinRotatedRect(false);
             long time23 = System.currentTimeMillis();
 
             // Paso 11 sin rotación.
@@ -326,27 +347,41 @@ public class ImageViewer extends Activity {
             //
             //
 
-            //Log.d("Times", "i=" + i + "----------------------------");
-  /*          Log.d("Times", "Time 14_5-15: " + String.valueOf(time15-time14_5) + " Suma: " + String.valueOf(time15-time1));
-            Log.d("Times", "Time 15-16: " + String.valueOf(time16-time15) + " Suma: " + String.valueOf(time16-time1));
-            Log.d("Times", "Time 16-17: " + String.valueOf(time17-time16) + " Suma: " + String.valueOf(time17-time1));
-            Log.d("Times", "Time 17-18: " + String.valueOf(time18-time17) + " Suma: " + String.valueOf(time18-time1));
-            Log.d("Times", "Time 18-19: " + String.valueOf(time19-time18) + " Suma: " + String.valueOf(time19-time1));
-            Log.d("Times", "Time 19-20: " + String.valueOf(time20-time19) + " Suma: " + String.valueOf(time20-time1));
-            Log.d("Times", "Time 20-21: " + String.valueOf(time21-time20) + " Suma: " + String.valueOf(time21-time1));
-            Log.d("Times", "Time 21-22: " + String.valueOf(time22-time21) + " Suma: " + String.valueOf(time22-time1));
-            Log.d("Times", "Time 22-23: " + String.valueOf(time23-time22) + " Suma: " + String.valueOf(time23-time1));
-            Log.d("Times", "----------------------------");*/
+            long time24 = System.currentTimeMillis();
 
-            finalCandidates.add(candidateSelector.CurrentImage.clone());
 
+            long time25 = System.currentTimeMillis();
+
+            long time26 = System.currentTimeMillis();
+            finalCandidates.add(candidateSelector.GetFinalImage(true));
+            long time27 = System.currentTimeMillis();
             if (false && i==patentIndexInImage.get(image)) {
                 //Mostrar en pantalla resultado de la iteración
                 drawContornsToMatInBitmap(candidateSelector.CurrentImage, null);
                 break; // IMPORTANTE, PROBLEMA DE THREAD PARECE, SI NO HAY BREAK LA LÍNEA ANTERIOR SE CAE.
             }
-        }
 
+            Log.d("Times", "i=" + i + " Time 14_5-15: " + String.valueOf(time15-time14_5) + " Suma: " + String.valueOf(time15-time1));
+            Log.d("Times", "i=" + i + " Time 15-16: " + String.valueOf(time16-time15) + " Suma: " + String.valueOf(time16-time1));
+            Log.d("Times", "i=" + i + " Time 16-16_1: " + String.valueOf(time16_1-time16) + " Suma: " + String.valueOf(time16_1-time1));
+            Log.d("Times", "i=" + i + " Time 16_1-16_2: " + String.valueOf(time16_2-time16_1) + " Suma: " + String.valueOf(time16_2-time1));
+            Log.d("Times", "i=" + i + " Time 16_2-16_3: " + String.valueOf(time16_3-time16_2) + " Suma: " + String.valueOf(time16_3-time1));
+            Log.d("Times", "i=" + i + " Time 16_3-17: " + String.valueOf(time17-time16_3) + " Suma: " + String.valueOf(time17-time1));
+            Log.d("Times", "i=" + i + " Time 17-18: " + String.valueOf(time18-time17) + " Suma: " + String.valueOf(time18-time1));
+            Log.d("Times", "i=" + i + " Time 18-19: " + String.valueOf(time19-time18) + " Suma: " + String.valueOf(time19-time1));
+            Log.d("Times", "i=" + i + " Time 19-20: " + String.valueOf(time20-time19) + " Suma: " + String.valueOf(time20-time1));
+            Log.d("Times", "i=" + i + " Time 20-21: " + String.valueOf(time21-time20) + " Suma: " + String.valueOf(time21-time1));
+            Log.d("Times", "i=" + i + " Time 21-22: " + String.valueOf(time22-time21) + " Suma: " + String.valueOf(time22-time1));
+            Log.d("Times", "i=" + i + " Time 22-22_5: " + String.valueOf(time22_5-time22) + " Suma: " + String.valueOf(time22_5-time1));
+            Log.d("Times", "i=" + i + " Time 22_5-23: " + String.valueOf(time23-time22_5) + " Suma: " + String.valueOf(time23-time1));
+            Log.d("Times", "i=" + i + " Time 23-24: " + String.valueOf(time24-time23) + " Suma: " + String.valueOf(time24-time1));
+            Log.d("Times", "i=" + i + " Time 24-25: " + String.valueOf(time25-time24) + " Suma: " + String.valueOf(time25-time1));
+            Log.d("Times", "i=" + i + " Time 25-26: " + String.valueOf(time26-time25) + " Suma: " + String.valueOf(time26-time1));
+            Log.d("Times", "i=" + i + " Time 26-27: " + String.valueOf(time27-time26) + " Suma: " + String.valueOf(time27-time1));
+            Log.d("Times", "----------------------------");
+        }
+        long time100 = System.currentTimeMillis();
+        Log.d("Times", " Suma Final: " + String.valueOf(time100-time1));
         InitializeGallery();
         //DrawImages();
     }
@@ -508,4 +543,23 @@ public class ImageViewer extends Activity {
             Log.d("test","finished!!!");
         }
     }
+    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
+
+        @Override
+        public void onManagerConnected(int status) {
+            switch (status) {
+                case LoaderCallbackInterface.SUCCESS:
+                {
+                    Log.i("OpenCV", "OpenCV loaded successfully");
+                    CodePostOpenCVLoaded();
+                } break;
+                default:
+                {
+                    super.onManagerConnected(status);
+                } break;
+            }
+        }
+    };
+
+
 }

@@ -21,7 +21,7 @@ import java.util.List;
  * Created by fergu on 06-08-2016.
  */
 public class CandidatesFinder {
-    public Mat OriginalImage, OriginalImageRealSize;
+    public Mat OriginalEqualizedImage, OriginalImage, OriginalImageRealSize;
     public Mat CurrentImage;
     public Mat PreMultiDilationImage;
     public List<MatOfPoint> BlueCandidates, LastBlueCandidates;
@@ -31,6 +31,7 @@ public class CandidatesFinder {
     public CandidatesFinder(Bitmap bm)
     {
         OriginalImage = new Mat();
+        OriginalEqualizedImage = new Mat();
         PreMultiDilationImage = new Mat();
         Utils.bitmapToMat(bm, OriginalImage);
         OriginalImageRealSize = OriginalImage.clone();
@@ -69,6 +70,11 @@ public class CandidatesFinder {
         Imgproc.cvtColor(CurrentImage, CurrentImage, Imgproc.COLOR_RGB2GRAY);
     }
 
+    public void EqualizeHistOriginalImage() {
+        Imgproc.equalizeHist( CurrentImage, CurrentImage);/// Apply Histogram Equalization
+        OriginalEqualizedImage = CurrentImage.clone();
+    }
+
     public void Dilate() {
         final float DILATATION_AMPLIFIER = 1.4f;
         Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 9*DILATATION_AMPLIFIER, 3*DILATATION_AMPLIFIER ));
@@ -82,9 +88,7 @@ public class CandidatesFinder {
     }
 
     public void Substraction() {
-        Mat temp = new Mat();
-        Imgproc.cvtColor(OriginalImage, temp, Imgproc.COLOR_RGB2GRAY);
-        Core.absdiff(temp, CurrentImage, CurrentImage); // This function should replace this section. But it doesn't work!
+        Core.absdiff(OriginalEqualizedImage, CurrentImage, CurrentImage); // This function should replace this section. But it doesn't work!
         // NOW IT WORKS!!!
         /*
         Mat dest = OriginalImage.clone();
@@ -172,4 +176,5 @@ public class CandidatesFinder {
     private MatOfPoint2f mopToMop2f(MatOfPoint mop) {
         return new MatOfPoint2f( mop.toArray() );
     }
+
 }
