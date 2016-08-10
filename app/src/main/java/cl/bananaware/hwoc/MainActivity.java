@@ -32,7 +32,7 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements CvCameraViewListener2
 {
-    public static final boolean TAKE_PICTURE = false;
+    public static final boolean TAKE_PICTURE = true;
     private static final String TAG = "OCVSample::Activity";
 
     public MainActivity() {

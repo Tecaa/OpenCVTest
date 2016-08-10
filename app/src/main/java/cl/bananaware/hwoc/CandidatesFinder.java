@@ -27,6 +27,7 @@ public class CandidatesFinder {
     public List<MatOfPoint> BlueCandidates, LastBlueCandidates;
     public List<RotatedRect> BlueCandidatesRR;
     public List<MatOfPoint> GreenCandidates, LastGreenCandidates;
+    private double scale;
 
     public CandidatesFinder(Bitmap bm)
     {
@@ -37,6 +38,7 @@ public class CandidatesFinder {
         OriginalImageRealSize = OriginalImage.clone();
 
         OriginalImage = Resize(OriginalImage);
+        scale = OriginalImageRealSize.size().width/OriginalImage.size().width;
         CurrentImage = OriginalImage.clone();
         BlueCandidates = new ArrayList<MatOfPoint>();
         BlueCandidatesRR = new ArrayList<RotatedRect>();
@@ -70,8 +72,9 @@ public class CandidatesFinder {
         Imgproc.cvtColor(CurrentImage, CurrentImage, Imgproc.COLOR_RGB2GRAY);
     }
 
-    public void EqualizeHistOriginalImage() {
-        Imgproc.equalizeHist( CurrentImage, CurrentImage);/// Apply Histogram Equalization
+    public void EqualizeHistOriginalImage(boolean doit) {
+        if (doit)
+            Imgproc.equalizeHist( CurrentImage, CurrentImage);/// Apply Histogram Equalization
         OriginalEqualizedImage = CurrentImage.clone();
     }
 
@@ -88,7 +91,9 @@ public class CandidatesFinder {
     }
 
     public void Substraction() {
-        Core.absdiff(OriginalEqualizedImage, CurrentImage, CurrentImage); // This function should replace this section. But it doesn't work!
+        Mat temp = OriginalImage.clone();
+        Imgproc.cvtColor(temp, temp, Imgproc.COLOR_RGB2GRAY);
+        Core.absdiff(temp, CurrentImage, CurrentImage); // This function should replace this section. But it doesn't work!
         // NOW IT WORKS!!!
         /*
         Mat dest = OriginalImage.clone();
@@ -163,7 +168,7 @@ public class CandidatesFinder {
             double bbArea=mr.size.width * mr.size.height;
             float ratio = (float)(area/bbArea);
 
-            if( (ratio < 0.45) || (bbArea < 400) ){
+            if( (ratio < 0.45) || (bbArea*scale/2 < 400) ){
                 ;// do nothing
             }else{
                 BlueCandidatesRR.add(mr);

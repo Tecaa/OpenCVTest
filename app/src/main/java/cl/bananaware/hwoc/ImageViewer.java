@@ -32,6 +32,7 @@ import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
@@ -47,9 +48,11 @@ import java.util.Map;
  * Created by Marco on 21-04-2016.
  */
 public class ImageViewer extends Activity {
-    int image = R.drawable.vehicle_ex3;
+    int image = R.drawable.vehicle_ex7;
     Map<Integer, Integer> patentIndexInImage = new HashMap<Integer, Integer>();
+    private final boolean ADD_STEPS_TO_VIEW = true;
     List<Mat> finalCandidates = new ArrayList<Mat>();
+    List<Mat> processSteps = new ArrayList<Mat>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +77,7 @@ public class ImageViewer extends Activity {
 
     private void CodePostOpenCVLoaded() {
         //ImageView imgFp = (ImageView) findViewById(R.id.imageView);
+        final boolean EXPERIMENTAL_EQUALITATION = false;
 
         long time1 = System.currentTimeMillis();
         CandidatesFinder candidatesFinder;
@@ -112,7 +116,16 @@ public class ImageViewer extends Activity {
             return;
         }
         long time2_5 = System.currentTimeMillis();
-        candidatesFinder.EqualizeHistOriginalImage();
+        boolean fueGaussianBlureada = false;
+        candidatesFinder.EqualizeHistOriginalImage(false);
+        if (ADD_STEPS_TO_VIEW)
+            processSteps.add(candidatesFinder.CurrentImage.clone());
+
+        if (EXPERIMENTAL_EQUALITATION) {
+            Imgproc.GaussianBlur(candidatesFinder.OriginalEqualizedImage, candidatesFinder.CurrentImage, new Size(25, 25), 25);
+            fueGaussianBlureada = true;
+
+        }
 
         if (false) {
             // DRAWING IMAGE AFTER EQUALIZING
@@ -122,20 +135,60 @@ public class ImageViewer extends Activity {
         }
         long time3 = System.currentTimeMillis();
         candidatesFinder.Dilate();
+        if (ADD_STEPS_TO_VIEW)
+            processSteps.add(candidatesFinder.CurrentImage.clone());
+        if (false) {
+            // DRAWING dilate 1
+            drawContornsToMatInBitmap(candidatesFinder.CurrentImage, null, null);
+            return;
+        }
+
         long time4 = System.currentTimeMillis();
         candidatesFinder.Erode();
+        if (ADD_STEPS_TO_VIEW)
+            processSteps.add(candidatesFinder.CurrentImage.clone());
+
+        if (false) {
+            // DRAWING erode 1
+            drawContornsToMatInBitmap(candidatesFinder.CurrentImage, null, null);
+            return;
+        }
         long time5 = System.currentTimeMillis();
+
+
         candidatesFinder.Substraction();
+        if (ADD_STEPS_TO_VIEW)
+            processSteps.add(candidatesFinder.CurrentImage.clone());
         long time6 = System.currentTimeMillis();
 
+        if (false) {
+            // DRAWING substraction
+            drawContornsToMatInBitmap(candidatesFinder.CurrentImage, null, null);
+            return;
+        }
 
 
         candidatesFinder.Sobel();
+        if (ADD_STEPS_TO_VIEW)
+            processSteps.add(candidatesFinder.CurrentImage.clone());
         long time7 = System.currentTimeMillis();
+        if (false) {
+            // DRAWING sobel
+            drawContornsToMatInBitmap(candidatesFinder.CurrentImage, null, null);
+            return;
+        }
+
+
         candidatesFinder.GaussianBlur();
+        if (ADD_STEPS_TO_VIEW)
+            processSteps.add(candidatesFinder.CurrentImage.clone());
         long time8 = System.currentTimeMillis();
         List<RotatedRect> outlines = new ArrayList<RotatedRect>();
-
+        if (false) {
+            // DRAWING gaussianblur
+            drawContornsToMatInBitmap(candidatesFinder.CurrentImage, null, null);
+            return;
+        }
 
         Log.d("Times", "Time 1-2: " + String.valueOf(time2-time1) + " Suma: " + String.valueOf(time2-time1));
         Log.d("Times", "Time 2-2_5: " + String.valueOf(time2_5-time2) + " Suma: " + String.valueOf(time2_5-time1));
@@ -153,14 +206,17 @@ public class ImageViewer extends Activity {
             candidatesFinder.Erode2();
             long time10 = System.currentTimeMillis();
 
+            if (false && is == ImageSize.MEDIANA) {
+                // DRAWING erode
+                drawContornsToMatInBitmap(candidatesFinder.CurrentImage, null, null);
+                return;
+            }
 
-
-            //candidatesFinder.ToGrayScale();
             long time11 = System.currentTimeMillis();
             candidatesFinder.OtsusThreshold();
             long time12 = System.currentTimeMillis();
             if (false && is == ImageSize.GRANDE) {
-                // DRAWING
+                // DRAWING otsu
                 drawContornsToMatInBitmap(candidatesFinder.CurrentImage, null, null);
                 return;
             }
@@ -175,18 +231,18 @@ public class ImageViewer extends Activity {
             candidatesFinder.OutlinesSelection();
             long time14 = System.currentTimeMillis();
 
-            if (true && is == ImageSize.MEDIANA) {
+            if (false && is == ImageSize.MEDIANA) {
                 // DRAWING GREEN AND BLUE LINES IN COLOR IMAGE
-                drawContornsToMatInBitmap(candidatesFinder.OriginalImage.clone(), candidatesFinder.LastGreenCandidates,
+                drawContornsToMatInBitmap(candidatesFinder.OriginalEqualizedImage.clone(), candidatesFinder.LastGreenCandidates,
                         candidatesFinder.LastBlueCandidates);
                 return;
             }
 
-            if (false && is == ImageSize.GRANDE) {
+            if (false && is == ImageSize.MEDIANA) {
                 // DRAWING GREEN AND BLUE LINES IN GRAY SCALE IMAGE
                 Mat temp = candidatesFinder.CurrentImage.clone();
                 Imgproc.cvtColor(temp, temp, Imgproc.COLOR_GRAY2RGB);
-                drawContornsToMatInBitmap(temp, null,
+                drawContornsToMatInBitmap(temp, candidatesFinder.LastGreenCandidates,
                         candidatesFinder.LastBlueCandidates);
                 return;
             }
@@ -199,8 +255,9 @@ public class ImageViewer extends Activity {
             Log.d("Times", "Size=" + is.name() + " Time 11-12: " + String.valueOf(time12-time11) + " Suma: " + String.valueOf(time12-time1));
             Log.d("Times", "Size=" + is.name() + " Time 12-13: " + String.valueOf(time13-time12) + " Suma: " + String.valueOf(time13-time1));
             Log.d("Times", "Size=" + is.name() + " Time 13-14: " + String.valueOf(time14-time13) + " Suma: " + String.valueOf(time14-time1));
-
-
+            if (ADD_STEPS_TO_VIEW)
+                processSteps.add(PutContourns(candidatesFinder.CurrentImage.clone(), candidatesFinder.LastGreenCandidates,
+                    candidatesFinder.LastBlueCandidates));
         }
         outlines.addAll(candidatesFinder.BlueCandidatesRR);
 
@@ -222,7 +279,7 @@ public class ImageViewer extends Activity {
             if (    false && i==patentIndexInImage.get(image)) {
                 // DRAW START DE INVENCION
                 Mat temp = candidateSelector.OriginalEqualizedImage.clone();
-                Imgproc.cvtColor(temp, temp, Imgproc.COLOR_RGB2GRAY);
+                //Imgproc.cvtColor(temp, temp, Imgproc.COLOR_RGB2GRAY);
                 Imgproc.cvtColor(temp, temp, Imgproc.COLOR_GRAY2RGB);
                 drawContornsToMatInBitmap(drawRotatedRectInMat(candidateSelector.CandidateRect,
                         temp), null, null);
@@ -241,6 +298,7 @@ public class ImageViewer extends Activity {
 
 
             ////////////////////////////// START INVENCION MIA //////////////////////////////
+
 
             candidateSelector.Sobel();
             long time16_1 = System.currentTimeMillis();
@@ -293,7 +351,19 @@ public class ImageViewer extends Activity {
             long time20 = System.currentTimeMillis();
 
             //STEP 9:
-            candidateSelector.FindMinAreaRectInMaxArea();
+            if(!candidateSelector.FindMinAreaRectInMaxArea()) {
+                Log.d("Times", "i=" + i + " Time 14_5-15: " + String.valueOf(time15-time14_5) + " Suma: " + String.valueOf(time15-time1));
+                Log.d("Times", "i=" + i + " Time 15-16: " + String.valueOf(time16-time15) + " Suma: " + String.valueOf(time16-time1));
+                Log.d("Times", "i=" + i + " Time 16-16_1: " + String.valueOf(time16_1-time16) + " Suma: " + String.valueOf(time16_1-time1));
+                Log.d("Times", "i=" + i + " Time 16_1-16_2: " + String.valueOf(time16_2-time16_1) + " Suma: " + String.valueOf(time16_2-time1));
+                Log.d("Times", "i=" + i + " Time 16_2-16_3: " + String.valueOf(time16_3-time16_2) + " Suma: " + String.valueOf(time16_3-time1));
+                Log.d("Times", "i=" + i + " Time 16_3-17: " + String.valueOf(time17-time16_3) + " Suma: " + String.valueOf(time17-time1));
+                Log.d("Times", "i=" + i + " Time 17-18: " + String.valueOf(time18-time17) + " Suma: " + String.valueOf(time18-time1));
+                Log.d("Times", "i=" + i + " Time 18-19: " + String.valueOf(time19-time18) + " Suma: " + String.valueOf(time19-time1));
+                Log.d("Times", "i=" + i + " Time 19-20: " + String.valueOf(time20-time19) + " Suma: " + String.valueOf(time20-time1));
+                Log.d("Times", "----------------------------");
+                continue;
+            }
             long time21 = System.currentTimeMillis();
             if (false && i==patentIndexInImage.get(image)) {
                 // DRAWING ROTATED RECTANGLE
@@ -386,7 +456,25 @@ public class ImageViewer extends Activity {
         //DrawImages();
     }
 
+    private Mat PutContourns(Mat currentImage, List<MatOfPoint> lastGreenCandidates, List<MatOfPoint> lastBlueCandidates) {
+        Imgproc.cvtColor(currentImage, currentImage, Imgproc.COLOR_GRAY2RGB); //Convert to gray scale
+        if (lastGreenCandidates != null)
+        {
+            for (int cId = 0; cId < lastGreenCandidates.size(); cId++) {
+                Imgproc.drawContours(currentImage, lastGreenCandidates, cId, new Scalar(0, 255, 0), 1);
+            }
+        }
+        if (lastBlueCandidates != null)
+        {
+            for (int cId = 0; cId < lastBlueCandidates.size(); cId++) {
+                Imgproc.drawContours(currentImage, lastBlueCandidates, cId, new Scalar(0, 0, 255), 6);
+            }
+        }
+        return currentImage;
+    }
+
     private void InitializeGallery() {
+        finalCandidates.addAll(processSteps); //agregamos pasos intermedios a los dibujos finales
         // Note that Gallery view is deprecated in Android 4.1---
         Gallery gallery = (Gallery) findViewById(R.id.gallery1);
         gallery.setAdapter(new ImageAdapter(this));
@@ -401,6 +489,7 @@ public class ImageViewer extends Activity {
 
     private void SetGalleryImage(int position)
     {
+
         if (position >= finalCandidates.size()) {
             Toast.makeText(getBaseContext(),"Position " + position + " not found.",
                   Toast.LENGTH_SHORT).show();

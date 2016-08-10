@@ -130,7 +130,7 @@ public class CandidateSelector {
 
 
     public void OtsusThreshold() {
-        Imgproc.cvtColor(CurrentImage, CurrentImage, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
+//        Imgproc.cvtColor(CurrentImage, CurrentImage, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
         Imgproc.threshold(CurrentImage, CurrentImage, 0, 255, Imgproc.THRESH_OTSU | Imgproc.THRESH_BINARY);
     }
 
@@ -159,10 +159,13 @@ public class CandidateSelector {
         return new MatOfPoint2f( mop.toArray() );
     }
 
-    public void FindMinAreaRectInMaxArea() {
+    public boolean FindMinAreaRectInMaxArea() {
+        if (GreenCandidatesPro.size() == 0)
+            return false;
         MatOfPoint mop2 = GreenCandidatesPro.get(maxAreaCandidateProIndex);
         MatOfPoint2f mop2f2 = mopToMop2f(mop2);
         MinAreaRect = Imgproc.minAreaRect(mop2f2);
+            return true;
     }
 
     final double MIN_AREA = 420; //950 is a good value
@@ -196,7 +199,7 @@ public class CandidateSelector {
             double area = MinAreaRectSize.width*MinAreaRectSize.height;
             double maxAreaImage = OriginalEqualizedImage.size().width * OriginalEqualizedImage.size().height;
             double percentajeImage = area/maxAreaImage;
-            if (area >= MIN_AREA && percentajeImage <= MAX_PERCENTAJE_AREA)
+            if (area*scale >= MIN_AREA && percentajeImage <= MAX_PERCENTAJE_AREA)
                 passChecks = true;
         }
         return passChecks;
@@ -208,12 +211,15 @@ public class CandidateSelector {
             MinAreaRect.center.y *= scale;
             MinAreaRect.size.width *= scale;
             MinAreaRect.size.height *= scale;
+
+            Imgproc.cvtColor(CroppedExtraBoundingBox, CroppedExtraBoundingBox, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
+            Imgproc.cvtColor(CurrentImage, CurrentImage, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
         }
         Mat matrix = Imgproc.getRotationMatrix2D(MinAreaRect.center, MinAreaRectAngle, 1.0);
         // perform the affine transformation
         Mat rotated = new Mat();
         Mat precrop = CroppedExtraBoundingBox.clone();
-        Imgproc.cvtColor(precrop, precrop, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
+        //Imgproc.cvtColor(precrop, precrop, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
         Imgproc.warpAffine(precrop, rotated, matrix, precrop.size(), Imgproc.INTER_CUBIC);
         // crop the resulting image
         Imgproc.getRectSubPix(rotated, MinAreaRectSize, MinAreaRect.center, CurrentImage);
@@ -223,7 +229,7 @@ public class CandidateSelector {
         double area1 = OriginalEqualizedImage.size().area();
         double area2 = newHeight * newWidth;
         double perc = area2/area1;
-        return area2>= MIN_AREA && perc<=MAX_PERCENTAJE_AREA;
+        return area2*scale >= MIN_AREA && perc<=MAX_PERCENTAJE_AREA;
     }
 
     public Mat GetFinalImage(boolean realSizeCrop) {
