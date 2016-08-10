@@ -411,6 +411,7 @@ public class ImageViewer extends Activity {
 
 
             // Apply Gray Scale, Skew Correction, Fixed Size.
+            // hacer reequalizacion????
             //Mat resizeimage = new Mat();
             //Size sz = new Size(100,100);
             //Imgproc.resize( croppedimage, resizeimage, sz );
