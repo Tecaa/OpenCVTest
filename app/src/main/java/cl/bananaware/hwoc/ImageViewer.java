@@ -27,7 +27,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.googlecode.tesseract.android.TessBaseAPI;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
@@ -94,13 +93,13 @@ public class ImageViewer extends Activity {
         CandidatesFinder candidatesFinder;
 
 
-
+/*
         TessBaseAPI baseApi = new TessBaseAPI();
         // DATA_PATH = Path to the storage
         // lang = for which the language data exists, usually "eng"
         final String lang = "eng";
         final String DATA_PATH = Environment.getExternalStorageDirectory() + "/DCIM/tessdata/";
-        baseApi.init(DATA_PATH, lang);
+        baseApi.init(DATA_PATH, lang);*/
         // Eg. baseApi.init("/mnt/sdcard/tesseract/tessdata/eng.traineddata", "eng");
         /*Mat m = candidateSelector.GetFinalImage(true);
         Bitmap bmp = Bitmap.createBitmap(m.cols(), m.rows(), Bitmap.Config.ARGB_8888);
