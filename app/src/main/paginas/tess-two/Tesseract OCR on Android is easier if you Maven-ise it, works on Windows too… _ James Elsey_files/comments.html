@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<!-- saved from url=(0729)https://apis.google.com/u/0/_/widget/render/comments?usegapi=1&width=725&href=http%3A%2F%2Fwww.jameselsey.co.uk%2Fblogs%2Ftechblog%2Ftesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too%2F&first_party_property=BLOGGER&view_type=FILTERED_POSTMOD&hl=en-US&origin=http%3A%2F%2Fwww.jameselsey.co.uk&search=&hash=&gsrc=3p&ic=1&jsh=m%3B%2F_%2Fscs%2Fapps-static%2F_%2Fjs%2Fk%3Doz.gapi.es.-oQ-WcOtTVI.O%2Fm%3D__features__%2Fam%3DEQ%2Frt%3Dj%2Fd%3D1%2Frs%3DAGLTcCOlpENifU9RK7clc9uz8DplkrY8JQ#_methods=onPlusOne%2C_ready%2C_close%2C_open%2C_resizeMe%2C_renderstart%2Concircled%2Cdrefresh%2Cerefresh%2Cscroll%2Copenwindow%2Conload&id=I0_1470863206770&parent=http%3A%2F%2Fwww.jameselsey.co.uk&pfname=&rpctoken=14931719 -->
+<html lang="en" dir="ltr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><!--<base href="https://apis.google.com/u/0/wm/1/" target="_blank">--><base href="." target="_blank"><style>body {-webkit-font-smoothing: antialiased;}/* cyrillic-ext */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  src: url(//fonts.gstatic.com/s/roboto/v15/ek4gzZ-GeXAPcSbHtCeQI_esZW2xOQ-xsNqO47m55DA.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+20B4, U+2DE0-2DFF, U+A640-A69F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  src: url(//fonts.gstatic.com/s/roboto/v15/mErvLBYg_cXG3rLvUsKT_fesZW2xOQ-xsNqO47m55DA.woff2) format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  src: url(//fonts.gstatic.com/s/roboto/v15/-2n2p-_Y08sg57CNWQfKNvesZW2xOQ-xsNqO47m55DA.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  src: url(//fonts.gstatic.com/s/roboto/v15/u0TOpm082MNkS5K0Q4rhqvesZW2xOQ-xsNqO47m55DA.woff2) format('woff2');
+  unicode-range: U+0370-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  src: url(//fonts.gstatic.com/s/roboto/v15/NdF9MtnOpLzo-noMoG0miPesZW2xOQ-xsNqO47m55DA.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  src: url(//fonts.gstatic.com/s/roboto/v15/Fcx7Wwv8OzT71A3E1XOAjvesZW2xOQ-xsNqO47m55DA.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  src: url(//fonts.gstatic.com/s/roboto/v15/CWB0XYA8bzo0kSThX0UTuA.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 300;
+  src: url(//fonts.gstatic.com/s/roboto/v15/0eC6fl06luXEYWpBSJvXCBJtnKITppOI_IvcXXDNrsc.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+20B4, U+2DE0-2DFF, U+A640-A69F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 300;
+  src: url(//fonts.gstatic.com/s/roboto/v15/Fl4y0QdOxyyTHEGMXX8kcRJtnKITppOI_IvcXXDNrsc.woff2) format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 300;
+  src: url(//fonts.gstatic.com/s/roboto/v15/-L14Jk06m6pUHB-5mXQQnRJtnKITppOI_IvcXXDNrsc.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 300;
+  src: url(//fonts.gstatic.com/s/roboto/v15/I3S1wsgSg9YCurV6PUkTORJtnKITppOI_IvcXXDNrsc.woff2) format('woff2');
+  unicode-range: U+0370-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 300;
+  src: url(//fonts.gstatic.com/s/roboto/v15/NYDWBdD4gIq26G5XYbHsFBJtnKITppOI_IvcXXDNrsc.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 300;
+  src: url(//fonts.gstatic.com/s/roboto/v15/Pru33qjShpZSmG3z6VYwnRJtnKITppOI_IvcXXDNrsc.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 300;
+  src: url(//fonts.gstatic.com/s/roboto/v15/Hgo13k-tfSpn0qi1SFdUfVtXRa8TVwTICgirnJhmVJw.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  src: url(//fonts.gstatic.com/s/roboto/v15/77FXFjRbGzN4aCrSFhlh3hJtnKITppOI_IvcXXDNrsc.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+20B4, U+2DE0-2DFF, U+A640-A69F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  src: url(//fonts.gstatic.com/s/roboto/v15/isZ-wbCXNKAbnjo6_TwHThJtnKITppOI_IvcXXDNrsc.woff2) format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  src: url(//fonts.gstatic.com/s/roboto/v15/UX6i4JxQDm3fVTc1CPuwqhJtnKITppOI_IvcXXDNrsc.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  src: url(//fonts.gstatic.com/s/roboto/v15/jSN2CGVDbcVyCnfJfjSdfBJtnKITppOI_IvcXXDNrsc.woff2) format('woff2');
+  unicode-range: U+0370-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  src: url(//fonts.gstatic.com/s/roboto/v15/PwZc-YbIL414wB9rB1IAPRJtnKITppOI_IvcXXDNrsc.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  src: url(//fonts.gstatic.com/s/roboto/v15/97uahxiqZRoncBaCEI3aWxJtnKITppOI_IvcXXDNrsc.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  src: url(//fonts.gstatic.com/s/roboto/v15/d-6IYplOFocCacKzxwXSOFtXRa8TVwTICgirnJhmVJw.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+</style><link rel="stylesheet" href="./rs=AGLTcCN97kaAZPZ22pLLkHnnz6xht2jjsA"><script>function __sp() {try {var params = {};var el = document.getElementById('widget_bounds'), s, d, ws;var w = el.offsetWidth + 1;params['width'] = w;params['height'] = el.offsetHeight;params['title'] = 'Comment on this';} catch (e) {return null}return params;}var _F_jsUrl = "\/_\/scs\/apps-static\/_\/js\/k\x3doz.comments_widget.en_US.lzvA7qxOtzY.O\/m\x3dc_b\/am\x3dQA\/rt\x3dj\/d\x3d1\/rs\x3dAGLTcCO-iRBXsXw-rEBDFuWgcHLrAiuoEg";var gapi=window.gapi=window.gapi||{};(function() { var f=function(a,c){var d=a.match(new RegExp(".*(\\?|#|&)"+c+"=([^&#]+)"))||[];return decodeURIComponent(d[d.length-1]||"")},r=function(a,c){g(l(),a,c)},t=function(a,c){g(!0,a,c)},g=function(a,c,d){function m(){a?(e.s=n+"/"+h+":"+n+":"+e.s,e.g=!1,d&&(e.a=d.slice(1)),b.parent.postMessage("!_"+b.JSON.stringify(e),p||"*")):b.parent.postMessage(b.JSON.stringify(e),p||"*")}var b=window,q=b.document;if(b.postMessage&&b.JSON&&b.JSON.stringify&&b!=b.parent){var h=b.name,k=b.location.href,p=function(b){if(!b.match(/^https?\:\/\//))return"";
+var a=q.createElement("a");a.href=b;a.pathname=a.search=a.hash="";return a.href.replace(/\/\??\#?$/,"")}(f(k,"parent")),n=f(k,"pfname"),e={s:c,f:h,r:h,t:f(k,"rpctoken"),a:d||[""],g:"ping"};q.all?b.setTimeout(m,0):m()}},u=function(a,c){g(!1,"widget-csi-tick-"+window.name,[a,null,c])},l=function(a){var c=window;return"1"===f(a||c.location.href,"usegapi")};window.gapi.inline=window.gapi.inline||{ping:r,tick:u,shouldUseGapi:l,pingGapi:t}; })();
+var sentRenderStart = false; function gapi_sendRenderStart() {if (sentRenderStart) {return}sentRenderStart = true; var sz = __sp(); if (sz) {gapi.inline.ping('_renderstart', ['', sz]);var k=function(c,d){var a=c.match(new RegExp(".*(\\?|#|&)"+d+"=([^&#]+)"))||[];return decodeURIComponent(a[a.length-1]||"")},p=function(c){function d(){e.s=h+"/"+l+":"+h+":"+e.s;e.g=!1;c&&(e.a=c.slice(1));a.parent.postMessage("!_"+a.JSON.stringify(e),n||"*")}var a=window,f=a.document;if(a.postMessage&&a.JSON&&a.JSON.stringify&&a!=a.parent){var l=a.name,g=a.location.href,n=function(a){if(!a.match(/^https?\:\/\//))return"";var b=f.createElement("a");b.href=a;b.pathname=b.search=b.hash="";return b.href.replace(/\/\??\#?$/,
+"")}(k(g,"parent")),h=k(g,"pfname"),e={s:"fontstats",f:l,r:l,t:k(g,"rpctoken"),a:c||[""],g:"ping"};f.all?a.setTimeout(d,0):d()}};(function(){var c=function(a,c){var d=Number(c-a);return 0<a&&0<c&&0<=d?d:null},d={},a=function(a,c){d[a]||(d[a]=!0,c())},f=function(d,g){var f=new RegExp("^http[s]?://"+d.replace(".","\\.")+(g?"/"+g:"")+"(.*)"),h=0,e=window.performance;if(e&&e.getEntries)for(var e=e.getEntries(),m=0;m<e.length;m++){var b=e[m];f.test(b.name)&&a(b.name,function(){0<=b.duration&&p(["",{num:h,dns:c(b.domainLookupStart,b.domainLookupEnd),connect:c(b.connectStart,b.connectEnd),request:c(b.requestStart,b.responseStart),
+response:c(b.responseStart,b.responseEnd),ttfb:c(b.startTime,b.responseStart),ctfb:c(b.connectStart,b.responseEnd),total:0<b.duration?b.duration:1}])})&&h++}};window.setTimeout(function(){f("ssl.gstatic.com","fonts/roboto");f("fonts.gstatic.com","s/roboto")},5E3)})();
+}}document.createElement('content');</script><style></style><script>(function(){(function(){function e(a){this.t={};this.tick=function(a,c,b){var d=void 0!=b?b:(new Date).getTime();this.t[a]=[d,c];if(void 0==b)try{window.console.timeStamp("CSI/"+a)}catch(e){}};this.tick("start",null,a)}var a,d;window.performance&&(d=(a=window.performance.timing)&&a.responseStart);var f=0<d?new e(d):new e;window.jstiming={Timer:e,load:f};if(a){var c=a.navigationStart;0<c&&d>=c&&(window.jstiming.srt=d-c)}if(a){var b=window.jstiming.load;0<c&&d>=c&&(b.tick("_wtsrt",void 0,c),b.tick("wtsrt_","_wtsrt",
+d),b.tick("tbsd_","wtsrt_"))}try{a=null,window.chrome&&window.chrome.csi&&(a=Math.floor(window.chrome.csi().pageT),b&&0<c&&(b.tick("_tbnd",void 0,window.chrome.csi().startE),b.tick("tbnd_","_tbnd",c))),null==a&&window.gtbExternal&&(a=window.gtbExternal.pageT()),null==a&&window.external&&(a=window.external.pageT,b&&0<c&&(b.tick("_tbnd",void 0,window.external.startE),b.tick("tbnd_","_tbnd",c))),a&&(window.jstiming.pt=a)}catch(g){}})();})();
+var loadTimer = window.jstiming.load; loadTimer.name = 'cw_load';</script><script>var AF_initDataKeys = ["115","46","2","177","178","95","90","1","100"]
+; var AF_dataServiceRequests = {}; var AF_initDataChunkQueue = []; var AF_initDataCallback; var AF_initDataInitializeCallback; if (AF_initDataInitializeCallback) {AF_initDataInitializeCallback(AF_initDataKeys, AF_initDataChunkQueue, AF_dataServiceRequests);}if (!AF_initDataCallback) {AF_initDataCallback = function(chunk) {AF_initDataChunkQueue.push(chunk);};}</script></head><body class="kv8eNc " marginwidth="0" marginheight="0"><div id="root"><script>var AF_initDataKeys = []
+; var AF_dataServiceRequests = {}; var AF_initDataChunkQueue = []; var AF_initDataCallback; var AF_initDataInitializeCallback; if (AF_initDataInitializeCallback) {AF_initDataInitializeCallback(AF_initDataKeys, AF_initDataChunkQueue, AF_dataServiceRequests);}if (!AF_initDataCallback) {AF_initDataCallback = function(chunk) {AF_initDataChunkQueue.push(chunk);};}</script><div jscontroller="x06APe" jsmodel="kK0FD" jsaction="rcuQ6b:npT2md" data-location="20"><div jscontroller="alWAnf" jsaction="rcuQ6b:rcuQ6b;rNXknf:lyGbEe;BXKuDf:qq80hf;JvsJ6:bWda9c"><script>gapi.inline.tick('wcdi', new Date().getTime());</script><div id="widget_bounds" class="Upa r3" style="width: 725px;"><div class="CWa CJa"></div><div class="yJa"><div jscontroller="sO4Tm" jsaction="rcuQ6b:WYd;JK4Ypd:ZBBa9d"><div class="DJa" jsaction="click:gUrD6b">5 comments<div class="zJa"><h2 class="AJa">Google+</h2></div></div></div><div jscontroller="ou8gye" jsaction="rcuQ6b:rcuQ6b"><div class="CKa dOa"><div class="Mza mj"><a href="https://apis.google.com/u/0/wm/1/114061997959991660439" class="ob Jk" oid="114061997959991660439" aria-hidden="true"><img src="./photo.jpg" width="46px" height="46px" alt="" class="wi we Wva" oid="114061997959991660439"></a><div class="siKBdf Caa"><div class="Mga"></div><div class="Jea"></div></div><div class="RN Nza E5" tabindex="0" onclick="this.className += &#39; d4&#39;" role="textbox" aria-describedby="Share your thoughts, add a comment"><span class="Oga">Add a comment as Marco Rojas</span><span class="T7">Opening...</span></div><div class="KEa stb"></div></div></div></div><div style="display:none" id="lmc"></div><div class="zPa g9"><div jscontroller="OYNFc" jsaction="rcuQ6b:WYd;xHitb:DwIL6e"><div class="uPa BJa"><div class="PQb u3a"><div jscontroller="iQLpy" jsaction="rcuQ6b:rcuQ6b"><div class="yPa xN d-y-r-c d-k-l"><div class="d-k-l d-y-r-c-ha">Top comments</div><div class="ena"></div></div><div class="xPa xN d-y-r-c d-k-l" style="display:none"><div class="d-r d-r-Mn Hma" style="display: none"><div class="d-A Pga" value="1">Top comments</div><div class="d-A Pga" value="2">Newest first</div></div></div></div></div><div class="QQb w3a"><div jscontroller="F2FCld" jsaction="JIbuQc:umNo8b"><div role="button" class="d-k-l b-c b-c-R b-c-M b-c-da-ja Gza b-c-S-Ja" tabindex="0" title="From Everyone" jscontroller="S8kSSc" jsaction="click:cOuCgd; focus:AHmuwe; mousedown:UX7yZ; mouseenter:tfO1Yc; mouseleave:JywGue" jsname="LgbsSe" aria-pressed="true" data-circlefilter="false"><div class="l9 S3a"></div></div><div role="button" class="d-k-l b-c b-c-R b-c-da-ja RN Gza b-c-S-ya" tabindex="0" title="Only from your Google+ Circles" jscontroller="S8kSSc" jsaction="click:cOuCgd; focus:AHmuwe; mousedown:UX7yZ; mouseenter:tfO1Yc; mouseleave:JywGue" jsname="LgbsSe" aria-pressed="false" data-circlefilter="true"><div class="l9 R3a"></div></div></div></div></div></div><div class="sPa OOb"></div><script>window.jstiming.load.tick('streamStart');</script><div class="tna UMa"></div><div guidedhelpid="streamcontent" class="VW Bn" jsname="bndkSe"><h2 class="o-Bd">Stream</h2><div class="xqa Ei"></div><div class="pga"><div id="update-z132t5jx3wravzuya04cfjxzjvmngpfgqzs0k" tabindex="-1" class="Yp yt Xa" jscontroller="LeWvCf" jsmodel="XNmfOc" jslog="6941; 1:update-z132t5jx3wravzuya04cfjxzjvmngpfgqzs0k; track:impression,click" data-render-context="%.@.20,null,null,true,null,null,null,true,null,&quot;fntn&quot;,false,9,false,[&quot;http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/&quot;]
+,null,null,false]
+" jsaction=" click:Qrv4Te(RTPDDc),zzwwld(lUFH9b),iQMaZe(A5O8Yc);O1htCb:BpK2Q;PR4gi:I6kmac;UJtr3c:vwifpf;wA70zd:Fz0Y3e;"><div class="ju"><div class="ki"><div class="ve oba HPa"><span role="button" class="d-s xw if" title="Options menu" tabindex="0" jslog="11002; track:mouseover" data-update-id="z132t5jx3wravzuya04cfjxzjvmngpfgqzs0k" jsaction="O1htCb:I2JThd; click:ZElhof; focus:npT2md; mouseover:KPlBgb;iDXPZb:dFUVCf" jscontroller="ORvg7b" jsname="yOtFFf" aria-haspopup="true"></span><a href="https://apis.google.com/u/0/wm/1/102132817815273130087" target="_blank"><img src="./uFp_tsTJboUY7kue5XAsGA=s46" width="46px" height="46px" alt="" class="Uk vKa" oid="102132817815273130087"></a><div class="f5 wy"><header class="lea"><h3 class="Mpa"><a href="https://apis.google.com/u/0/wm/1/102132817815273130087" target="_blank" oid="102132817815273130087"><span class="Ub gna">Arturo Juan Sacerio Pallerols</span></a></h3><span class="Ve"><span class="PL"><a href="http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/?google_comment_id=z132t5jx3wravzuya04cfjxzjvmngpfgqzs0k" target="_blank" rel="noreferrer" class="o-U-s FI Rg">1 year ago</a></span> &nbsp;-&nbsp; <span role="button" class="d-s Vt Hm dk Q9" title="Sharing details" tabindex="0" jsname="lUFH9b" aria-haspopup="true">Shared publicly </span><div class="GPa vj1UBd"></div><div class="E4a tKa"></div></span><div class="hWa D4a"></div></header></div><div class="C4a a2"></div><div class="pf Al"><div class="Xx xJ"><div class="Ig At dn"><div class="Bt Pm"><div class="tG QF">&nbsp;</div><div class="Ct">hi arthurjonhd@gmail.com&nbsp; this is my mail id please send me the code for image to text extract in android (eclipse).﻿</div></div><span role="button" class="d-s Yv on  gj" style="display:none;" tabindex="0">Read more</span><span role="button" class="d-s Xv zt gj" style="display:none;" tabindex="0">Show less</span></div></div></div><div class="REa Sea"><div class="RN F4a Tea"><div class="Id"><div class="CI zh o-U-s-vg" style="visibility:hidden" tabindex="0" title="People who +1&#39;d this"><div dir="ltr" class="YC"><div class="Rp">+</div><div class="St Vk">0<br>1<br>0<br></div></div></div> <button href="javascript:void(0);" role="button" jscontroller="p7ePre" jsaction="click:JIbuQc" data-ontitle="Click to remove your +1 from this comment" data-offtitle="Click to +1 this comment" class="esw eswd Ae qG" aria-pressed="false" aria-label="Click to +1 this comment" title="Click to +1 this comment" g:token="AEIZW7QYuXqoeP4FmMHAgTzEU3LcM69SxPydr2Sz9DGv4lc0NFUa1D0w5u6/ML8YdkBqrrv5tWlr"><span dir="ltr" class="Gba Yl"><span class="Hba sm"></span>1</span></button> </div></div><div class="SOa"> &nbsp;·&nbsp; </div><div class="Kv RN SEa K5 d-s">Reply</div></div></div><div class="Cx fr"><div class="I4a oub"><div class="Ar vt"></div><div class="Wp O9" style="display:none;"><div class="GK HK TC" style="display:none"><div class="WR"><span role="button" class="d-s vy" tabindex="0"></span><div class="TR"><span class="d-s vq Bl "></span></div></div></div><div class="Dx EP lC"><div class="KK gR"><span role="button" class="d-s ww ZR" style="display:none;" tabindex="0"></span><div class="JK"></div></div></div></div><div class="Tt bj RN yta Uea" style="display:none;"><div class="Dt wu" tabindex="0" role="button">Add a comment...</div></div></div></div></div></div></div><div id="update-z12quppq0sy3whzst23itp5jswv4sz3mw" tabindex="-1" class="Yp yt Xa" jscontroller="LeWvCf" jsmodel="XNmfOc" jslog="6941; 1:update-z12quppq0sy3whzst23itp5jswv4sz3mw; track:impression,click" data-render-context="%.@.20,null,null,true,null,null,null,true,null,&quot;fntn&quot;,false,9,false,[&quot;http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/&quot;]
+,null,null,false]
+" jsaction=" click:Qrv4Te(RTPDDc),zzwwld(lUFH9b),iQMaZe(A5O8Yc);O1htCb:BpK2Q;PR4gi:I6kmac;UJtr3c:vwifpf;wA70zd:Fz0Y3e;"><div class="ju"><div class="ki"><div class="ve oba HPa"><span role="button" class="d-s xw if" title="Options menu" tabindex="0" jslog="11002; track:mouseover" data-update-id="z12quppq0sy3whzst23itp5jswv4sz3mw" jsaction="O1htCb:I2JThd; click:ZElhof; focus:npT2md; mouseover:KPlBgb;iDXPZb:dFUVCf" jscontroller="ORvg7b" jsname="yOtFFf" aria-haspopup="true"></span><a href="https://apis.google.com/u/0/wm/1/105071408636588527980" target="_blank"><img src="./photo(1).jpg" width="46px" height="46px" alt="" class="Uk vKa" oid="105071408636588527980"></a><div class="f5 wy"><header class="lea"><h3 class="Mpa"><a href="https://apis.google.com/u/0/wm/1/105071408636588527980" target="_blank" oid="105071408636588527980"><span class="Ub gna">chand y</span></a></h3><span class="Ve"><span class="PL"><a href="http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/?google_comment_id=z12quppq0sy3whzst23itp5jswv4sz3mw" target="_blank" rel="noreferrer" class="o-U-s FI Rg">2 years ago</a></span> &nbsp;-&nbsp; <span role="button" class="d-s Vt Hm dk Q9" title="Sharing details" tabindex="0" jsname="lUFH9b" aria-haspopup="true">Shared publicly</span><div class="GPa vj1UBd"></div><div class="E4a tKa"></div></span><div class="hWa D4a"></div></header></div><div class="C4a a2"></div><div class="pf Al"><div class="Xx xJ"><div class="Ig At dn"><div class="Bt Pm"><div class="tG QF">&nbsp;</div><div class="Ct">hi chandandroidinfo@yahoo.co.in&nbsp; this is my mail id please send me the code for image to text extract in android (eclipse).﻿</div></div><span role="button" class="d-s Yv on  gj" style="display:none;" tabindex="0">Read more</span><span role="button" class="d-s Xv zt gj" style="display:none;" tabindex="0">Show less</span></div></div></div><div class="REa Sea"><div class="RN F4a Tea"><div class="Id"><div class="CI zh o-U-s-vg" style="visibility:hidden" tabindex="0" title="People who +1&#39;d this"><div dir="ltr" class="YC"><div class="Rp">+</div><div class="St Vk">0<br>1<br>0<br></div></div></div> <button href="javascript:void(0);" role="button" jscontroller="p7ePre" jsaction="click:JIbuQc" data-ontitle="Click to remove your +1 from this comment" data-offtitle="Click to +1 this comment" class="esw eswd Ae qG" aria-pressed="false" aria-label="Click to +1 this comment" title="Click to +1 this comment" g:token="AEIZW7QYuXqoeP4FmMHAgTzEU3LcM69SxPydr2Sz9DGv4lc0NFUa1D0w5u6/ML8YdkBqrrv5tWlr"><span dir="ltr" class="Gba Yl"><span class="Hba sm"></span>1</span></button> </div></div><div class="SOa"> &nbsp;·&nbsp; </div><div class="Kv RN SEa K5 d-s">Reply</div></div></div><div class="Cx fr"><div class="I4a oub"><div class="Ar vt"></div><div class="Wp O9" style="display:none;"><div class="GK HK TC" style="display:none"><div class="WR"><span role="button" class="d-s vy" tabindex="0"></span><div class="TR"><span class="d-s vq Bl "></span></div></div></div><div class="Dx EP lC"><div class="KK gR"><span role="button" class="d-s ww ZR" style="display:none;" tabindex="0"></span><div class="JK"></div></div></div></div><div class="Tt bj RN yta Uea" style="display:none;"><div class="Dt wu" tabindex="0" role="button">Add a comment...</div></div></div></div></div></div></div><div id="update-z12xczrgntyfcdibx04ccdeplqe5id2o22k" tabindex="-1" class="Yp yt Xa" jscontroller="LeWvCf" jsmodel="XNmfOc" jslog="6941; 1:update-z12xczrgntyfcdibx04ccdeplqe5id2o22k; track:impression,click" data-render-context="%.@.20,null,null,true,null,null,null,true,null,&quot;fntn&quot;,false,9,false,[&quot;http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/&quot;]
+,null,null,false]
+" jsaction=" click:Qrv4Te(RTPDDc),zzwwld(lUFH9b),iQMaZe(A5O8Yc);O1htCb:BpK2Q;PR4gi:I6kmac;UJtr3c:vwifpf;wA70zd:Fz0Y3e;"><div class="ju"><div class="ki"><div class="ve oba HPa"><span role="button" class="d-s xw if" title="Options menu" tabindex="0" jslog="11002; track:mouseover" data-update-id="z12xczrgntyfcdibx04ccdeplqe5id2o22k" jsaction="O1htCb:I2JThd; click:ZElhof; focus:npT2md; mouseover:KPlBgb;iDXPZb:dFUVCf" jscontroller="ORvg7b" jsname="yOtFFf" aria-haspopup="true"></span><a href="https://apis.google.com/u/0/wm/1/109846777688912381102" target="_blank"><img src="./photo(2).jpg" width="46px" height="46px" alt="" class="Uk vKa" oid="109846777688912381102"></a><div class="f5 wy"><header class="lea"><h3 class="Mpa"><a href="https://apis.google.com/u/0/wm/1/109846777688912381102" target="_blank" oid="109846777688912381102"><span class="Ub gna">Adnan Nazir</span></a></h3><span class="Ve"><span class="PL"><a href="http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/?google_comment_id=z12xczrgntyfcdibx04ccdeplqe5id2o22k" target="_blank" rel="noreferrer" class="o-U-s FI Rg">2 years ago</a></span> &nbsp;-&nbsp; <span role="button" class="d-s Vt Hm dk Q9" title="Sharing details" tabindex="0" jsname="lUFH9b" aria-haspopup="true">Shared publicly</span><div class="GPa vj1UBd"></div><div class="E4a tKa"></div></span><div class="hWa D4a"></div></header></div><div class="C4a a2"></div><div class="pf Al"><div class="Xx xJ"><div class="Ig At dn"><div class="Bt Pm"><div class="tG QF">&nbsp;</div><div class="Ct">Not able to understand . everything working fine but "android update project --path" is not working .&nbsp;<br>awwwww :(﻿</div></div><span role="button" class="d-s Yv on  gj" style="display:none;" tabindex="0">Read more</span><span role="button" class="d-s Xv zt gj" style="display:none;" tabindex="0">Show less</span></div></div></div><div class="REa Sea"><div class="RN F4a Tea"><div class="Id"><div class="CI zh o-U-s-vg" tabindex="0" title="People who +1&#39;d this"><div dir="ltr" class="YC"><div class="Rp">+</div><div class="St Vk">1<br>2<br>1<br></div></div></div> <button href="javascript:void(0);" role="button" jscontroller="p7ePre" jsaction="click:JIbuQc" data-ontitle="Click to remove your +1 from this comment" data-offtitle="Click to +1 this comment" class="esw eswd Ae qG" aria-pressed="false" aria-label="Click to +1 this comment" title="Click to +1 this comment" g:token="AEIZW7QYuXqoeP4FmMHAgTzEU3LcM69SxPydr2Sz9DGv4lc0NFUa1D0w5u6/ML8YdkBqrrv5tWlr"><span dir="ltr" class="Gba Yl"><span class="Hba sm"></span>1</span></button> </div></div><div class="SOa"> &nbsp;·&nbsp; </div><div class="Kv RN SEa K5 d-s">Reply</div></div></div><div class="Cx fr"><div class="I4a oub"><div class="Ar vt"></div><div class="Wp O9"><div class="GK HK TC" style="display:none"><div class="WR"><span role="button" class="d-s vy" tabindex="0">View <span class="cr Rs">1</span><span class="Ss"> reply</span></span><div class="TR"><span class="d-s vq Bl "></span></div></div></div><div class="Dx EP lC"><div class="KK gR"><span role="button" class="d-s ww ZR" style="display:none;" tabindex="0"></span><div class="JK"><div id="z12xczrgntyfcdibx04ccdeplqe5id2o22k#1403663720459534" tabindex="-1" class="Ik Wv" jsmodel="mrYqlc"><div class="Wi lg via"><a href="https://plus.google.com/110505997680959683345" target="_blank"><img src="./photo(3).jpg" width="28px" height="28px" alt="" class="go Wh" oid="110505997680959683345"></a><div class="Jx"><div class="eR"><div class="fR"><a href="https://plus.google.com/110505997680959683345" target="_blank" oid="110505997680959683345"><span class="Ub TD">Oscar Heredia</span></a><div class="Nba Cw"></div><div class="wO"><a href="http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/?google_comment_id=z12xczrgntyfcdibx04ccdeplqe5id2o22k" target="_blank" class="o-U-s ob Jj">2 years ago</a><div class="GPa vj1UBd"></div><span class="DI wp RN"><div class="Id"><div class="CI zh o-U-s-vg" style="visibility:hidden" tabindex="0" title="People who +1&#39;d this"><div dir="ltr" class="YC"><div class="Rp">+</div><div class="St Vk">0<br>1<br>0<br></div></div></div> <button href="javascript:void(0);" role="button" jscontroller="p7ePre" jsaction="click:JIbuQc" data-ontitle="Click to remove your +1 from this reply" data-offtitle="Click to +1 this reply" class="esw eswd Ae qG" aria-pressed="false" aria-label="Click to +1 this reply" title="Click to +1 this reply" g:token="AEIZW7QYuXqoeP4FmMHAgTzEU3LcM69SxPydr2Sz9DGv4lc0NFUa1D0w5u6/ML8YdkBqrrv5tWlr"><span dir="ltr" class="Gba Yl"><span class="Hba sm"></span>1</span></button> </div></span></div></div><div class="HA"><div class="Kv RN SEa K5 d-s" style="display:none">Reply</div><span class="A9 iE"><div class="vK yK QR"></div></span></div></div><div class="Aq DK Bt UR gA"><div class="tG QF">&nbsp;</div><div class="Ct">just make sure you have set correctly the enviroment variables, check the&nbsp;Troubleshooting section on this tutorial:&nbsp;<a rel="nofollow" target="_blank" href="http://gaut.am/making-an-ocr-android-app-using-tesseract/#comment-156239" class="ot-anchor aaTEdf" jslog="10929; track:click" dir="ltr">http://gaut.am/making-an-ocr-android-app-using-tesseract/#comment-156239</a>﻿</div></div></div><div class="YR"><span role="button" class="d-s nq on dp" style="display:none;" tabindex="0">Read more</span><span role="button" class="d-s mq dp" style="display:none;" tabindex="0">Show less</span></div></div></div></div></div></div></div><div class="Tt bj RN yta Uea" style="display:none;"><div class="Dt wu" tabindex="0" role="button">Add a comment...</div></div></div></div></div></div></div><div id="update-z130s32ahkyotvuaz04cf1thkxfrcncaogo" tabindex="-1" class="Yp yt Xa" jscontroller="LeWvCf" jsmodel="XNmfOc" jslog="6941; 1:update-z130s32ahkyotvuaz04cf1thkxfrcncaogo; track:impression,click" data-render-context="%.@.20,null,null,true,null,null,null,true,null,&quot;fntn&quot;,false,9,false,[&quot;http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/&quot;]
+,null,null,false]
+" jsaction=" click:Qrv4Te(RTPDDc),zzwwld(lUFH9b),iQMaZe(A5O8Yc);O1htCb:BpK2Q;PR4gi:I6kmac;UJtr3c:vwifpf;wA70zd:Fz0Y3e;"><div class="ju"><div class="ki"><div class="ve oba HPa"><span role="button" class="d-s xw if" title="Options menu" tabindex="0" jslog="11002; track:mouseover" data-update-id="z130s32ahkyotvuaz04cf1thkxfrcncaogo" jsaction="O1htCb:I2JThd; click:ZElhof; focus:npT2md; mouseover:KPlBgb;iDXPZb:dFUVCf" jscontroller="ORvg7b" jsname="yOtFFf" aria-haspopup="true"></span><a href="https://apis.google.com/u/0/wm/1/104158591117253097599" target="_blank"><img src="./photo(4).jpg" width="46px" height="46px" alt="" class="Uk vKa" oid="104158591117253097599"></a><div class="f5 wy"><header class="lea"><h3 class="Mpa"><a href="https://apis.google.com/u/0/wm/1/104158591117253097599" target="_blank" oid="104158591117253097599"><span class="Ub gna">Zwide Heights</span></a></h3><span class="Ve"><span class="PL"><a href="http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/?google_comment_id=z130s32ahkyotvuaz04cf1thkxfrcncaogo" target="_blank" rel="noreferrer" class="o-U-s FI Rg">1 year ago</a></span> &nbsp;-&nbsp; <span role="button" class="d-s Vt Hm dk Q9" title="Sharing details" tabindex="0" jsname="lUFH9b" aria-haspopup="true">Shared publicly </span><div class="GPa vj1UBd"></div><div class="E4a tKa"></div></span><div class="hWa D4a"></div></header></div><div class="C4a a2"></div><div class="pf Al"><div class="Xx xJ"><div class="Ig At dn"><div class="Bt Pm"><div class="tG QF">&nbsp;</div><div class="Ct">thank you.﻿</div></div><span role="button" class="d-s Yv on  gj" style="display:none;" tabindex="0">Read more</span><span role="button" class="d-s Xv zt gj" style="display:none;" tabindex="0">Show less</span></div></div></div><div class="REa Sea"><div class="RN F4a Tea"><div class="Id"><div class="CI zh o-U-s-vg" tabindex="0" title="People who +1&#39;d this"><div dir="ltr" class="YC"><div class="Rp">+</div><div class="St Vk">1<br>2<br>1<br></div></div></div> <button href="javascript:void(0);" role="button" jscontroller="p7ePre" jsaction="click:JIbuQc" data-ontitle="Click to remove your +1 from this comment" data-offtitle="Click to +1 this comment" class="esw eswd Ae qG" aria-pressed="false" aria-label="Click to +1 this comment" title="Click to +1 this comment" g:token="AEIZW7QYuXqoeP4FmMHAgTzEU3LcM69SxPydr2Sz9DGv4lc0NFUa1D0w5u6/ML8YdkBqrrv5tWlr"><span dir="ltr" class="Gba Yl"><span class="Hba sm"></span>1</span></button> </div></div><div class="SOa"> &nbsp;·&nbsp; </div><div class="Kv RN SEa K5 d-s">Reply</div></div></div><div class="Cx fr"><div class="I4a oub"><div class="Ar vt"></div><div class="Wp O9" style="display:none;"><div class="GK HK TC" style="display:none"><div class="WR"><span role="button" class="d-s vy" tabindex="0"></span><div class="TR"><span class="d-s vq Bl "></span></div></div></div><div class="Dx EP lC"><div class="KK gR"><span role="button" class="d-s ww ZR" style="display:none;" tabindex="0"></span><div class="JK"></div></div></div></div><div class="Tt bj RN yta Uea" style="display:none;"><div class="Dt wu" tabindex="0" role="button">Add a comment...</div></div></div></div></div></div></div></div><div class="R4 b2 Xha" style="display: none"><span role="button" class="d-s L5 r0" title="Load more posts" tabindex="0">Show more</span><span class="dP PA" style="display: none"><span class="Uv">Loading...</span></span></div><div class="w8" style="display:none"></div></div><script>window.jstiming.load.tick('streamEnd');</script><div jscontroller="eqPKme" jsaction="rcuQ6b:npT2md"><div class="Y72Jsf" style="display:none;" tabindex="0" role="button" jsname="Z70hJe" jsaction="click:rhBgDe" jslog="17474; track:click">Try the new Google+</div></div><div class="FPa"></div></div></div></div></div></div><script>gapi_sendRenderStart(); window['GAPI_EVAL'] = true; var _F_jsUrl = '\/_\/scs\/apps-static\/_\/js\/k\x3doz.comments_widget.en_US.lzvA7qxOtzY.O\/m\x3dc_b\/am\x3dQA\/rt\x3dj\/d\x3d1\/rs\x3dAGLTcCO-iRBXsXw-rEBDFuWgcHLrAiuoEg'; var OZ_jsVersion = 'lzvA7qxOtzY.en_US.'; var OZ_lang = 'en'; var OZ_domReady = 1; var OZ_renderTime = (new Date()).getTime();</script><script>AF_initDataCallback({key: '115', isError:  false , hash: '1', data:["plus.google.com","plus.google.com","//plus.google.com/u/0/"]
+});</script><script>AF_initDataCallback({key: '46', isError:  false , hash: '2', data:["http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/","fountain"]
+});</script><script>AF_initDataCallback({key: '2', isError:  false , hash: '3', data:["114061997959991660439",[null,null,"https://plus.google.com/114061997959991660439","//lh4.googleusercontent.com/-zQkjptLlbAM/AAAAAAAAAAI/AAAAAAAAAGE/oBJG41IqDps/photo.jpg",[[null,null,null,null,[]
+,6]
+,"Marco","Rojas","Marco Rojas",0]
+,[[null,null,null,null,[]
+,6]
+,[]
+]
+,[[null,null,null,null,[]
+,6]
+,""]
+,[[null,null,null,null,[]
+,6]
+,[]
+]
+,[[null,null,null,null,[]
+,6]
+,[["Universidad Técnica Federico Santa María","Ingeniería Civil Informática",[]
+,"",""]
+]
+]
+,[[null,null,null,null,[]
+,6]
+,"",[]
+,null,null,[]
+]
+,"//maps-api-ssl.google.com/maps/api/staticmap?size\u003d375x175\u0026sensor\u003dfalse\u0026language\u003den\u0026client\u003dgoogle-profiles\u0026signature\u003dfNZUcgnPo-kwulgpmUhuA1MK6sE%3D",[[]
+,[null,null,null,null,[]
+,6]
+,[null,null,null,null,[]
+,6]
+]
+,[[null,null,null,null,[]
+,6]
+,[]
+,[]
+,[]
+,[]
+,null,[]
+,[]
+,null,[]
+,[]
+]
+,[[null,null,null,null,[]
+,6]
+,[]
+,[]
+,[]
+,[]
+,null,[]
+,[]
+,null,[]
+,[]
+]
+,[[null,null,null,null,[]
+,6]
+,""]
+,null,[[null,null,null,null,[]
+,6]
+,"May 9",0,9,5,1991]
+,[[null,null,null,null,[]
+,6]
+,1]
+,null,[[null,null,null,null,[]
+,6]
+,"Se pintar sin salirme de la línea."]
+,null,null,[[null,null,null,null,[]
+,6]
+,3,0]
+,[[null,null,null,null,[]
+,6]
+,[[2]
+,[5]
+]
+]
+,[[null,null,null,null,[]
+,6]
+,0]
+,[[null,null,null,null,[]
+,6]
+,0]
+,[[null,null,null,null,[]
+,6]
+,0]
+,null,null,null,"114061997959991660439",1,null,[[null,null,null,null,[]
+,6]
+,""]
+,null,[[null,null,null,null,[]
+,6]
+,[]
+]
+,null,[[null,null,null,null,[]
+,6]
+,0]
+,null,[null,26]
+,0,null,null,null,[null,1,0,null,1,1,null,null,1,1,1]
+,1,[4,null,0,null,0,[]
+,null,null,0,0]
+,[[null,null,null,null,[]
+,6]
+,""]
+,1,null,1,[[[[null,null,null,null,[]
+,6]
+,"http://www.youtube.com/user/SayTecaaPlease","//s2.googleusercontent.com/s2/favicons?domain\u003dwww.youtube.com\u0026alt\u003dp","M Rojas","me",1,["sgn://youtube.com/?ident\u003dsaytecaaplease","http://www.youtube.com/user/SayTecaaPlease"]
+,[[2]
+]
+]
+]
+,null,[null,null,null,null,[]
+,6]
+]
+,[[]
+,null,[null,null,null,null,[]
+,6]
+]
+,[[]
+,null,[null,null,null,null,[]
+,6]
+]
+,1,null,[[null,null,null,null,[]
+,6]
+,0]
+,null,null,null,null,[[null,null,null,null,[]
+,6]
+,0]
+,0,[2,[]
+]
+,null,null,[4,0]
+,null,null,[[[null,1,6500]
+]
+]
+,null,null,null,null,[[1]
+]
+,null,[[null,null,null,null,[]
+,6]
+,""]
+,1309667404845,[["//maps-api-ssl.google.com/maps/api/staticmap?size\u003d320x175\u0026sensor\u003dfalse\u0026language\u003den\u0026client\u003dgoogle-profiles\u0026signature\u003d6g52SawoDCxI9y9wUdgvjpCc9kM%3D","//maps-api-ssl.google.com/maps/api/staticmap?size\u003d400x175\u0026sensor\u003dfalse\u0026language\u003den\u0026client\u003dgoogle-profiles\u0026signature\u003dyiZlEaoMtlr_Rq4pItNdASlV8xM%3D","//maps-api-ssl.google.com/maps/api/staticmap?size\u003d480x175\u0026sensor\u003dfalse\u0026language\u003den\u0026client\u003dgoogle-profiles\u0026signature\u003dXFx9UcLT04n6gPg4XIBeel7N_P4%3D"]
+]
+,null,0,1,0]
+,"fergushog@gmail.com",null,"en_US",null,null,null,null,1,null,1,null,0,1,null,null,null,null,null,"Marco Rojas \u003cfergushog@gmail.com\u003e",null,null,null,1,null,null,null,null,null,1,null,null,"zw_lMcWs2PXDzih2/AptSgRDeG_kWMmlLY",[4,0]
+,0,0,1]
+});</script><script>AF_initDataCallback({key: '1', isError:  false , hash: '4', data:["/c/u/0/","docs.google.com/picker",null,[["e1a3ade5","99",1]
+,["3075e8a9","pages/settings/plus",2]
+,["5ad7396c","pages/settings/admin",2]
+,["a0c13a02","notifications/all",2]
+,["15f084ae"]
+,["fb4e2fc4"]
+,["345ff995"]
+,["b60ba4d6","//www.youtube.com/embed/l0qfHq_Qva8?wmode\u003dopaque",2]
+,["58cc0ecc","100",1]
+,["2837709a","250",1]
+,["12881b0b"]
+,["ca2c7f4"]
+,["5eca3fd8"]
+,["21fa5ea3"]
+,["3bdfc36"]
+,["53905784"]
+,["361a82fe","20",1]
+,["acbf0ffc","6",1]
+,["30dc41c4"]
+,["5cd08d3e"]
+,["293c503d"]
+,["a7258d35","5",1]
+,["a8e523a3","1000",1]
+,["153fc4e3"]
+,["40acc4f7"]
+,["96a53e1a","80",1]
+,["d6697028","//www.youtube.com/embed/GUywKEtXX2c",2]
+,["d582a4f8","25",1]
+,["66c83ef2","",2]
+,["2b8b0743","10",1]
+,["4dc524c0","import,suggest,follow,profile",2]
+,["7615555e","100",1]
+,["c05ef682","5",1]
+,["e975220","5",1]
+,["f892a1f6","750",1]
+,["da271db1","//ssl.gstatic.com/s2/oz/images/hangouts/hangouts_onair_promo_live-dffa4529a32c693283924cd12ffbc4e4.png",2]
+,["f85d7a75","//ssl.gstatic.com/s2/oz/images/hangouts/hangouts_onair_promo_recorded-7453f2c3b2160c984e5cd7c017effd49.png",2]
+,["dc47b7e1","https://www.google.com",2]
+,["48b332f1","//www.google.com/maps?layer\u003dc\u0026ie\u003dUTF8\u0026source\u003dembed\u0026output\u003dsvembed",2]
+,["b549d814","10000",1]
+,["4ca66953","300000",1]
+,["242aea5","5000",1]
+,["1ddddfd5","1.0",1]
+,["300feef9","0.5",1]
+,["bf3c2a2d","0.05",1]
+,["1ea69d6d","-1",1]
+,["51e3db92","https://photos.google.com",2]
+,["63c8aa1c","43200000",1]
+,["b3d65284","1800000",1]
+,["32a36dc7","15000",1]
+,["c40522f","2000",1]
+,["aaf52903","0.3",1]
+,["8c85289b","2",1]
+,["e46643a","3",1]
+,["4ea6b8e3","2000",1]
+,["b2186565","400",1]
+,["c1daf5cd","10",1]
+,["703730af","15",1]
+,["463afe84","10",1]
+,["5a10b9d9","//ssl.gstatic.com/s2/oz/images/notifications/jingles_eb4e5306b38f83915d82034fa93390d9/",2]
+,["18f1cdf9","250",1]
+,["86f3341a","10",1]
+,["8012fae7","20",1]
+,["a9a3e797","25",1]
+,["b378b70a","25",1]
+,["a68807db"]
+,["5715347d"]
+,["a2e5195e"]
+,["2f65daed"]
+,["6f8cc541"]
+,["44a20323"]
+,["7372f164","//www.youtube.com/watch?v\u003d",2]
+,["1a3786fb","2000",1]
+,["90c3e763"]
+,["887aa6bb"]
+,["2bca337"]
+,["dff71358"]
+,["542595e1","0",1]
+,["96942408","10",1]
+,["12885cf2","40",1]
+,["c4a65487","3",1]
+,["cfa495ac"]
+,["25b05df1","60",1]
+,["7a92f75c","20",1]
+,["dd75ff49","0",1]
+,["5cf6e450"]
+,["c696ffc3","//www.youtube.com/embed/bo390-3ohW4",2]
+,["c5eb23d7","//www.youtube.com/embed/ylZg43Meick",2]
+,["62f9e96d","//www.youtube.com/embed/8aCYZ3gXfy8",2]
+,["f5caebd8","Widget[gmail.rhs],Widget[gmail.plusnotifycard],Widget[gmail.pview],Widget[gmail.rhspp]",2]
+,["92cebb77"]
+,["d59d524b"]
+,["ed2ddf08","2500",1]
+,["56af9af6","1000",1]
+,["b07d93ca","500",1]
+,["a05aeb35","500",1]
+,["2125014e","600",1]
+,["371ccd09","0.025",1]
+,["7ecdfea5"]
+,["c99cf54c"]
+,["415edc4f"]
+,["6005610c","40",1]
+,["d8e528b3","200",1]
+,["bdfc96d5"]
+,["109a38d3"]
+,["269eceba","100",1]
+,["a45cf373","4",1]
+,["5e6ae07f","2",1]
+,["1d6b6a06","4",1]
+,["4ab88f97","4",1]
+,["554ac1cc","3",1]
+,["5c19a49e","2",1]
+,["15f3a3a0","8",1]
+,["787163ac","4",1]
+,["9f44a2f3","8",1]
+,["520ff8c4","5",1]
+,["2c833439","5",1]
+,["98f0a38b","4",1]
+,["8ed40ce0","20",1]
+,["f28ca27a","44",1]
+,["da72c0db","500",1]
+,["a181a097","3",1]
+,["119e347a","1000",1]
+,["65b9aa26","google.com/+",2]
+,["1ec68444","youtube.com/c",2]
+,["40d4b6d8"]
+,["88d90359","1000:3000:1000",2]
+,["c8595228","https://support.google.com/plus/?p\u003dplus_embeds",2]
+,["8d2087d6"]
+]
+,1,"/u/0","//www.google.com/intl/en-US/images/logos/profiles_logo.png",null,1,"pNl_QzWxNVwWvN-tGPXcsw","0",null,null,null,"https://csi.gstatic.com/csi","AObGSAjcZbedqQAG0Ij1YWuLwTMyRTfguw:1470863210003",null,null,"https://hangouts.google.com","/complete/search","plus.url.google.com","https://hangouts.google.com/hangouts/_/",[81,97,99,122,123,30,79,127]
+,null,["114061997959991660439"]
+,"https://accounts.google.com/TOS?hl\u003den-US",null,"https://hangouts.google.com/hangouts/_/extras/","AMP3uWYafITE1CkyV5wlbXo2_gKE6M3gZhbnTQCGcNPu8v5eAdb2wBMUXJCrK8uVcjvn5Q5HMrcaQJhK9O8zd2hCsIsNVxzS_A","https://hangouts.google.com/hangouts/_/stream/","/u/0",1470863209863,"picasaweb.google.com","https://www.google.com/contacts","us","http://www.google.com/intl/en-US/+/learnmore/forum/",null,null,"https://www.google.com/intl/en-US/privacy/privacy-policy.html",null,"https://www.google.com/intl/en-US/help/terms_maps.html",null,null,"https://accounts.google.com/Logout?service\u003doz\u0026hl\u003den-US\u0026continue\u003dhttps://apis.google.com/u/0/_/widget/render/comments?usegapi%3D1%26width%3D725%26href%3Dhttp://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/%26first_party_property%3DBLOGGER%26view_type%3DFILTERED_POSTMOD%26hl%3Den-US%26origin%3Dhttp://www.jameselsey.co.uk%26search%26hash%26gsrc%3D3p%26ic%3D1%26jsh%3Dm;/_/scs/apps-static/_/js/k%253Doz.gapi.es.-oQ-WcOtTVI.O/m%253D__features__/am%253DEQ/rt%253Dj/d%253D1/rs%253DAGLTcCOlpENifU9RK7clc9uz8DplkrY8JQ","https://accounts.google.com/AddSession?service\u003doz\u0026hl\u003den-US\u0026continue\u003dhttps://apis.google.com/u/0/_/widget/render/comments?usegapi%3D1%26width%3D725%26href%3Dhttp://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/%26first_party_property%3DBLOGGER%26view_type%3DFILTERED_POSTMOD%26hl%3Den-US%26origin%3Dhttp://www.jameselsey.co.uk%26search%26hash%26gsrc%3D3p%26ic%3D1%26jsh%3Dm;/_/scs/apps-static/_/js/k%253Doz.gapi.es.-oQ-WcOtTVI.O/m%253D__features__/am%253DEQ/rt%253Dj/d%253D1/rs%253DAGLTcCOlpENifU9RK7clc9uz8DplkrY8JQ","ah41KVYYoxdJKuKvUv1rCFS-Nd0","1470450268"]
+});</script><script>AF_initDataCallback({key: '100', isError:  false , hash: '5', data:[null,null,0,null,0,0,1,null,null,null,null,null,null,0,0,[[[[9,"pref:DEFAULT"]
+,[[[null,null,1]
+]
+]
+,[[2]
+,[6]
+]
+,[]
+]
+]
+,[[[1,2,3,4]
+,0,0,9,0]
+]
+,[[[null,null,1]
+,"Public"]
+]
+]
+,[]
+,null,null,null,0,0,[]
+]
+});</script><script>AF_initDataCallback({key: '178', isError:  false , hash: '6', data:["cw.bsc"]
+});</script><script>AF_initDataCallback({key: '95', isError:  false , hash: '7', data:["rt.r",2,[null,3600000,20000,3.0,0.5]
+]
+});</script><script>AF_initDataCallback({key: '177', isError:  false , hash: '8', data:["os.blogger",[[]
+,"Cg0Q2vOUueC3zgIgESgBEjIIABCgyKLP_unDAiol99mEz9TBv4YnnsaUxIHZhPJlrJKxvdunkY6dAZvb4bOrm7OmTxgBIAQoxKWmjK3qm9xx",null,null,[]
+,null,null,[[1002,null,null,null,null,[1001,"z132t5jx3wravzuya04cfjxzjvmngpfgqzs0k"]
+,{"33558957":["","","www.jameselsey.co.uk","Arturo Juan Sacerio Pallerols","",1424210784724,"http://www.google.com/favicon.ico",[]
+,"z132t5jx3wravzuya04cfjxzjvmngpfgqzs0k","","s:updates:fountain:www.jameselsey.co.uk",[]
+,[]
+,"http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/",null,[]
+,"102132817815273130087",[]
+,"",null,"hi arthurjonhd@gmail.com  this is my mail id please send me the code for image to text extract in android (eclipse).\ufeff","http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/?google_comment_id\u003dz132t5jx3wravzuya04cfjxzjvmngpfgqzs0k",0,0.0,"./102132817815273130087",[]
+,null,null,"",0,0,0,1,null,0,1,null,0,1424210784724,null,null,0,null,null,null,0,null,null,null,[]
+,null,null,0,0,null,null,0,null,null,null,null,0,null,null,null,null,[]
+,null,null,null,null,null,null,["4/jcsnagnoappbkgvridkrgynpj5kn0h33gtpbkyneitqqwtvkgtnr2ynna1pk/",4,null,null,null,null,0.0,null,null,null,null,null,[[0.0,null,[]
+]
+]
+,0,null,null,0,[]
+,0,0,null,"AEIZW7QYuXqoeP4FmMHAgTzEU3LcM69SxPydr2Sz9DGv4lc0NFUa1D0w5u6/ML8YdkBqrrv5tWlr"]
+,null,null,1,null,1,0,null,3,null,null,"social.google.com",0,0,null,null,0,0,null,"2015-02-17",0,0,null,0,null,null,null,0,0,null,null,null,null,null,null,null,null,null,[1,7]
+,null,[]
+,null,null,0,10,null,0,[]
+,0,[]
+,0,1,null,"http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/",[]
+,null,"Tesseract OCR on Android is easier if you Maven-ise it, works on Windows too… | James Elsey","http://s2.googleusercontent.com/s2/favicons?domain\u003dwww.jameselsey.co.uk","https://plus.google.com/102132817815273130087/posts/aFzjHdtnG2x",null,null,1,null,["Arturo Juan Sacerio Pallerols","102132817815273130087",0,0,"","./102132817815273130087","male",null,0]
+,[[[0,"hi arthurjonhd@gmail.com  this is my mail id please send me the code for image to text extract in android (eclipse).\ufeff"]
+]
+]
+,null,null,null,["en",0,"English"]
+,[[[2,"Arturo Juan Sacerio Pallerols",null,["./102132817815273130087",null,[[[350,335,0]
+,{"41007156":[null,null,"Arturo Juan Sacerio Pallerols",null,null,null,null,[]
+,null,null,[]
+,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,"102132817815273130087",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,"male"]
+}]
+]
+]
+]
+,[0," commented on a post on Blogger."]
+]
+]
+,[]
+,null,[null,0]
+,null,[]
+,null,0,null,null,[0]
+,"z132t5jx3wravzuya04cfjxzjvmngpfgqzs0k"]
+}]
+,[1002,null,null,null,null,[1001,"z12quppq0sy3whzst23itp5jswv4sz3mw"]
+,{"33558957":["","","www.jameselsey.co.uk","chand y","",1404367027982,"http://www.google.com/favicon.ico",[]
+,"z12quppq0sy3whzst23itp5jswv4sz3mw","","s:updates:fountain:www.jameselsey.co.uk",[]
+,[]
+,"",null,[]
+,"105071408636588527980",[]
+,"https://lh5.googleusercontent.com/-C9Qjl0EaEOI/AAAAAAAAAAI/AAAAAAAAABQ/DT5t3TKdoTw/photo.jpg",null,"hi chandandroidinfo@yahoo.co.in  this is my mail id please send me the code for image to text extract in android (eclipse).","http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/?google_comment_id\u003dz12quppq0sy3whzst23itp5jswv4sz3mw",0,0.0,"./105071408636588527980",[]
+,null,null,"",0,0,0,1,null,0,1,null,0,1404367027982,null,null,0,null,null,null,0,null,null,null,[]
+,null,null,0,0,null,null,0,null,null,null,null,0,null,null,null,null,[]
+,null,null,null,null,null,null,["4/jcsn4wfpi1sb2g3nj4triu3uihu34gvdils3eunnixv3cwvuahqri/",4,null,null,null,null,0.0,null,null,null,null,null,[[0.0,null,[]
+]
+]
+,0,null,null,0,[]
+,0,0,null,"AEIZW7QYuXqoeP4FmMHAgTzEU3LcM69SxPydr2Sz9DGv4lc0NFUa1D0w5u6/ML8YdkBqrrv5tWlr"]
+,null,null,1,null,1,0,null,3,null,null,"social.google.com",0,0,null,null,1,0,null,"2014-07-02",0,0,null,0,null,null,null,0,0,null,null,null,null,null,null,null,null,null,[2,7]
+,null,[]
+,null,null,0,10,null,0,[]
+,0,[]
+,0,0,null,"http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/",[]
+,null,"Tesseract OCR on Android is easier if you Maven-ise it, works on Windows too… | James Elsey","http://s2.googleusercontent.com/s2/favicons?domain\u003dwww.jameselsey.co.uk","https://plus.google.com/105071408636588527980/posts/5MCVx7fnGKN",null,null,1,null,["chand y","105071408636588527980",0,0,"https://lh5.googleusercontent.com/-C9Qjl0EaEOI/AAAAAAAAAAI/AAAAAAAAABQ/DT5t3TKdoTw/photo.jpg","./105071408636588527980","male",null,0]
+,[[[0,"hi chandandroidinfo@yahoo.co.in  this is my mail id please send me the code for image to text extract in android (eclipse).\ufeff"]
+]
+]
+,null,null,null,["en",0,"English"]
+,[[[2,"chand y",null,["./105071408636588527980",null,[[[350,335,0]
+,{"41007156":[null,null,"chand y",null,null,null,null,[]
+,null,null,[]
+,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,"105071408636588527980",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,"male"]
+}]
+]
+]
+]
+,[0," commented on a post on Blogger."]
+]
+]
+,[]
+,null,[null,0]
+,null,[]
+,null,0,null,null,[0]
+,"z12quppq0sy3whzst23itp5jswv4sz3mw"]
+}]
+,[1002,null,null,null,null,[1001,"z12xczrgntyfcdibx04ccdeplqe5id2o22k"]
+,{"33558957":["","","www.jameselsey.co.uk","Adnan Nazir","",1392975732633,"http://www.google.com/favicon.ico",[[null,"","",1403663720459,"z12xczrgntyfcdibx04ccdeplqe5id2o22k#1403663720459534",null,"110505997680959683345","z12xczrgntyfcdibx04ccdeplqe5id2o22k",0,0,null,0,null,null,0,[null,null,null,null,null,null,null,null,null,null,null,null,[]
+,null,null,null,null,[]
+,0]
+,null,null,null,null,null,[2,7]
+,null,0,null,["Oscar Heredia","110505997680959683345",0,0,"https://lh4.googleusercontent.com/-Tv7ta3j25ps/AAAAAAAAAAI/AAAAAAAACAY/ajwySUAktlk/photo.jpg","https://plus.google.com/110505997680959683345","male",null,0]
+,["en",0,"English"]
+,[[[0,"just make sure you have set correctly the enviroment variables, check the Troubleshooting section on this tutorial: "]
+,[2,"http://gaut.am/making-an-ocr-android-app-using-tesseract/#comment-156239",null,["http://gaut.am/making-an-ocr-android-app-using-tesseract/#comment-156239"]
+]
+,[0,"\ufeff"]
+]
+]
+]
+]
+,"z12xczrgntyfcdibx04ccdeplqe5id2o22k","","s:updates:fountain:www.jameselsey.co.uk",[]
+,[]
+,"",null,[]
+,"109846777688912381102",[]
+,"https://lh3.googleusercontent.com/-A0f0Lw17HQ8/AAAAAAAAAAI/AAAAAAAAB6M/fYdNbuqQ-3A/photo.jpg",null,"Not able to understand . everything working fine but \"android update project --path\" is not working .\nawwwww :(","http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/?google_comment_id\u003dz12xczrgntyfcdibx04ccdeplqe5id2o22k",0,0.0,"./109846777688912381102",[]
+,null,null,"",0,0,0,1,null,0,1,null,0,1392975732633,null,null,0,null,null,null,0,null,null,null,[]
+,null,null,0,0,null,null,0,null,null,null,null,0,null,null,null,null,[]
+,null,null,null,null,null,null,["4/jcsn4y33jdtaivnoj5naat3dgdw30h33ghmaew3gi5mneuf4adrn4gnf/",4,null,null,null,null,1.453359599999999E12,null,null,null,null,null,[[1.0,null,[]
+]
+]
+,0,null,null,1,[]
+,0,0,null,"AEIZW7QYuXqoeP4FmMHAgTzEU3LcM69SxPydr2Sz9DGv4lc0NFUa1D0w5u6/ML8YdkBqrrv5tWlr"]
+,null,null,1,null,1,0,null,11,null,null,"social.google.com",0,0,null,null,1,0,null,"2014-02-21",1,0,null,0,null,null,null,0,0,null,null,null,null,null,null,null,null,null,[2,7]
+,null,[["Oscar Heredia","110505997680959683345",1,1,"https://lh4.googleusercontent.com/-Tv7ta3j25ps/AAAAAAAAAAI/AAAAAAAACAY/ajwySUAktlk/photo.jpg","https://plus.google.com/110505997680959683345","other"]
+]
+,null,null,0,10,null,0,[]
+,0,[]
+,0,0,null,"http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/",[]
+,null,"Tesseract OCR on Android is easier if you Maven-ise it, works on Windows too… | James Elsey","http://s2.googleusercontent.com/s2/favicons?domain\u003dwww.jameselsey.co.uk","https://plus.google.com/+ADNANNAZIR2012/posts/jPfVfEjhpxh",null,null,1,null,["Adnan Nazir","109846777688912381102",0,0,"https://lh3.googleusercontent.com/-A0f0Lw17HQ8/AAAAAAAAAAI/AAAAAAAAB6M/fYdNbuqQ-3A/photo.jpg","./109846777688912381102","male",null,0]
+,[[[0,"Not able to understand . everything working fine but \"android update project --path\" is not working . "]
+,[1]
+,[0,"awwwww :(\ufeff"]
+]
+]
+,null,null,null,["en",0,"English"]
+,[[[2,"Adnan Nazir",null,["./109846777688912381102",null,[[[350,335,0]
+,{"41007156":[null,null,"Adnan Nazir",null,null,null,null,[]
+,null,null,[]
+,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,"109846777688912381102",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,"male"]
+}]
+]
+]
+]
+,[0," commented on a post on Blogger."]
+]
+]
+,[]
+,null,[null,0]
+,null,[]
+,null,0,null,null,[0]
+,"z12xczrgntyfcdibx04ccdeplqe5id2o22k"]
+}]
+,[1002,null,null,null,null,[1001,"z130s32ahkyotvuaz04cf1thkxfrcncaogo"]
+,{"33558957":["","","www.jameselsey.co.uk","Zwide Heights","",1419666498991,"http://www.google.com/favicon.ico",[]
+,"z130s32ahkyotvuaz04cf1thkxfrcncaogo","","s:updates:fountain:www.jameselsey.co.uk:orphan",[]
+,[]
+,"http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/",null,[]
+,"104158591117253097599",[]
+,"https://lh3.googleusercontent.com/-V3nLQ64ySPE/AAAAAAAAAAI/AAAAAAAAAKY/KQC27q-qnXY/photo.jpg",null,"thank you.","http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/?google_comment_id\u003dz130s32ahkyotvuaz04cf1thkxfrcncaogo",0,0.0,"./104158591117253097599",[]
+,null,null,"",0,0,0,1,null,0,1,null,0,1419666498991,null,null,0,null,null,null,0,null,null,null,[]
+,null,null,0,0,null,null,0,null,null,null,null,0,null,null,null,null,[]
+,null,null,null,null,null,null,["4/jcsnag3nagta2u3fj5rrcxnpg5x30h33gssrcu3fj1nb4svighkqytvj/",4,null,null,null,null,1.434031199999999E12,null,null,null,null,null,[[1.0,null,[]
+]
+]
+,0,null,null,1,[]
+,0,0,null,"AEIZW7QYuXqoeP4FmMHAgTzEU3LcM69SxPydr2Sz9DGv4lc0NFUa1D0w5u6/ML8YdkBqrrv5tWlr"]
+,null,null,1,null,1,0,null,2,null,null,"social.google.com",0,0,null,null,0,0,null,"2014-12-26",0,0,null,0,null,null,null,0,0,null,null,null,null,null,null,null,null,null,[1,7]
+,null,[]
+,null,null,0,10,null,0,[]
+,0,[]
+,0,1,null,"http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/",[]
+,null,"Tesseract OCR on Android is easier if you Maven-ise it, works on Windows too… | James Elsey","http://s2.googleusercontent.com/s2/favicons?domain\u003dwww.jameselsey.co.uk","https://plus.google.com/104158591117253097599/posts/eSHBTSyVSnC",null,null,1,null,["Zwide Heights","104158591117253097599",0,0,"https://lh3.googleusercontent.com/-V3nLQ64ySPE/AAAAAAAAAAI/AAAAAAAAAKY/KQC27q-qnXY/photo.jpg","./104158591117253097599","male",null,0]
+,[[[0,"thank you.\ufeff"]
+]
+]
+,null,null,null,["en",0,"English"]
+,[[[2,"Zwide Heights",null,["./104158591117253097599",null,[[[350,335,0]
+,{"41007156":[null,null,"Zwide Heights",null,null,null,null,[]
+,null,null,[]
+,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,"104158591117253097599",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,"male"]
+}]
+]
+]
+]
+,[0," commented on a post on Blogger."]
+]
+]
+,[]
+,null,[null,0]
+,null,[]
+,null,0,null,null,[0]
+,"z130s32ahkyotvuaz04cf1thkxfrcncaogo"]
+}]
+]
+,null,null,null,[]
+]
+,[5,null,null,0,1,0]
+,[null,null,[1,[20,"Cg0Q2vOUueC3zgIgESgBEjIIABCgyKLP_unDAiol99mEz9TBv4YnnsaUxIHZhPJlrJKxvdunkY6dAZvb4bOrm7OmTxgBIAQoxKWmjK3qm9xx"]
+,null,[[[2,[null,""]
+]
+]
+]
+]
+]
+,[["http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/",null,null,null,0,null,"http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/",null,null,1,[20,null,null,1,null,null,null,1,null,"fntn",0,9,0,["http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/"]
+,null,null,0]
+,null,null,null,null,1,null,null,null,null,0,null,null,3,0,"Cg0Q2vOUueC3zgIgESgBEjIIABCgyKLP_unDAiol99mEz9TBv4YnnsaUxIHZhPJlrJKxvdunkY6dAZvb4bOrm7OmTxgBIAQoxKWmjK3qm9xx",20,null,null,[null,null,0,0,0]
+,1,0,null,0]
+,"http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/","http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/",[20,null,null,1,null,null,null,1,null,"fntn",0,9,0,["http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/"]
+,null,null,0]
+,0,""]
+]
+});</script><script>AF_initDataCallback({key: '90', isError:  false , hash: '9', data:["cw.gfr",["http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/",null,null,null,0,null,"http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/",null,null,1,[20,null,null,1,null,null,null,1,null,"fntn",0,9,0,["http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/"]
+,null,null,0]
+,null,null,null,null,1,null,null,null,null,0,null,null,3,0,"Cg0Q2vOUueC3zgIgESgBEjIIABCgyKLP_unDAiol99mEz9TBv4YnnsaUxIHZhPJlrJKxvdunkY6dAZvb4bOrm7OmTxgBIAQoxKWmjK3qm9xx",20,null,null,[null,null,0,0,0]
+,1,0,null,0]
+,[[]
+,"Cg0Q2vOUueC3zgIgESgBEjIIABCgyKLP_unDAiol99mEz9TBv4YnnsaUxIHZhPJlrJKxvdunkY6dAZvb4bOrm7OmTxgBIAQoxKWmjK3qm9xx",null,null,[]
+,null,null,[[1002,null,null,null,null,[1001,"z132t5jx3wravzuya04cfjxzjvmngpfgqzs0k"]
+,{"33558957":["","","www.jameselsey.co.uk","Arturo Juan Sacerio Pallerols","",1424210784724,"http://www.google.com/favicon.ico",[]
+,"z132t5jx3wravzuya04cfjxzjvmngpfgqzs0k","","s:updates:fountain:www.jameselsey.co.uk",[]
+,[]
+,"http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/",null,[]
+,"102132817815273130087",[]
+,"",null,"hi arthurjonhd@gmail.com  this is my mail id please send me the code for image to text extract in android (eclipse).\ufeff","http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/?google_comment_id\u003dz132t5jx3wravzuya04cfjxzjvmngpfgqzs0k",0,0.0,"./102132817815273130087",[]
+,null,null,"",0,0,0,1,null,0,1,null,0,1424210784724,null,null,0,null,null,null,0,null,null,null,[]
+,null,null,0,0,null,null,0,null,null,null,null,0,null,null,null,null,[]
+,null,null,null,null,null,null,["4/jcsnagnoappbkgvridkrgynpj5kn0h33gtpbkyneitqqwtvkgtnr2ynna1pk/",4,null,null,null,null,0.0,null,null,null,null,null,[[0.0,null,[]
+]
+]
+,0,null,null,0,[]
+,0,0,null,"AEIZW7QYuXqoeP4FmMHAgTzEU3LcM69SxPydr2Sz9DGv4lc0NFUa1D0w5u6/ML8YdkBqrrv5tWlr"]
+,null,null,1,null,1,0,null,3,null,null,"social.google.com",0,0,null,null,0,0,null,"2015-02-17",0,0,null,0,null,null,null,0,0,null,null,null,null,null,null,null,null,null,[1,7]
+,null,[]
+,null,null,0,10,null,0,[]
+,0,[]
+,0,1,null,"http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/",[]
+,null,"Tesseract OCR on Android is easier if you Maven-ise it, works on Windows too… | James Elsey","http://s2.googleusercontent.com/s2/favicons?domain\u003dwww.jameselsey.co.uk","https://plus.google.com/102132817815273130087/posts/aFzjHdtnG2x",null,null,1,null,["Arturo Juan Sacerio Pallerols","102132817815273130087",0,0,"","./102132817815273130087","male",null,0]
+,[[[0,"hi arthurjonhd@gmail.com  this is my mail id please send me the code for image to text extract in android (eclipse).\ufeff"]
+]
+]
+,null,null,null,["en",0,"English"]
+,[[[2,"Arturo Juan Sacerio Pallerols",null,["./102132817815273130087",null,[[[350,335,0]
+,{"41007156":[null,null,"Arturo Juan Sacerio Pallerols",null,null,null,null,[]
+,null,null,[]
+,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,"102132817815273130087",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,"male"]
+}]
+]
+]
+]
+,[0," commented on a post on Blogger."]
+]
+]
+,[]
+,null,[null,0]
+,null,[]
+,null,0,null,null,[0]
+,"z132t5jx3wravzuya04cfjxzjvmngpfgqzs0k"]
+}]
+,[1002,null,null,null,null,[1001,"z12quppq0sy3whzst23itp5jswv4sz3mw"]
+,{"33558957":["","","www.jameselsey.co.uk","chand y","",1404367027982,"http://www.google.com/favicon.ico",[]
+,"z12quppq0sy3whzst23itp5jswv4sz3mw","","s:updates:fountain:www.jameselsey.co.uk",[]
+,[]
+,"",null,[]
+,"105071408636588527980",[]
+,"https://lh5.googleusercontent.com/-C9Qjl0EaEOI/AAAAAAAAAAI/AAAAAAAAABQ/DT5t3TKdoTw/photo.jpg",null,"hi chandandroidinfo@yahoo.co.in  this is my mail id please send me the code for image to text extract in android (eclipse).","http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/?google_comment_id\u003dz12quppq0sy3whzst23itp5jswv4sz3mw",0,0.0,"./105071408636588527980",[]
+,null,null,"",0,0,0,1,null,0,1,null,0,1404367027982,null,null,0,null,null,null,0,null,null,null,[]
+,null,null,0,0,null,null,0,null,null,null,null,0,null,null,null,null,[]
+,null,null,null,null,null,null,["4/jcsn4wfpi1sb2g3nj4triu3uihu34gvdils3eunnixv3cwvuahqri/",4,null,null,null,null,0.0,null,null,null,null,null,[[0.0,null,[]
+]
+]
+,0,null,null,0,[]
+,0,0,null,"AEIZW7QYuXqoeP4FmMHAgTzEU3LcM69SxPydr2Sz9DGv4lc0NFUa1D0w5u6/ML8YdkBqrrv5tWlr"]
+,null,null,1,null,1,0,null,3,null,null,"social.google.com",0,0,null,null,1,0,null,"2014-07-02",0,0,null,0,null,null,null,0,0,null,null,null,null,null,null,null,null,null,[2,7]
+,null,[]
+,null,null,0,10,null,0,[]
+,0,[]
+,0,0,null,"http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/",[]
+,null,"Tesseract OCR on Android is easier if you Maven-ise it, works on Windows too… | James Elsey","http://s2.googleusercontent.com/s2/favicons?domain\u003dwww.jameselsey.co.uk","https://plus.google.com/105071408636588527980/posts/5MCVx7fnGKN",null,null,1,null,["chand y","105071408636588527980",0,0,"https://lh5.googleusercontent.com/-C9Qjl0EaEOI/AAAAAAAAAAI/AAAAAAAAABQ/DT5t3TKdoTw/photo.jpg","./105071408636588527980","male",null,0]
+,[[[0,"hi chandandroidinfo@yahoo.co.in  this is my mail id please send me the code for image to text extract in android (eclipse).\ufeff"]
+]
+]
+,null,null,null,["en",0,"English"]
+,[[[2,"chand y",null,["./105071408636588527980",null,[[[350,335,0]
+,{"41007156":[null,null,"chand y",null,null,null,null,[]
+,null,null,[]
+,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,"105071408636588527980",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,"male"]
+}]
+]
+]
+]
+,[0," commented on a post on Blogger."]
+]
+]
+,[]
+,null,[null,0]
+,null,[]
+,null,0,null,null,[0]
+,"z12quppq0sy3whzst23itp5jswv4sz3mw"]
+}]
+,[1002,null,null,null,null,[1001,"z12xczrgntyfcdibx04ccdeplqe5id2o22k"]
+,{"33558957":["","","www.jameselsey.co.uk","Adnan Nazir","",1392975732633,"http://www.google.com/favicon.ico",[[null,"","",1403663720459,"z12xczrgntyfcdibx04ccdeplqe5id2o22k#1403663720459534",null,"110505997680959683345","z12xczrgntyfcdibx04ccdeplqe5id2o22k",0,0,null,0,null,null,0,[null,null,null,null,null,null,null,null,null,null,null,null,[]
+,null,null,null,null,[]
+,0]
+,null,null,null,null,null,[2,7]
+,null,0,null,["Oscar Heredia","110505997680959683345",0,0,"https://lh4.googleusercontent.com/-Tv7ta3j25ps/AAAAAAAAAAI/AAAAAAAACAY/ajwySUAktlk/photo.jpg","https://plus.google.com/110505997680959683345","male",null,0]
+,["en",0,"English"]
+,[[[0,"just make sure you have set correctly the enviroment variables, check the Troubleshooting section on this tutorial: "]
+,[2,"http://gaut.am/making-an-ocr-android-app-using-tesseract/#comment-156239",null,["http://gaut.am/making-an-ocr-android-app-using-tesseract/#comment-156239"]
+]
+,[0,"\ufeff"]
+]
+]
+]
+]
+,"z12xczrgntyfcdibx04ccdeplqe5id2o22k","","s:updates:fountain:www.jameselsey.co.uk",[]
+,[]
+,"",null,[]
+,"109846777688912381102",[]
+,"https://lh3.googleusercontent.com/-A0f0Lw17HQ8/AAAAAAAAAAI/AAAAAAAAB6M/fYdNbuqQ-3A/photo.jpg",null,"Not able to understand . everything working fine but \"android update project --path\" is not working .\nawwwww :(","http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/?google_comment_id\u003dz12xczrgntyfcdibx04ccdeplqe5id2o22k",0,0.0,"./109846777688912381102",[]
+,null,null,"",0,0,0,1,null,0,1,null,0,1392975732633,null,null,0,null,null,null,0,null,null,null,[]
+,null,null,0,0,null,null,0,null,null,null,null,0,null,null,null,null,[]
+,null,null,null,null,null,null,["4/jcsn4y33jdtaivnoj5naat3dgdw30h33ghmaew3gi5mneuf4adrn4gnf/",4,null,null,null,null,1.453359599999999E12,null,null,null,null,null,[[1.0,null,[]
+]
+]
+,0,null,null,1,[]
+,0,0,null,"AEIZW7QYuXqoeP4FmMHAgTzEU3LcM69SxPydr2Sz9DGv4lc0NFUa1D0w5u6/ML8YdkBqrrv5tWlr"]
+,null,null,1,null,1,0,null,11,null,null,"social.google.com",0,0,null,null,1,0,null,"2014-02-21",1,0,null,0,null,null,null,0,0,null,null,null,null,null,null,null,null,null,[2,7]
+,null,[["Oscar Heredia","110505997680959683345",1,1,"https://lh4.googleusercontent.com/-Tv7ta3j25ps/AAAAAAAAAAI/AAAAAAAACAY/ajwySUAktlk/photo.jpg","https://plus.google.com/110505997680959683345","other"]
+]
+,null,null,0,10,null,0,[]
+,0,[]
+,0,0,null,"http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/",[]
+,null,"Tesseract OCR on Android is easier if you Maven-ise it, works on Windows too… | James Elsey","http://s2.googleusercontent.com/s2/favicons?domain\u003dwww.jameselsey.co.uk","https://plus.google.com/+ADNANNAZIR2012/posts/jPfVfEjhpxh",null,null,1,null,["Adnan Nazir","109846777688912381102",0,0,"https://lh3.googleusercontent.com/-A0f0Lw17HQ8/AAAAAAAAAAI/AAAAAAAAB6M/fYdNbuqQ-3A/photo.jpg","./109846777688912381102","male",null,0]
+,[[[0,"Not able to understand . everything working fine but \"android update project --path\" is not working . "]
+,[1]
+,[0,"awwwww :(\ufeff"]
+]
+]
+,null,null,null,["en",0,"English"]
+,[[[2,"Adnan Nazir",null,["./109846777688912381102",null,[[[350,335,0]
+,{"41007156":[null,null,"Adnan Nazir",null,null,null,null,[]
+,null,null,[]
+,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,"109846777688912381102",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,"male"]
+}]
+]
+]
+]
+,[0," commented on a post on Blogger."]
+]
+]
+,[]
+,null,[null,0]
+,null,[]
+,null,0,null,null,[0]
+,"z12xczrgntyfcdibx04ccdeplqe5id2o22k"]
+}]
+,[1002,null,null,null,null,[1001,"z130s32ahkyotvuaz04cf1thkxfrcncaogo"]
+,{"33558957":["","","www.jameselsey.co.uk","Zwide Heights","",1419666498991,"http://www.google.com/favicon.ico",[]
+,"z130s32ahkyotvuaz04cf1thkxfrcncaogo","","s:updates:fountain:www.jameselsey.co.uk:orphan",[]
+,[]
+,"http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/",null,[]
+,"104158591117253097599",[]
+,"https://lh3.googleusercontent.com/-V3nLQ64ySPE/AAAAAAAAAAI/AAAAAAAAAKY/KQC27q-qnXY/photo.jpg",null,"thank you.","http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/?google_comment_id\u003dz130s32ahkyotvuaz04cf1thkxfrcncaogo",0,0.0,"./104158591117253097599",[]
+,null,null,"",0,0,0,1,null,0,1,null,0,1419666498991,null,null,0,null,null,null,0,null,null,null,[]
+,null,null,0,0,null,null,0,null,null,null,null,0,null,null,null,null,[]
+,null,null,null,null,null,null,["4/jcsnag3nagta2u3fj5rrcxnpg5x30h33gssrcu3fj1nb4svighkqytvj/",4,null,null,null,null,1.434031199999999E12,null,null,null,null,null,[[1.0,null,[]
+]
+]
+,0,null,null,1,[]
+,0,0,null,"AEIZW7QYuXqoeP4FmMHAgTzEU3LcM69SxPydr2Sz9DGv4lc0NFUa1D0w5u6/ML8YdkBqrrv5tWlr"]
+,null,null,1,null,1,0,null,2,null,null,"social.google.com",0,0,null,null,0,0,null,"2014-12-26",0,0,null,0,null,null,null,0,0,null,null,null,null,null,null,null,null,null,[1,7]
+,null,[]
+,null,null,0,10,null,0,[]
+,0,[]
+,0,1,null,"http://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/",[]
+,null,"Tesseract OCR on Android is easier if you Maven-ise it, works on Windows too… | James Elsey","http://s2.googleusercontent.com/s2/favicons?domain\u003dwww.jameselsey.co.uk","https://plus.google.com/104158591117253097599/posts/eSHBTSyVSnC",null,null,1,null,["Zwide Heights","104158591117253097599",0,0,"https://lh3.googleusercontent.com/-V3nLQ64ySPE/AAAAAAAAAAI/AAAAAAAAAKY/KQC27q-qnXY/photo.jpg","./104158591117253097599","male",null,0]
+,[[[0,"thank you.\ufeff"]
+]
+]
+,null,null,null,["en",0,"English"]
+,[[[2,"Zwide Heights",null,["./104158591117253097599",null,[[[350,335,0]
+,{"41007156":[null,null,"Zwide Heights",null,null,null,null,[]
+,null,null,[]
+,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,"104158591117253097599",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,"male"]
+}]
+]
+]
+]
+,[0," commented on a post on Blogger."]
+]
+]
+,[]
+,null,[null,0]
+,null,[]
+,null,0,null,null,[0]
+,"z130s32ahkyotvuaz04cf1thkxfrcncaogo"]
+}]
+]
+,null,null,null,[]
+]
+,5,null,null,null,[]
+]
+});</script></div><script>window.__GOOGLEAPIS = {googleapis: {versions: {pos: 'v1'}}};window['__P1_BASEURL'] = 'https:\/\/apis.google.com\/u\/0\/'; window['__P1_LOCALE'] = 'en_US'; var OZ_domReady = 1;
+      var _DumpException = function(e) {
+        e['errsource'] = e['errsource'] || 'api_widget';
+        throw e;
+      }
+    window['___jsl'] = window['___jsl'] || {}; window['___jsl']['ci'] = [{"deviceType":"desktop","oauth-flow":{"authUrl":"https://accounts.google.com/o/oauth2/auth","disableOpt":true,"idpIframeUrl":"https://accounts.google.com/o/oauth2/iframe","proxyUrl":"https://accounts.google.com/o/oauth2/postmessageRelay","usegapi":false},"debug":{"host":"https://apis.google.com","reportExceptionRate":0.05,"forceIm":false,"rethrowException":false},"lexps":[81,97,99,122,123,30,79,127],"enableMultilogin":true,"googleapis.config":{"auth":{"useFirstPartyAuthV2":true}},"isPlusUser":true,"inline":{"css":1},"disableRealtimeCallback":false,"drive_share":{"skipInitCommand":true},"csi":{"rate":0.01},"report":{"host":"https://apis.google.com","apiRate":{"gapi\\.signin2\\..*":0.05,"gapi\\.signin\\..*":0.05},"apis":["iframes\\..*","gadgets\\..*","gapi\\.appcirclepicker\\..*","gapi\\.auth\\..*","gapi\\.client\\..*"],"rate":0.001},"client":{"headers":{"request":["Accept","Accept-Language","Authorization","Cache-Control","Content-Disposition","Content-Encoding","Content-Language","Content-Length","Content-MD5","Content-Range","Content-Type","Date","GData-Version","Host","If-Match","If-Modified-Since","If-None-Match","If-Unmodified-Since","Origin","OriginToken","Pragma","Range","Slug","Transfer-Encoding","Want-Digest","X-ClientDetails","X-GData-Client","X-GData-Key","X-Goog-AuthUser","X-Goog-PageId","X-Goog-Encode-Response-If-Executable","X-Goog-Correlation-Id","X-Goog-Request-Info","X-Goog-Experiments","x-goog-iam-authority-selector","x-goog-iam-authorization-token","X-Goog-Spatula","X-Goog-Upload-Command","X-Goog-Upload-Content-Disposition","X-Goog-Upload-Content-Length","X-Goog-Upload-Content-Type","X-Goog-Upload-File-Name","X-Goog-Upload-Offset","X-Goog-Upload-Protocol","X-Goog-Visitor-Id","X-HTTP-Method-Override","X-JavaScript-User-Agent","X-Pan-Versionid","X-Origin","X-Referer","X-Upload-Content-Length","X-Upload-Content-Type","X-Use-HTTP-Status-Code-Override","X-Ios-Bundle-Identifier","X-Android-Package","X-YouTube-VVT","X-YouTube-Page-CL","X-YouTube-Page-Timestamp"],"response":["Digest","Cache-Control","Content-Disposition","Content-Encoding","Content-Language","Content-Length","Content-MD5","Content-Range","Content-Type","Date","ETag","Expires","Last-Modified","Location","Pragma","Range","Server","Transfer-Encoding","WWW-Authenticate","Vary","Unzipped-Content-MD5","X-Goog-Generation","X-Goog-Metageneration","X-Goog-Safety-Content-Type","X-Goog-Safety-Encoding","X-Google-Trace","X-Goog-Upload-Chunk-Granularity","X-Goog-Upload-Control-URL","X-Goog-Upload-Size-Received","X-Goog-Upload-Status","X-Goog-Upload-URL","X-Goog-Diff-Download-Range","X-Goog-Hash","X-Goog-Updated-Authorization","X-Server-Object-Version","X-Guploader-Customer","X-Guploader-Upload-Result","X-Guploader-Uploadid","X-Google-Gfe-Backend-Request-Cost"]},"rms":"migrated","cors":false},"isLoggedIn":true,"signInDeprecation":{"rate":0},"include_granted_scopes":true,"llang":"en","plus_layer":"{\"isEnabled\":false}","iframes":{"youtube":{"params":{"location":["search","hash"]},"url":":socialhost:/:session_prefix:_/widget/render/youtube?usegapi\u003d1","methods":["scroll","openwindow"]},"ytsubscribe":{"url":"https://www.youtube.com/subscribe_embed?usegapi\u003d1"},"plus_circle":{"params":{"url":""},"url":":socialhost:/:session_prefix::se:_/widget/plus/circle?usegapi\u003d1"},"plus_share":{"params":{"url":""},"url":":socialhost:/:session_prefix::se:_/+1/sharebutton?plusShare\u003dtrue\u0026usegapi\u003d1"},"rbr_s":{"params":{"url":""},"url":":socialhost:/:session_prefix::se:_/widget/render/recobarsimplescroller"},"udc_webconsentflow":{"params":{"url":""},"url":"https://www.google.com/settings/webconsent?usegapi\u003d1"},":source:":"3p","blogger":{"params":{"location":["search","hash"]},"url":":socialhost:/:session_prefix:_/widget/render/blogger?usegapi\u003d1","methods":["scroll","openwindow"]},"evwidget":{"params":{"url":""},"url":":socialhost:/:session_prefix:_/events/widget?usegapi\u003d1"},"partnersbadge":{"url":"https://www.gstatic.com/partners/badge/templates/badge.html?usegapi\u003d1"},":socialhost:":"https://apis.google.com","shortlists":{"url":""},"hangout":{"url":"https://talkgadget.google.com/:session_prefix:talkgadget/_/widget"},"plus_followers":{"params":{"url":""},"url":":socialhost:/_/im/_/widget/render/plus/followers?usegapi\u003d1"},"post":{"params":{"url":""},"url":":socialhost:/:session_prefix::im_prefix:_/widget/render/post?usegapi\u003d1"},":gplus_url:":"https://plus.google.com","signin":{"params":{"url":""},"url":":socialhost:/:session_prefix:_/widget/render/signin?usegapi\u003d1","methods":["onauth"]},"rbr_i":{"params":{"url":""},"url":":socialhost:/:session_prefix::se:_/widget/render/recobarinvitation"},"share":{"url":":socialhost:/:session_prefix::im_prefix:_/widget/render/share?usegapi\u003d1"},"plusone":{"params":{"count":"","size":"","url":""},"url":":socialhost:/:session_prefix::se:_/+1/fastbutton?usegapi\u003d1"},"comments":{"params":{"location":["search","hash"]},"url":":socialhost:/:session_prefix:_/widget/render/comments?usegapi\u003d1","methods":["scroll","openwindow"]},":im_socialhost:":"https://plus.googleapis.com","backdrop":{"url":"https://clients3.google.com/cast/chromecast/home/widget/backdrop?usegapi\u003d1"},"visibility":{"params":{"url":""},"url":":socialhost:/:session_prefix:_/widget/render/visibility?usegapi\u003d1"},"autocomplete":{"params":{"url":""},"url":":socialhost:/:session_prefix:_/widget/render/autocomplete"},"additnow":{"url":"https://apis.google.com/additnow/additnow.html?usegapi\u003d1","methods":["launchurl"]},":signuphost:":"https://plus.google.com","appcirclepicker":{"url":":socialhost:/:session_prefix:_/widget/render/appcirclepicker"},"follow":{"url":":socialhost:/:session_prefix:_/widget/render/follow?usegapi\u003d1"},"community":{"url":":ctx_socialhost:/:session_prefix::im_prefix:_/widget/render/community?usegapi\u003d1"},"sharetoclassroom":{"url":"https://www.gstatic.com/classroom/sharewidget/widget_stable.html?usegapi\u003d1"},"ytshare":{"params":{"url":""},"url":":socialhost:/:session_prefix:_/widget/render/ytshare?usegapi\u003d1"},"plus":{"url":":socialhost:/:session_prefix:_/widget/render/badge?usegapi\u003d1"},"family_creation":{"params":{"url":""},"url":"https://families.google.com/webcreation?usegapi\u003d1\u0026usegapi\u003d1"},"reportabuse":{"params":{"url":""},"url":":socialhost:/:session_prefix:_/widget/render/reportabuse?usegapi\u003d1"},"commentcount":{"url":":socialhost:/:session_prefix:_/widget/render/commentcount?usegapi\u003d1"},"configurator":{"url":":socialhost:/:session_prefix:_/plusbuttonconfigurator?usegapi\u003d1"},"zoomableimage":{"url":"https://ssl.gstatic.com/microscope/embed/"},"savetowallet":{"url":"https://clients5.google.com/s2w/o/savetowallet"},"person":{"url":":socialhost:/:session_prefix:_/widget/render/person?usegapi\u003d1"},"savetodrive":{"url":"https://drive.google.com/savetodrivebutton?usegapi\u003d1","methods":["save"]},"page":{"url":":socialhost:/:session_prefix:_/widget/render/page?usegapi\u003d1"},"card":{"url":":socialhost:/:session_prefix:_/hovercard/card"}}}];</script><script>(function(){var gapi=window.gapi=window.gapi||{};gapi._bs=new Date().getTime();(function(){var g=window,k=document,aa=g.location,ba=function(){},ca=/\[native code\]/,m=function(a,b,c){return a[b]=a[b]||c},da=function(a){for(var b=0;b<this.length;b++)if(this[b]===a)return b;return-1},ea=function(a){a=a.sort();for(var b=[],c=void 0,d=0;d<a.length;d++){var e=a[d];e!=c&&b.push(e);c=e}return b},n=function(){var a;if((a=Object.create)&&ca.test(a))a=a(null);else{a={};for(var b in a)a[b]=void 0}return a},q=m(g,"gapi",{});var r;r=m(g,"___jsl",n());m(r,"I",0);m(r,"hel",10);var x=function(){var a=aa.href,b;if(r.dpo)b=r.h;else{b=r.h;var c=RegExp("([#].*&|[#])jsh=([^&#]*)","g"),d=RegExp("([?#].*&|[?#])jsh=([^&#]*)","g");if(a=a&&(c.exec(a)||d.exec(a)))try{b=decodeURIComponent(a[2])}catch(e){}}return b},fa=function(a){var b=m(r,"PQ",[]);r.PQ=[];var c=b.length;if(0===c)a();else for(var d=0,e=function(){++d===c&&a()},f=0;f<c;f++)b[f](e)},B=function(a){return m(m(r,"H",n()),a,n())};var C=m(r,"perf",n()),D=m(C,"g",n()),ga=m(C,"i",n());m(C,"r",[]);n();n();var E=function(a,b,c){var d=C.r;"function"===typeof d?d(a,b,c):d.push([a,b,c])},H=function(a,b,c){b&&0<b.length&&(b=F(b),c&&0<c.length&&(b+="___"+F(c)),28<b.length&&(b=b.substr(0,28)+(b.length-28)),c=b,b=m(ga,"_p",n()),m(b,c,n())[a]=(new Date).getTime(),E(a,"_p",c))},F=function(a){return a.join("__").replace(/\./g,"_").replace(/\-/g,"_").replace(/\,/g,"_")};var I=n(),J=[],K=function(a){throw Error("Bad hint"+(a?": "+a:""));};J.push(["jsl",function(a){for(var b in a)if(Object.prototype.hasOwnProperty.call(a,b)){var c=a[b];"object"==typeof c?r[b]=m(r,b,[]).concat(c):m(r,b,c)}if(b=a.u)a=m(r,"us",[]),a.push(b),(b=/^https:(.*)$/.exec(b))&&a.push("http:"+b[1])}]);var ha=/^(\/[a-zA-Z0-9_\-]+)+$/,ia=/^[a-zA-Z0-9\-_\.,!]+$/,ja=/^gapi\.loaded_[0-9]+$/,ka=/^[a-zA-Z0-9,._-]+$/,oa=function(a,b,c,d){var e=a.split(";"),f=e.shift(),l=I[f],h=null;l?h=l(e,b,c,d):K("no hint processor for: "+f);h||K("failed to generate load url");b=h;c=b.match(la);(d=b.match(ma))&&1===d.length&&na.test(b)&&c&&1===c.length||K("failed sanity: "+a);return h},qa=function(a,b,c,d){a=pa(a);ja.test(c)||K("invalid_callback");b=L(b);d=d&&d.length?L(d):null;var e=function(a){return encodeURIComponent(a).replace(/%2C/g,
+",")};return[encodeURIComponent(a.g).replace(/%2C/g,",").replace(/%2F/g,"/"),"/k=",e(a.version),"/m=",e(b),d?"/exm="+e(d):"","/rt=j/sv=1/d=1/ed=1",a.a?"/am="+e(a.a):"",a.c?"/rs="+e(a.c):"",a.f?"/t="+e(a.f):"","/cb=",e(c)].join("")},pa=function(a){"/"!==a.charAt(0)&&K("relative path");for(var b=a.substring(1).split("/"),c=[];b.length;){a=b.shift();if(!a.length||0==a.indexOf("."))K("empty/relative directory");else if(0<a.indexOf("=")){b.unshift(a);break}c.push(a)}a={};for(var d=0,e=b.length;d<e;++d){var f=
+b[d].split("="),l=decodeURIComponent(f[0]),h=decodeURIComponent(f[1]);2==f.length&&l&&h&&(a[l]=a[l]||h)}b="/"+c.join("/");ha.test(b)||K("invalid_prefix");c=M(a,"k",!0);d=M(a,"am");e=M(a,"rs");a=M(a,"t");return{g:b,version:c,a:d,c:e,f:a}},L=function(a){for(var b=[],c=0,d=a.length;c<d;++c){var e=a[c].replace(/\./g,"_").replace(/-/g,"_");ka.test(e)&&b.push(e)}return b.join(",")},M=function(a,b,c){a=a[b];!a&&c&&K("missing: "+b);if(a){if(ia.test(a))return a;K("invalid: "+b)}return null},na=/^https?:\/\/[a-z0-9_.-]+\.google\.com(:\d+)?\/[a-zA-Z0-9_.,!=\-\/]+$/,
+ma=/\/cb=/g,la=/\/\//g,ra=/^\/[a-z_]+\//,sa=function(){var a=x();if(!a)throw Error("Bad hint");return a};I.m=function(a,b,c,d){(a=a[0])||K("missing_hint");return"https://apis.google.com"+qa(a,b,c,d)};var N=decodeURI("%73cript"),O=function(a,b){for(var c=[],d=0;d<a.length;++d){var e=a[d];e&&0>da.call(b,e)&&c.push(e)}return c},ta=function(a){"loading"!=k.readyState?P(a):k.write("<"+N+' src="'+encodeURI(a)+'"></'+N+">")},P=function(a){Q(a)},Q=function(a){var b=k.createElement(N);b.setAttribute("src",a);b.async="true";(a=k.getElementsByTagName(N)[0])?a.parentNode.insertBefore(b,a):(k.head||k.body||k.documentElement).appendChild(b)},ua=function(a,b){var c=b&&b._c;if(c)for(var d=0;d<J.length;d++){var e=
+J[d][0],f=J[d][1];f&&Object.prototype.hasOwnProperty.call(c,e)&&f(c[e],a,b)}},va=function(a,b,c){R(function(){var c;c=b===x()?m(q,"_",n()):n();c=m(B(b),"_",c);a(c)},c)},T=function(a,b){var c=b||{};"function"==typeof b&&(c={},c.callback=b);ua(a,c);var d=a?a.split(":"):[],e=c.h||sa(),f=m(r,"ah",n());if(f["::"]&&d.length){for(var l=[],h=null;h=d.shift();){var p=h.split("."),p=f[h]||f[p[1]&&"ns:"+p[0]||""]||e,y=l.length&&l[l.length-1]||null,z=y;y&&y.hint==p||(z={hint:p,b:[]},l.push(z));z.b.push(h)}var A=
+l.length;if(1<A){var w=c.callback;w&&(c.callback=function(){0==--A&&w()})}for(;d=l.shift();)S(d.b,c,d.hint)}else S(d||[],c,e)},S=function(a,b,c){a=ea(a)||[];var d=b.callback,e=b.config,f=b.timeout,l=b.ontimeout,h=b.onerror,p=void 0;"function"==typeof h&&(p=h);var y=null,z=!1;if(f&&!l||!f&&l)throw"Timeout requires both the timeout parameter and ontimeout parameter to be set";var h=m(B(c),"r",[]).sort(),A=m(B(c),"L",[]).sort(),w=[].concat(h),U=function(a,b){if(z)return 0;g.clearTimeout(y);A.push.apply(A,
+t);var d=((q||{}).config||{}).update;d?d(e):e&&m(r,"cu",[]).push(e);if(b){H("me0",a,w);try{va(b,c,p)}finally{H("me1",a,w)}}return 1};0<f&&(y=g.setTimeout(function(){z=!0;l()},f));var t=O(a,A);if(t.length){var t=O(a,h),u=m(r,"CP",[]),v=u.length;u[v]=function(a){if(!a)return 0;H("ml1",t,w);var b=function(b){u[v]=null;U(t,a)&&fa(function(){d&&d();b()})},c=function(){var a=u[v+1];a&&a()};0<v&&u[v-1]?u[v]=function(){b(c)}:b(c)};if(t.length){var G="loaded_"+r.I++;q[G]=function(a){u[v](a);q[G]=null};a=oa(c,
+t,"gapi."+G,h);h.push.apply(h,t);H("ml0",t,w);b.sync||g.___gapisync?ta(a):P(a,b,G)}else u[v](ba)}else U(t)&&d&&d()};var R=function(a,b){if(r.hee&&0<r.hel)try{return a()}catch(c){b&&b(c),r.hel--,T("debug_error",function(){try{window.___jsl.hefn(c)}catch(a){throw c;}})}else try{return a()}catch(c){throw b&&b(c),c;}};q.load=function(a,b){return R(function(){return T(a,b)})};var wa=/^(\/\* JS \*\/ ){0,1}gapi.loaded_\d+\(/,V=function(a,b,c,d){(d=d.before_eval_cb)&&d();g.execScript?g.execScript(b,"JavaScript"):c?a.eval(b):(a=a.document,c=a.createElement("script"),c.defer=!1,c.appendChild(a.createTextNode(b)),a.body.appendChild(c),a.body.removeChild(c))},xa=function(a,b,c,d){var e=g.XMLHttpRequest;a=a.replace(/^https?:\/\/[^\/]+\//,"/");if(!ra.test(a))throw"Bad URL "+a;var f=new e;f.open("GET",a,!0);f.onreadystatechange=function(){if(4===f.readyState)if(200===f.status){var e=
+f.responseText,h=b.src_cb;h&&h();var p=!1;window.GAPI_EVAL&&(e+="\n//@ sourceURL="+encodeURI(a),p=!0);h=function(){if(wa.test(e))V(g,e,p,b);else q[c](function(){V(this,e,p,b)})};d?d(h):h()}else throw"Error requesting "+a+": "+f.statusText+"\nCurrent location: "+location.href;};f.send(null)};var W="mousemove mouseover mousedown click touchstart keydown focus resize".split(" "),X=["onmouseover","onmousedown","onkeydown","onfocusin"],Y=function(){if(m(r,"LI",!1))return!0;r.LI=!0;return!1},Z=0,ya=function(){r.LE=!0;for(var a=r.LQ,b=0;a&&b<a.length;b++)(0,a[b])();r.LQ=null},za=function(){function a(a){for(var d=0;d<W.length;d++)g[a+"EventListener"](W[d],b,!0)}if(!Y()){var b=function(b){"resize"==b.type&&2>++Z||(a("remove"),ya())};a("add")}},Aa=function(){function a(a){for(var d=0;d<X.length;d++)k[a+
+"Event"](X[d],b)}if(!Y()){var b=function(b){if(!("resize"==b.type&&2>++Z)){a("detach");var d=k.createEventObject(b);ya();d.srcElement.fireEvent("on"+d.type,d);b.cancelBubble=!0;b.stopPropagation&&b.stopPropagation()}};a("attach")}},P=function(a,b,c){var d=!0;g.XMLHttpRequest&&!/\/widget\//.test(a)&&g.JSON?g.addEventListener?za():k.attachEvent&&k.createEventObject?Aa():d=!1:d=!1;d?xa(a,b,c,function(a){r.LE?a():m(r,"LQ",[]).push(a)}):Q(a)};D.bs0=window.gapi._bs||(new Date).getTime();E("bs0");D.bs1=(new Date).getTime();E("bs1");delete window.gapi._bs;})();
+gapi.load("",{callback:window["gapi_onload"],_c:{"jsl":{"ci":{"deviceType":"desktop","oauth-flow":{"authUrl":"https://accounts.google.com/o/oauth2/auth","proxyUrl":"https://accounts.google.com/o/oauth2/postmessageRelay","disableOpt":true,"idpIframeUrl":"https://accounts.google.com/o/oauth2/iframe","usegapi":false},"debug":{"reportExceptionRate":0.05,"forceIm":false,"rethrowException":false,"host":"https://apis.google.com"},"lexps":[81,97,99,122,123,30,79,127],"enableMultilogin":true,"googleapis.config":{"auth":{"useFirstPartyAuthV2":true}},"isPlusUser":true,"inline":{"css":1},"disableRealtimeCallback":false,"drive_share":{"skipInitCommand":true},"csi":{"rate":0.01},"report":{"apiRate":{"gapi\\.signin\\..*":0.05,"gapi\\.signin2\\..*":0.05},"apis":["iframes\\..*","gadgets\\..*","gapi\\.appcirclepicker\\..*","gapi\\.auth\\..*","gapi\\.client\\..*"],"rate":0.001,"host":"https://apis.google.com"},"client":{"headers":{"request":["Accept","Accept-Language","Authorization","Cache-Control","Content-Disposition","Content-Encoding","Content-Language","Content-Length","Content-MD5","Content-Range","Content-Type","Date","GData-Version","Host","If-Match","If-Modified-Since","If-None-Match","If-Unmodified-Since","Origin","OriginToken","Pragma","Range","Slug","Transfer-Encoding","Want-Digest","X-ClientDetails","X-GData-Client","X-GData-Key","X-Goog-AuthUser","X-Goog-PageId","X-Goog-Encode-Response-If-Executable","X-Goog-Correlation-Id","X-Goog-Request-Info","X-Goog-Experiments","x-goog-iam-authority-selector","x-goog-iam-authorization-token","X-Goog-Spatula","X-Goog-Upload-Command","X-Goog-Upload-Content-Disposition","X-Goog-Upload-Content-Length","X-Goog-Upload-Content-Type","X-Goog-Upload-File-Name","X-Goog-Upload-Offset","X-Goog-Upload-Protocol","X-Goog-Visitor-Id","X-HTTP-Method-Override","X-JavaScript-User-Agent","X-Pan-Versionid","X-Origin","X-Referer","X-Upload-Content-Length","X-Upload-Content-Type","X-Use-HTTP-Status-Code-Override","X-Ios-Bundle-Identifier","X-Android-Package","X-YouTube-VVT","X-YouTube-Page-CL","X-YouTube-Page-Timestamp"],"response":["Digest","Cache-Control","Content-Disposition","Content-Encoding","Content-Language","Content-Length","Content-MD5","Content-Range","Content-Type","Date","ETag","Expires","Last-Modified","Location","Pragma","Range","Server","Transfer-Encoding","WWW-Authenticate","Vary","Unzipped-Content-MD5","X-Goog-Generation","X-Goog-Metageneration","X-Goog-Safety-Content-Type","X-Goog-Safety-Encoding","X-Google-Trace","X-Goog-Upload-Chunk-Granularity","X-Goog-Upload-Control-URL","X-Goog-Upload-Size-Received","X-Goog-Upload-Status","X-Goog-Upload-URL","X-Goog-Diff-Download-Range","X-Goog-Hash","X-Goog-Updated-Authorization","X-Server-Object-Version","X-Guploader-Customer","X-Guploader-Upload-Result","X-Guploader-Uploadid","X-Google-Gfe-Backend-Request-Cost"]},"rms":"migrated","cors":false},"isLoggedIn":true,"signInDeprecation":{"rate":0.0},"include_granted_scopes":true,"llang":"en","plus_layer":{"isEnabled":false},"iframes":{"youtube":{"params":{"location":["search","hash"]},"url":":socialhost:/:session_prefix:_/widget/render/youtube?usegapi\u003d1","methods":["scroll","openwindow"]},"ytsubscribe":{"url":"https://www.youtube.com/subscribe_embed?usegapi\u003d1"},"plus_circle":{"params":{"url":""},"url":":socialhost:/:session_prefix::se:_/widget/plus/circle?usegapi\u003d1"},"plus_share":{"params":{"url":""},"url":":socialhost:/:session_prefix::se:_/+1/sharebutton?plusShare\u003dtrue\u0026usegapi\u003d1"},"rbr_s":{"params":{"url":""},"url":":socialhost:/:session_prefix::se:_/widget/render/recobarsimplescroller"},"udc_webconsentflow":{"params":{"url":""},"url":"https://www.google.com/settings/webconsent?usegapi\u003d1"},":source:":"3p","blogger":{"params":{"location":["search","hash"]},"url":":socialhost:/:session_prefix:_/widget/render/blogger?usegapi\u003d1","methods":["scroll","openwindow"]},"evwidget":{"params":{"url":""},"url":":socialhost:/:session_prefix:_/events/widget?usegapi\u003d1"},"partnersbadge":{"url":"https://www.gstatic.com/partners/badge/templates/badge.html?usegapi\u003d1"},":socialhost:":"https://apis.google.com","shortlists":{"url":""},"hangout":{"url":"https://talkgadget.google.com/:session_prefix:talkgadget/_/widget"},"plus_followers":{"params":{"url":""},"url":":socialhost:/_/im/_/widget/render/plus/followers?usegapi\u003d1"},"post":{"params":{"url":""},"url":":socialhost:/:session_prefix::im_prefix:_/widget/render/post?usegapi\u003d1"},":gplus_url:":"https://plus.google.com","signin":{"params":{"url":""},"url":":socialhost:/:session_prefix:_/widget/render/signin?usegapi\u003d1","methods":["onauth"]},"rbr_i":{"params":{"url":""},"url":":socialhost:/:session_prefix::se:_/widget/render/recobarinvitation"},"share":{"url":":socialhost:/:session_prefix::im_prefix:_/widget/render/share?usegapi\u003d1"},"plusone":{"params":{"count":"","size":"","url":""},"url":":socialhost:/:session_prefix::se:_/+1/fastbutton?usegapi\u003d1"},"comments":{"params":{"location":["search","hash"]},"url":":socialhost:/:session_prefix:_/widget/render/comments?usegapi\u003d1","methods":["scroll","openwindow"]},":im_socialhost:":"https://plus.googleapis.com","backdrop":{"url":"https://clients3.google.com/cast/chromecast/home/widget/backdrop?usegapi\u003d1"},"visibility":{"params":{"url":""},"url":":socialhost:/:session_prefix:_/widget/render/visibility?usegapi\u003d1"},"autocomplete":{"params":{"url":""},"url":":socialhost:/:session_prefix:_/widget/render/autocomplete"},"additnow":{"url":"https://apis.google.com/additnow/additnow.html?usegapi\u003d1","methods":["launchurl"]},":signuphost:":"https://plus.google.com","appcirclepicker":{"url":":socialhost:/:session_prefix:_/widget/render/appcirclepicker"},"follow":{"url":":socialhost:/:session_prefix:_/widget/render/follow?usegapi\u003d1"},"community":{"url":":ctx_socialhost:/:session_prefix::im_prefix:_/widget/render/community?usegapi\u003d1"},"sharetoclassroom":{"url":"https://www.gstatic.com/classroom/sharewidget/widget_stable.html?usegapi\u003d1"},"ytshare":{"params":{"url":""},"url":":socialhost:/:session_prefix:_/widget/render/ytshare?usegapi\u003d1"},"plus":{"url":":socialhost:/:session_prefix:_/widget/render/badge?usegapi\u003d1"},"family_creation":{"params":{"url":""},"url":"https://families.google.com/webcreation?usegapi\u003d1\u0026usegapi\u003d1"},"reportabuse":{"params":{"url":""},"url":":socialhost:/:session_prefix:_/widget/render/reportabuse?usegapi\u003d1"},"commentcount":{"url":":socialhost:/:session_prefix:_/widget/render/commentcount?usegapi\u003d1"},"configurator":{"url":":socialhost:/:session_prefix:_/plusbuttonconfigurator?usegapi\u003d1"},"zoomableimage":{"url":"https://ssl.gstatic.com/microscope/embed/"},"savetowallet":{"url":"https://clients5.google.com/s2w/o/savetowallet"},"person":{"url":":socialhost:/:session_prefix:_/widget/render/person?usegapi\u003d1"},"savetodrive":{"url":"https://drive.google.com/savetodrivebutton?usegapi\u003d1","methods":["save"]},"page":{"url":":socialhost:/:session_prefix:_/widget/render/page?usegapi\u003d1"},"card":{"url":":socialhost:/:session_prefix:_/hovercard/card"}}},"h":"m;/_/scs/apps-static/_/js/k\u003doz.gapi.en_US.DVeMWrcBdMY.O/m\u003d__features__/am\u003dEQ/rt\u003dj/d\u003d1/rs\u003dAGLTcCM3sDN06jszXFuivyMTSv5XxKaaiQ","u":"https://apis.google.com/u/0/_/widget/render/comments?usegapi\u003d1\u0026width\u003d725\u0026href\u003dhttp://www.jameselsey.co.uk/blogs/techblog/tesseract-ocr-on-android-is-easier-if-you-maven-ise-it-works-on-windows-too/\u0026first_party_property\u003dBLOGGER\u0026view_type\u003dFILTERED_POSTMOD\u0026hl\u003den-US\u0026origin\u003dhttp://www.jameselsey.co.uk\u0026search\u0026hash\u0026gsrc\u003d3p\u0026ic\u003d1\u0026jsh\u003dm;/_/scs/apps-static/_/js/k%3Doz.gapi.es.-oQ-WcOtTVI.O/m%3D__features__/am%3DEQ/rt%3Dj/d%3D1/rs%3DAGLTcCOlpENifU9RK7clc9uz8DplkrY8JQ","hee":true,"fp":"c952c58ac57ee9bedeeaefe6f84a20b4270a46d3","dpo":false},"fp":"c952c58ac57ee9bedeeaefe6f84a20b4270a46d3","annotation":["interactivepost","recobar","signin2","autocomplete","profile"],"bimodal":["signin","share"]}});var s = 'GAPI_INTERACTIVE'; window[s] = 'loading'; var c = 0; function cb() {if (++c == 2) {window[s] = 'interactive'; gapi.inline.ping('widget-interactive-' + window.name);}}gapi.load('gapi.iframes,gapi.iframes.style.common,gapi.iframes.iframer', {'callback': function() {cb();var sw = window['__sw']; if (sw) {sw();}var sz = __sp(); if (sz) {iframes.ready(sz, {'canAutoClose': function() {var f = window['__CAN_AUTOCLOSE_BUBBLE']; return f ? f() : true;}, 'showSharebox': function() {var f = window['__SHOW_SHAREBOX']; return f ? f() : false;}});}}, 'src_cb': cb, 'before_eval_cb': function() {gapi.inline.tick('wje0', new Date().getTime());}});gapi.load('c_b', {'h': 'm;\/_\/scs\/apps-static\/_\/js\/k\x3doz.comments_widget.en_US.lzvA7qxOtzY.O\/m\x3dc_b\/am\x3dQA\/rt\x3dj\/d\x3d1\/rs\x3dAGLTcCO-iRBXsXw-rEBDFuWgcHLrAiuoEg','callback': function() {cb();gapi.inline.tick('wje1', new Date().getTime());}, 'src_cb': cb});})(); gapi_sendRenderStart();</script></body></html>

@@ -1,15 +1,20 @@
 package cl.bananaware.hwoc;
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
@@ -21,6 +26,8 @@ import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import com.googlecode.tesseract.android.TessBaseAPI;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
@@ -53,11 +60,15 @@ public class ImageViewer extends Activity {
     private final boolean ADD_STEPS_TO_VIEW = true;
     List<Mat> finalCandidates = new ArrayList<Mat>();
     List<Mat> processSteps = new ArrayList<Mat>();
+
+
+    final int REQUEST_CODE_WRITE_EXTERNAL_PERMISSIONS= 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cameraview);
         fillMap();
+        getStorageAccessPermissions(); // Request storage read/write permissions from the user
     }
     public void onResume()
     {
@@ -81,6 +92,27 @@ public class ImageViewer extends Activity {
 
         long time1 = System.currentTimeMillis();
         CandidatesFinder candidatesFinder;
+
+
+
+        TessBaseAPI baseApi = new TessBaseAPI();
+        // DATA_PATH = Path to the storage
+        // lang = for which the language data exists, usually "eng"
+        final String lang = "eng";
+        final String DATA_PATH = Environment.getExternalStorageDirectory() + "/DCIM/tessdata/";
+        baseApi.init(DATA_PATH, lang);
+        // Eg. baseApi.init("/mnt/sdcard/tesseract/tessdata/eng.traineddata", "eng");
+        /*Mat m = candidateSelector.GetFinalImage(true);
+        Bitmap bmp = Bitmap.createBitmap(m.cols(), m.rows(), Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(m, bmp);
+        baseApi.setImage(bmp);
+        String recognizedText = baseApi.getUTF8Text();
+        Log.d("output", recognizedText);
+        baseApi.end();
+        */
+        if (true)
+            return;
+
 
         Bitmap b;
         if (MainActivity.TAKE_PICTURE)
@@ -450,13 +482,24 @@ public class ImageViewer extends Activity {
             Log.d("Times", "i=" + i + " Time 25-26: " + String.valueOf(time26-time25) + " Suma: " + String.valueOf(time26-time1));
             Log.d("Times", "i=" + i + " Time 26-27: " + String.valueOf(time27-time26) + " Suma: " + String.valueOf(time27-time1));
             Log.d("Times", "----------------------------");
+
+
         }
+
+
+
         long time100 = System.currentTimeMillis();
         Log.d("Times", " Suma Final: " + String.valueOf(time100-time1));
         InitializeGallery();
         //DrawImages();
     }
-
+    @TargetApi(23)
+    private void getStorageAccessPermissions() {
+        int hasWriteStoragePermission = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (hasWriteStoragePermission != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_WRITE_EXTERNAL_PERMISSIONS);
+        }
+    }
     private Mat PutContourns(Mat currentImage, List<MatOfPoint> lastGreenCandidates, List<MatOfPoint> lastBlueCandidates) {
         Imgproc.cvtColor(currentImage, currentImage, Imgproc.COLOR_GRAY2RGB); //Convert to gray scale
         if (lastGreenCandidates != null)

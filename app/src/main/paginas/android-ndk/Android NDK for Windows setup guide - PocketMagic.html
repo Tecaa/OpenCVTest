@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<!-- saved from url=(0076)http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#.US4Cgzsqdj7 -->
+<html lang="en-US" prefix="og: http://ogp.me/ns#" class="has-cookie-bar cookie-bar-top-bar cookie-bar-bar" style="margin-top: 61px;"><!--<![endif]--><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="profile" href="http://gmpg.org/xfn/11">
+		<link rel="pingback" href="http://www.pocketmagic.net/xmlrpc.php">
+	<title>Android NDK for Windows setup guide - PocketMagic</title>
+
+<!-- This site is optimized with the Yoast SEO plugin v3.4.1 - https://yoast.com/wordpress/plugins/seo/ -->
+<link rel="canonical" href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/">
+<meta property="og:locale" content="en_US">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android NDK for Windows setup guide - PocketMagic">
+<meta property="og:description" content="See how to configure Android NDK with Windows and build your JNI project in a few easy steps.">
+<meta property="og:url" content="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/">
+<meta property="og:site_name" content="PocketMagic">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="jni">
+<meta property="article:tag" content="native code">
+<meta property="article:tag" content="ndk">
+<meta property="article:tag" content="Windows">
+<meta property="article:section" content="Android">
+<meta property="article:published_time" content="2010-08-24T20:14:11+00:00">
+<meta property="og:image" content="http://www.pocketmagic.net/wp-content/uploads/2010/08/2.1.JPG">
+<meta property="og:image:width" content="1068">
+<meta property="og:image:height" content="657">
+<!-- / Yoast SEO plugin. -->
+
+<link rel="alternate" type="application/rss+xml" title="PocketMagic » Feed" href="http://www.pocketmagic.net/feed/">
+<link rel="alternate" type="application/rss+xml" title="PocketMagic » Comments Feed" href="http://www.pocketmagic.net/comments/feed/">
+<link rel="alternate" type="application/rss+xml" title="PocketMagic » Android NDK for Windows setup guide Comments Feed" href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/feed/">
+		<script type="text/javascript" async="" src="./Android NDK for Windows setup guide - PocketMagic_files/_Incapsula_Resource"></script><script src="./Android NDK for Windows setup guide - PocketMagic_files/cb=gapi.loaded_0" async=""></script><script type="text/javascript" async="" src="./Android NDK for Windows setup guide - PocketMagic_files/plusone.js" gapi_processed="true"></script><script type="text/javascript" async="" src="./Android NDK for Windows setup guide - PocketMagic_files/ga.js"></script><script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/72x72\/","ext":".png","source":{"concatemoji":"http:\/\/www.pocketmagic.net\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.5.3"}};
+			!function(a,b,c){function d(a){var c,d,e,f=b.createElement("canvas"),g=f.getContext&&f.getContext("2d"),h=String.fromCharCode;if(!g||!g.fillText)return!1;switch(g.textBaseline="top",g.font="600 32px Arial",a){case"flag":return g.fillText(h(55356,56806,55356,56826),0,0),f.toDataURL().length>3e3;case"diversity":return g.fillText(h(55356,57221),0,0),c=g.getImageData(16,16,1,1).data,d=c[0]+","+c[1]+","+c[2]+","+c[3],g.fillText(h(55356,57221,55356,57343),0,0),c=g.getImageData(16,16,1,1).data,e=c[0]+","+c[1]+","+c[2]+","+c[3],d!==e;case"simple":return g.fillText(h(55357,56835),0,0),0!==g.getImageData(16,16,1,1).data[0];case"unicode8":return g.fillText(h(55356,57135),0,0),0!==g.getImageData(16,16,1,1).data[0]}return!1}function e(a){var c=b.createElement("script");c.src=a,c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var f,g,h,i;for(i=Array("simple","flag","unicode8","diversity"),c.supports={everything:!0,everythingExceptFlag:!0},h=0;h<i.length;h++)c.supports[i[h]]=d(i[h]),c.supports.everything=c.supports.everything&&c.supports[i[h]],"flag"!==i[h]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[i[h]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(g=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",g,!1),a.addEventListener("load",g,!1)):(a.attachEvent("onload",g),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),f=c.source||{},f.concatemoji?e(f.concatemoji):f.wpemoji&&f.twemoji&&(e(f.twemoji),e(f.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script><script src="./Android NDK for Windows setup guide - PocketMagic_files/wp-emoji-release.min.js" type="text/javascript"></script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<link rel="stylesheet" id="cookie-consent-style-css" href="./Android NDK for Windows setup guide - PocketMagic_files/style.css" type="text/css" media="all">
+<link rel="stylesheet" id="front-css-yuzo_related_post-css" href="./Android NDK for Windows setup guide - PocketMagic_files/style(1).css" type="text/css" media="all">
+<link rel="stylesheet" id="custom-style-css" href="./Android NDK for Windows setup guide - PocketMagic_files/custom-style.css" type="text/css" media="all">
+<style id="custom-style-inline-css" type="text/css">
+.brand {font-family:Arial, sans-serif; font-weight:Normal; font-size:16px;  color:#333333; }
+h1, h2, h3, h4, h5, h6 {font-family:Arial, sans-serif; font-weight:Normal;  color:#333333; }
+body, p {font-family:Cambria, Georgia, serif; font-weight:Normal; font-size:14px;  color:#333333; }
+.posttitle {font-family:Arial, sans-serif; font-weight:Normal; font-size:16px;  color:#333333; }
+.widget-title {font-family:Arial, sans-serif; font-weight:Normal; font-size:16px;  color:#333333; }
+.container {
+   width: 1200px;
+}
+.sidebar {
+max-width: 220px !important;
+}
+
+div.col-sm-6.col-md-6.col-lg-6 {
+width: 56%;
+}
+
+div#sidebar.col-sm-3.col-md-3.col-lg-3 {
+width: 22%;
+}
+</style>
+<link rel="stylesheet" id="bootstrap-css" href="./Android NDK for Windows setup guide - PocketMagic_files/bootstrap.min.css" type="text/css" media="all">
+<link rel="stylesheet" id="fontawesome-css" href="./Android NDK for Windows setup guide - PocketMagic_files/font-awesome.min.css" type="text/css" media="all">
+<link rel="stylesheet" id="google_fonts-css" href="./Android NDK for Windows setup guide - PocketMagic_files/css" type="text/css" media="all">
+<link rel="stylesheet" id="prpin-style-css" href="./Android NDK for Windows setup guide - PocketMagic_files/style(2).css" type="text/css" media="all">
+<script type="text/javascript" src="./Android NDK for Windows setup guide - PocketMagic_files/jquery.js"></script>
+<script type="text/javascript" src="./Android NDK for Windows setup guide - PocketMagic_files/jquery-migrate.min.js"></script>
+<link rel="https://api.w.org/" href="http://www.pocketmagic.net/wp-json/">
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.pocketmagic.net/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.pocketmagic.net/wp-includes/wlwmanifest.xml"> 
+<meta name="generator" content="WordPress 4.5.3">
+<link rel="shortlink" href="http://www.pocketmagic.net/?p=1332">
+<link rel="alternate" type="application/json+oembed" href="http://www.pocketmagic.net/wp-json/oembed/1.0/embed?url=http%3A%2F%2Fwww.pocketmagic.net%2Fandroid-ndk-for-windows-setup-guide%2F">
+<link rel="alternate" type="text/xml+oembed" href="http://www.pocketmagic.net/wp-json/oembed/1.0/embed?url=http%3A%2F%2Fwww.pocketmagic.net%2Fandroid-ndk-for-windows-setup-guide%2F&amp;format=xml">
+<!-- Begin Analytics plugin -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-37133198-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script><style id="ctcc-css" type="text/css" media="screen">
+			#catapult-cookie-bar {
+				box-sizing: border-box;
+				max-height: 0;
+				opacity: 0;
+				z-index: 99999;
+				overflow: hidden;
+				color: #ddd;
+				position: fixed;
+				left: 0;
+				top: 0;
+				width: 100%;
+				background-color: #464646;
+			}
+			#catapult-cookie-bar a {
+				color: #fff;
+			}
+			button#catapultCookie {
+				background:;
+				color: ;
+				border: 0; padding: 6px 9px; border-radius: 3px;
+			}
+			#catapult-cookie-bar h3 {
+				color: #ddd;
+			}
+			.has-cookie-bar #catapult-cookie-bar {
+				opacity: 1;
+				max-height: 999px;
+				min-height: 30px;
+			}</style>
+<style type="text/css"></style>
+
+<style type="text/css">
+.synved-social-resolution-single {
+display: inline-block;
+}
+.synved-social-resolution-normal {
+display: inline-block;
+}
+.synved-social-resolution-hidef {
+display: none;
+}
+
+@media only screen and (min--moz-device-pixel-ratio: 2),
+only screen and (-o-min-device-pixel-ratio: 2/1),
+only screen and (-webkit-min-device-pixel-ratio: 2),
+only screen and (min-device-pixel-ratio: 2),
+only screen and (min-resolution: 2dppx),
+only screen and (min-resolution: 192dpi) {
+	.synved-social-resolution-normal {
+	display: none;
+	}
+	.synved-social-resolution-hidef {
+	display: inline-block;
+	}
+}
+</style>
+	<style type="text/css" id="prpin-header-css">
+			.site-title {
+			color: #0000ff;
+		}
+		</style>
+	</head>
+<body class="single single-post postid-1332 single-format-standard">
+<div id="navbar"> 
+<nav class="navbar  navbar-inverse navbar-fixed-top" role="navigation">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="container">
+        <div class="navbar-header">
+    		     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+			     <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+ 
+       <a class="navbar-brand" href="http://www.pocketmagic.net/">
+            <i class="fa fa-home"></i> 
+            </a>  
+        </div>
+<div class="menu-menu-container"><ul id="menu-menu" class="nav navbar-nav collapse navbar-collapse"><li id="menu-item-5685" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5685"><a title="Links" href="http://www.pocketmagic.net/links/">Links</a></li>
+<li id="menu-item-5686" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-5686"><a title="Facebook" href="http://www.facebook.com/pocketmagic.net">Facebook</a></li>
+<li id="menu-item-5687" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-5687"><a title="Youtube" href="https://www.youtube.com/user/radumotisan">Youtube</a></li>
+<li id="menu-item-5684" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5684"><a title="About" href="http://www.pocketmagic.net/about/">About</a></li>
+</ul></div> 		  <div class="pull-right">
+						
+	<div class="pull-right">
+ <form class="navbar-form" role="search" method="get" id="searchform" action="http://www.pocketmagic.net/">
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Search" name="s" id="s" value="">   </div>     
+    </form>
+  </div> 
+			
+					<a href="http://www.pocketmagic.net/feed/" title="Subscribe to our RSS Feed" class="social pull-right"><i class="fa fa-rss fa-lg"></i></a>					
+						<a href="https://plus.google.com/107696732307530214672/" title="Find us on Google+" class="social pull-right"><i class="fa fa-google-plus fa-lg"></i></a>
+						<a href="https://ro.linkedin.com/in/radumotisan" title="Find us on Linkedin" class="social pull-right"><i class="fa fa-linkedin fa-lg"></i></a>	
+											<a href="https://ro.pinterest.com/radhootech/" title="Find us on Pinterest" class="social pull-right"><i class="fa fa-pinterest fa-lg"></i></a>	
+											<a href="http://twitter.com/RaduMotisan" title="Follow us on Twitter" class="social pull-right"><i class="fa fa-twitter fa-lg"></i></a>
+										<a href="http://www.facebook.com/radu.motisan" title="Find us on Facebook" class="social pull-right"><i class="fa fa-facebook fa-lg"></i></a>
+							</div> <!-- collapse -->
+      </div> <!-- container -->
+</nav>
+</div> <!-- #navbar -->
+<div class="site-header"></div> 
+ 
+<!-- //header.php --> 
+
+ <div class="container"> 
+	<div id="content">
+		<div class="row">
+		<div id="sidebar" class="col-sm-3 col-md-3 col-lg-3"><div class="sidebar-inner"><div id="sidebar-left" class="sidebar">
+
+<!-- Quick Adsense Wordpress Plugin: http://quicksense.net/ -->
+<div id="adswidget1-quick-adsense" class="widget �lambda_811">
+<script async="" src="http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- Pocketmagic-08-responsive -->
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9192834732696651" data-ad-slot="7360686577" data-ad-format="auto"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</div><div id="yuzo_widget-2" class="widget yuzo_widget_wrap"><h3 class="widget-title"><span>Related posts</span></h3><div class="yuzo_related_post_widget style-1" data-version="5.12.45">
+					  <div class="relatedthumb" style="width: 207px; float: left; overflow: hidden; height: 181px;"><span class="equalizer-inner" style="display:block;">  
+						  
+						  <a rel="external" href="http://www.pocketmagic.net/developing-for-google-android-the-sdk/">
+								  <div class="yuzo-img-wrap  ilen_shine " style="width: 207px;height:117px;">
+									 <span class="shine-effect"></span> 
+									<div class="yuzo-img" style="background:url(&#39;http://www.pocketmagic.net/wp-content/uploads/2009/05/sdk-1-150x150.jpg&#39;) 50% 50% no-repeat;width: 207px;height:117px;margin-bottom: 5px;background-size: cover; "></div>
+								  </div>
+							<div style="margin-top:10px;margin-bottom:15px;font-size:13px;;">Developing for Google Android – the SDK</div>
+									<div style="clear:both;display:block;"></div>
+						  
+						<div style="clear:both;display:block;"></div>
+						</a> </span></div>
+					  <div class="relatedthumb" style="width: 207px; float: left; overflow: hidden; height: 181px;"><span class="equalizer-inner" style="display:block;">  
+						  
+						  <a rel="external" href="http://www.pocketmagic.net/android-ndk-cygwin-make-error-127/">
+								  <div class="yuzo-img-wrap  ilen_shine " style="width: 207px;height:117px;">
+									 <span class="shine-effect"></span> 
+									<div class="yuzo-img" style="background:url(&#39;http://www.pocketmagic.net/wp-content/uploads/2010/11/android_ndk_make_error_127-150x126.jpg&#39;) 50% 50% no-repeat;width: 207px;height:117px;margin-bottom: 5px;background-size: cover; "></div>
+								  </div>
+							<div style="margin-top:10px;margin-bottom:15px;font-size:13px;;">Android NDK Cygwin make error 127</div>
+									<div style="clear:both;display:block;"></div>
+						  
+						<div style="clear:both;display:block;"></div>
+						</a> </span></div>
+					  <div class="relatedthumb" style="width: 207px; float: left; overflow: hidden; height: 181px;"><span class="equalizer-inner" style="display:block;">  
+						  
+						  <a rel="external" href="http://www.pocketmagic.net/android-contacts-invoke-the-edit-contact-intent/">
+								  <div class="yuzo-img-wrap  ilen_shine " style="width: 207px;height:117px;">
+									 <span class="shine-effect"></span> 
+									<div class="yuzo-img" style="background:url(&#39;http://www.pocketmagic.net/wp-content/uploads/2011/03/pocketmagic.net-android-contacts-open-intent-1-150x150.jpg&#39;) 50% 50% no-repeat;width: 207px;height:117px;margin-bottom: 5px;background-size: cover; "></div>
+								  </div>
+							<div style="margin-top:10px;margin-bottom:15px;font-size:13px;;">Android Contacts – Invoke the Edit Contact I...</div>
+									<div style="clear:both;display:block;"></div>
+						  
+						<div style="clear:both;display:block;"></div>
+						</a> </span></div>
+					  <div class="relatedthumb" style="width: 207px; float: left; overflow: hidden; height: 181px;"><span class="equalizer-inner" style="display:block;">  
+						  
+						  <a rel="external" href="http://www.pocketmagic.net/google-tango-hackathon-in-timisoara/">
+								  <div class="yuzo-img-wrap  ilen_shine " style="width: 207px;height:117px;">
+									 <span class="shine-effect"></span> 
+									<div class="yuzo-img" style="background:url(&#39;http://www.pocketmagic.net/wp-content/uploads/2014/05/tango_camera_depth_representation-150x150.jpg&#39;) 50% 50% no-repeat;width: 207px;height:117px;margin-bottom: 5px;background-size: cover; "></div>
+								  </div>
+							<div style="margin-top:10px;margin-bottom:15px;font-size:13px;;">Google Tango Hackathon in Timisoara</div>
+									<div style="clear:both;display:block;"></div>
+						  
+						<div style="clear:both;display:block;"></div>
+						</a> </span></div>
+					  <div class="relatedthumb" style="width: 207px; float: left; overflow: hidden; height: 181px;"><span class="equalizer-inner" style="display:block;">  
+						  
+						  <a rel="external" href="http://www.pocketmagic.net/android-on-hd2-htc-leo-install_failed_insufficient_storage/">
+								  <div class="yuzo-img-wrap  ilen_shine " style="width: 207px;height:117px;">
+									 <span class="shine-effect"></span> 
+									<div class="yuzo-img" style="background:url(&#39;http://www.pocketmagic.net/wp-content/uploads/2010/11/android-hd2-insufficient-storage-150x86.jpg&#39;) 50% 50% no-repeat;width: 207px;height:117px;margin-bottom: 5px;background-size: cover; "></div>
+								  </div>
+							<div style="margin-top:10px;margin-bottom:15px;font-size:13px;;">Android on HD2 (HTC Leo) INSTALL_FAILED_INSUFFICIE...</div>
+									<div style="clear:both;display:block;"></div>
+						  
+						<div style="clear:both;display:block;"></div>
+						</a> </span></div>
+					  <div class="relatedthumb" style="width: 207px; float: left; overflow: hidden; height: 181px;"><span class="equalizer-inner" style="display:block;">  
+						  
+						  <a rel="external" href="http://www.pocketmagic.net/android-unable-to-open-sync-connection-error/">
+								  <div class="yuzo-img-wrap  ilen_shine " style="width: 207px;height:117px;">
+									 <span class="shine-effect"></span> 
+									<div class="yuzo-img" style="background:url(&#39;http://www.pocketmagic.net/wp-content/uploads/2011/07/adb-sync-error-150x57.jpg&#39;) 50% 50% no-repeat;width: 207px;height:117px;margin-bottom: 5px;background-size: cover; "></div>
+								  </div>
+							<div style="margin-top:10px;margin-bottom:15px;font-size:13px;;">Android “Unable to open sync connection̶...</div>
+									<div style="clear:both;display:block;"></div>
+						  
+						<div style="clear:both;display:block;"></div>
+						</a> </span></div></div> 
+ <style>
+						.yuzo_related_post_widget img{width:207px !important; height:117px !important;}
+						.yuzo_related_post_widget .relatedthumb{line-height:15px;background: !important;}.yuzo_related_post_widget .relatedthumb:hover{background:#fcfcf4 !important; -webkit-transition: background 0.2 s linear; -moz-transition: background 0.2 s linear; -o-transition: background 0.2 s linear; transition: background 0.2 s linear;}
+					.yuzo_related_post_widget .relatedthumb a{color:#444444;}
+					.yuzo_related_post_widget .yuzo_text, .yuzo_related_post .yuzo_views_post {color:!important;}
+					.yuzo_related_post_widget .relatedthumb:hover .yuzo_text, .yuzo_related_post:hover .yuzo_views_post {color:!important;}
+					.yuzo_related_post_widget .relatedthumb{  margin: 0px  8px  0px  0px!important;   padding: 5px  5px  5px  5px!important;  }
+					.yuzo_related_post_widget .relatedthumb{}
+					</style> <script>
+jQuery(document).ready(function() {
+	jQuery('.yuzo_related_post_widget').equalizer({ columns : '> div' });
+});
+</script> 
+ <div class="yuzo_clearfixed"></div>
+</div><div id="meta-2" class="widget widget_meta"><h4 class="widget-title">Blog options</h4>			<ul>
+						<li><a rel="nofollow" href="http://www.pocketmagic.net/wp-login.php">Log in</a></li>
+			<li><a href="http://www.pocketmagic.net/feed/">Entries <abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="http://www.pocketmagic.net/comments/feed/">Comments <abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="https://wordpress.org/" title="Powered by WordPress, state-of-the-art semantic personal publishing platform.">WordPress.org</a></li>			</ul>
+			</div><div id="execphp-2" class="widget widget_execphp"><h4 class="widget-title">Online Goodies</h4>			<div class="execphpwidget"><a href="http://www.thousandwishes.net/best-orange-chocolate-cake"><img src="./Android NDK for Windows setup guide - PocketMagic_files/00_cover_best_orange_chocolate_cake-200x160.jpg"><br>Best orange chocolate cake</a><br><br><a href="http://www.thousandwishes.net/hawaiian-cocktail-recipe"><img src="./Android NDK for Windows setup guide - PocketMagic_files/39_hawaiian_cocktail_recipe-1-200x160.jpg"><br>Hawaiian cocktail recipe</a><br><br><a href="http://www.thousandwishes.net/emerald-look-leonidas-chocolaterie"><img src="./Android NDK for Windows setup guide - PocketMagic_files/09_emerald_skirt_beaded_collar_flared_shirt-200x160.jpg"><br>Emerald look at Leonidas Chocolaterie</a></div>
+		</div></div></div></div>			<div class="col-sm-6 col-md-6 col-lg-6">			
+										<div id="post-1332" class="post-wrapper post-1332 post type-post status-publish format-standard has-post-thumbnail hentry category-android category-software tag-android tag-java tag-jni tag-native-code tag-ndk tag-windows">
+					<div class="h1-wrapper"><h1>Android NDK for Windows setup guide</h1></div>		<center><i class="fa fa-calendar"></i> August 24, 2010 &nbsp; <i class="fa fa-user"></i> <a href="http://www.pocketmagic.net/author/radumotisan/" title="Posts by Radu Motisan" rel="author">Radu Motisan</a></center><br>
+                    <img width="1024" height="629" src="./Android NDK for Windows setup guide - PocketMagic_files/2.1-1024x629.jpg" class="img-responsive wp-post-image" alt="2.1" srcset="http://www.pocketmagic.net/wp-content/uploads/2010/08/2.1-1024x629.jpg 1024w, http://www.pocketmagic.net/wp-content/uploads/2010/08/2.1-300x184.jpg 300w, http://www.pocketmagic.net/wp-content/uploads/2010/08/2.1.JPG 1068w" sizes="(max-width: 1024px) 100vw, 1024px"> 
+						<div class="post-content">
+							
+<!-- Quick Adsense WordPress Plugin: http://quicksense.net/ -->
+<div style="float:none;margin:0px;">
+<script async="" src="http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- Pocketmagic-06-responsive -->
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9192834732696651" data-ad-slot="2930486970" data-ad-format="auto"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</div>
+<h4>Introduction</h4>
+<p>Since most of the NDK tools are coming from the  Linux environment, that OS was my first approach in building native C applications for Android. See <a href="http://www.pocketmagic.net/?p=682">this tutorial </a>for a start.</p>
+<p>However, I also needed to be able to compile JNI Android apps using the Windows environment. It proved an easy task, but there were some issues, so I decided to write this guide.</p>
+<h4>Install Android NDK on Windows and use it to compile a JAVA/JNI application</h4>
+<p>You will need an internet connection to install Cygwin and the Android SDK automatically from the Internet.</p>
+<li><b>1) Download the Android NDK for Windows</b></li>
+<p>Download <a href="http://developer.android.com/sdk/ndk/index.html">link</a>.<br>
+Current version of the file is: android-ndk-r4b-windows.zip 45MB</p>
+<li><b>2) Download Cygwin</b></li>
+<p>Download <a href="http://www.cygwin.com/">link</a>. (<a href="http://www.cygwin.com/setup.exe">Direct Link</a>)<br>
+Select the mirror you need to download from then follow the installation guide.<br>
+On package selection, Open Devel category and check "make":<br>
+<a href="http://www.pocketmagic.net/wp-content/uploads/2010/08/2.1.JPG"><img src="./Android NDK for Windows setup guide - PocketMagic_files/2.1-150x150.jpg" alt="2.1" title="2.1" width="150" height="150" class="alignnone size-thumbnail wp-image-1334"></a><br>
+I've installed it to C:\cygwin</p>
+<li><b>3) Download the latest Android SDK for Windows</b></li>
+<p>Download <a href="http://developer.android.com/sdk/index.html">link</a>.<br>
+Current version is android-sdk_r06-windows.zip 23MB</p>
+<li><b>4) Install the SDK</b></li>
+<p><b>4.1) Unzip the zip content to a location on your harddisk. I choose:</b><br>
+D:\work_code\android\android-sdk-windows\<br>
+You will find SDK Setup.exe . Run it. I get a warning to install JAVA JDK<br>
+<b>4.2) Download Java JDK</b><br>
+Download <a href="http://java.sun.com/javase/downloads/">link</a>.<br>
+Select platform "Windows". Current file is: jdk-6u21-windows-i586.exe (<a href="http://cds.sun.com/is-bin/INTERSHOP.enfinity/WFS/CDS-CDS_Developer-Site/en_US/-/USD/VerifyItem-Start/jdk-6u21-windows-i586.exe?BundledLineItemUUID=MoqJ_hCxJqQAAAEq8zEHfaTT&amp;OrderID=h6yJ_hCxd2YAAAEq5zEHfaTT&amp;ProductID=h2iJ_hCyKS4AAAEpVrwzBGsB&amp;FileName=/jdk-6u21-windows-i586.exe">Direct link</a>)<br>
+<b>4.3) Install the Java JDK: simply run the exe . It takes a few minutes to complete.</b><br>
+<b>4.4) Re-run the SDK Setup.exe from the Android SDK.</b><br>
+This opens the Android SDK and AVD Manager. If you get a HTTPS Error:<br>
+<a href="http://www.pocketmagic.net/wp-content/uploads/2010/08/4.5.1.JPG"><img src="./Android NDK for Windows setup guide - PocketMagic_files/4.5.1-150x150.jpg" alt="4.5.1" title="4.5.1" width="150" height="150" class="alignnone size-thumbnail wp-image-1337"></a><br>
+go to Settings and check the "Force https:// ..." checkbox:<br>
+<a href="http://www.pocketmagic.net/wp-content/uploads/2010/08/4.5.2.JPG"><img src="./Android NDK for Windows setup guide - PocketMagic_files/4.5.2-150x150.jpg" alt="4.5.2" title="4.5.2" width="150" height="150" class="alignnone size-thumbnail wp-image-1338"></a><br>
+<b>4.5) Go to Available Packages</b>, select all, and press Install Selected:<br>
+<a href="http://www.pocketmagic.net/wp-content/uploads/2010/08/4.6.JPG"><img src="./Android NDK for Windows setup guide - PocketMagic_files/4.6-150x150.jpg" alt="4.6" title="4.6" width="150" height="150" class="alignnone size-thumbnail wp-image-1339"></a><br>
+The installer will download the packages from the internet, and might prompt you to accept terms, which you must do if you want to continue with the installation. This step takes a few minutes.</p>
+<li><b>5) Install the NDK</b></li>
+<p><b>5.1) Unzip the NDK zip file</b>. My choice is: D:\work_code\android\android-ndk-r4b\<br>
+<b>5.2) Configure Cygwin parameters</b><br>
+Go to the Cygwin folder and open Cygwin.bat. It contains something like this:</p>
+<pre class="cpp"><ol><li style="font-family: &#39;Courier New&#39;, Courier, monospace; color: black; font-weight: normal; font-style: normal;"><div style="font-family: &#39;Courier New&#39;, Courier, monospace; font-weight: normal;">&nbsp;</div></li><li style="font-family: &#39;Courier New&#39;, Courier, monospace; color: black; font-weight: normal; font-style: normal;"><div style="font-family: &#39;Courier New&#39;, Courier, monospace; font-weight: normal;">@echo off</div></li><li style="font-family: &#39;Courier New&#39;, Courier, monospace; color: black; font-weight: normal; font-style: normal;"><div style="font-family: &#39;Courier New&#39;, Courier, monospace; font-weight: normal;">&nbsp;</div></li><li style="font-family: &#39;Courier New&#39;, Courier, monospace; color: black; font-weight: normal; font-style: normal;"><div style="font-family: &#39;Courier New&#39;, Courier, monospace; font-weight: normal;">C:</div></li><li style="font-family: &#39;Courier New&#39;, Courier, monospace; color: black; font-weight: normal; font-style: normal;"><div style="font-family: &#39;Courier New&#39;, Courier, monospace; font-weight: normal;">chdir C:\cygwin\bin</div></li><li style="font-family: &#39;Courier New&#39;, Courier, monospace; color: black; font-weight: normal; font-style: normal;"><div style="font-family: &#39;Courier New&#39;, Courier, monospace; font-weight: normal;">&nbsp;</div></li><li style="font-family: &#39;Courier New&#39;, Courier, monospace; color: black; font-weight: normal; font-style: normal;"><div style="font-family: &#39;Courier New&#39;, Courier, monospace; font-weight: normal;">bash --login -i</div></li><li style="font-family: &#39;Courier New&#39;, Courier, monospace; color: black; font-weight: normal; font-style: normal;"><div style="font-family: &#39;Courier New&#39;, Courier, monospace; font-weight: normal;">&nbsp;</div></li></ol></pre>
+<p>Using any text editor change it to:</p>
+<!-- Quick Adsense WordPress Plugin: http://quicksense.net/ -->
+<div style="float:none;margin:0px;">
+<script async="" src="http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- Pocketmagic-07-responsive -->
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-9192834732696651" data-ad-slot="4407220173" data-ad-format="auto"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</div>
+
+<pre class="cpp"><ol><li style="font-family: &#39;Courier New&#39;, Courier, monospace; color: black; font-weight: normal; font-style: normal;"><div style="font-family: &#39;Courier New&#39;, Courier, monospace; font-weight: normal;">&nbsp;</div></li><li style="font-family: &#39;Courier New&#39;, Courier, monospace; color: black; font-weight: normal; font-style: normal;"><div style="font-family: &#39;Courier New&#39;, Courier, monospace; font-weight: normal;">@echo off</div></li><li style="font-family: &#39;Courier New&#39;, Courier, monospace; color: black; font-weight: normal; font-style: normal;"><div style="font-family: &#39;Courier New&#39;, Courier, monospace; font-weight: normal;">&nbsp;</div></li><li style="font-family: &#39;Courier New&#39;, Courier, monospace; color: black; font-weight: normal; font-style: normal;"><div style="font-family: &#39;Courier New&#39;, Courier, monospace; font-weight: normal;">set IS_UNIX=</div></li><li style="font-family: &#39;Courier New&#39;, Courier, monospace; color: black; font-weight: normal; font-style: normal;"><div style="font-family: &#39;Courier New&#39;, Courier, monospace; font-weight: normal;">set DEV_ROOT=d:/work_code/android/BlueInput</div></li><li style="font-family: &#39;Courier New&#39;, Courier, monospace; color: black; font-weight: normal; font-style: normal;"><div style="font-family: &#39;Courier New&#39;, Courier, monospace; font-weight: normal;">set JAVA_HOME=c:/Progra~<span style="color: #0000dd;">1</span>/Java/jdk1<span style="color: #0000dd;">.6</span>.0_21</div></li><li style="font-family: &#39;Courier New&#39;, Courier, monospace; color: black; font-weight: normal; font-style: normal;"><div style="font-family: &#39;Courier New&#39;, Courier, monospace; font-weight: normal;">set CLASSPATH=d:/work_code/android/BlueInput/obj</div></li><li style="font-family: &#39;Courier New&#39;, Courier, monospace; color: black; font-weight: normal; font-style: normal;"><div style="font-family: &#39;Courier New&#39;, Courier, monospace; font-weight: normal;">set PATH=D:/work_code/android/android-sdk-windows/tools;D:/work_code/android/android-ndk-r4b</div></li><li style="font-family: &#39;Courier New&#39;, Courier, monospace; color: black; font-weight: normal; font-style: normal;"><div style="font-family: &#39;Courier New&#39;, Courier, monospace; font-weight: normal;">set ANDROID_NDK_ROOT=/cygdrive/d/work_code/android-ndk-r4b</div></li><li style="font-family: &#39;Courier New&#39;, Courier, monospace; color: black; font-weight: normal; font-style: normal;"><div style="font-family: &#39;Courier New&#39;, Courier, monospace; font-weight: normal;">set NDK_PROJECT_PATH=/cygdrive/d/work_code/android/BlueInput</div></li><li style="font-family: &#39;Courier New&#39;, Courier, monospace; color: black; font-weight: normal; font-style: normal;"><div style="font-family: &#39;Courier New&#39;, Courier, monospace; font-weight: normal;">&nbsp;</div></li><li style="font-family: &#39;Courier New&#39;, Courier, monospace; color: black; font-weight: normal; font-style: normal;"><div style="font-family: &#39;Courier New&#39;, Courier, monospace; font-weight: normal;">C:</div></li><li style="font-family: &#39;Courier New&#39;, Courier, monospace; color: black; font-weight: normal; font-style: normal;"><div style="font-family: &#39;Courier New&#39;, Courier, monospace; font-weight: normal;">chdir C:\cygwin\bin</div></li><li style="font-family: &#39;Courier New&#39;, Courier, monospace; color: black; font-weight: normal; font-style: normal;"><div style="font-family: &#39;Courier New&#39;, Courier, monospace; font-weight: normal;">&nbsp;</div></li><li style="font-family: &#39;Courier New&#39;, Courier, monospace; color: black; font-weight: normal; font-style: normal;"><div style="font-family: &#39;Courier New&#39;, Courier, monospace; font-weight: normal;">bash --login -i</div></li><li style="font-family: &#39;Courier New&#39;, Courier, monospace; color: black; font-weight: normal; font-style: normal;"><div style="font-family: &#39;Courier New&#39;, Courier, monospace; font-weight: normal;">&nbsp;</div></li></ol></pre>
+<p>The path in the config, d:/work_code/android/BlueInput, is something I'm currently working on. Change to your Own project name. The project must be organized  as follows:<br>
+A) The JNI part (the .c and .h and Android.mk files) in:<br>
+d:/work_code/android/BlueInput/jni<br>
+B) The JAVA part (assets,bin,gen,jni,libs,obj,res,src with the .java files) in:<br>
+d:/work_code/android/BlueInput<br>
+For these paths always use forward slashes.<br>
+<b>5.3) Open Cygwin and browse to the NDK folder</b>, using cd <folder name=""> [enter] :<br>
+<a href="http://www.pocketmagic.net/wp-content/uploads/2010/08/5.4.JPG"><img src="./Android NDK for Windows setup guide - PocketMagic_files/5.4-150x150.jpg" alt="5.4" title="5.4" width="150" height="150" class="alignnone size-thumbnail wp-image-1340"></a><br>
+cd d:/work_code/android-ndk-r4b<br>
+<b>5.4) Type ./ndk-build  </b> to compile the JNI project<br>
+<a href="http://www.pocketmagic.net/wp-content/uploads/2010/08/5.5.JPG"><img src="./Android NDK for Windows setup guide - PocketMagic_files/5.5-150x150.jpg" alt="5.5" title="5.5" width="150" height="150" class="alignnone size-thumbnail wp-image-1341"></a><br>
+The C files have been successfully built. Now using Eclipse, you can build the Java android project, and it will include the JNI part automatically. Easy.</folder></p>
+
+<div style="font-size:0px;height:0px;line-height:0px;margin:0;padding:0;clear:both"></div><!-- Begin Yuzo --><div class="yuzo_related_post style-1" data-version="5.12.45"><div class="yuzo_clearfixed yuzo__title"><h3>Related Post</h3></div><div class="yuzo_wraps">
+						  <div class="relatedthumb relatedpost-4488" style="width: 126.5px; float: left; overflow: hidden; height: 151px;"><span class="equalizer-inner" style="display:block;">  
+							  
+							  <a href="http://www.pocketmagic.net/blackberry-10-command-line-development/">
+									  <div class="yuzo-img-wrap " style="/*width: 126.5px;height:88px;*/">
+										
+										<div class="yuzo-img" style="background:url(&#39;http://www.pocketmagic.net/wp-content/uploads/2013/07/bb10_shell_development-150x150.jpg&#39;) 50% 50% no-repeat;width: 126.5px;;max-width:100%;height:88px;margin-bottom: 5px;background-size: cover; "></div>
+									  </div>
+									  
+								   <span class="yuzo__text--title" style="font-size:13px;">Blackberry 10 Command line development</span>
+							  
+							  
+							  </a>
+
+						  </span></div>
+						  <div class="relatedthumb relatedpost-5090" style="width: 126.5px; float: left; overflow: hidden; height: 151px;"><span class="equalizer-inner" style="display:block;">  
+							  
+							  <a href="http://www.pocketmagic.net/custom-rotary-knob-control-for-android/">
+									  <div class="yuzo-img-wrap " style="/*width: 126.5px;height:88px;*/">
+										
+										<div class="yuzo-img" style="background:url(&#39;http://www.pocketmagic.net/wp-content/uploads/2013/11/volume-knobs-sw-s-150x150.jpg&#39;) 50% 50% no-repeat;width: 126.5px;;max-width:100%;height:88px;margin-bottom: 5px;background-size: cover; "></div>
+									  </div>
+									  
+								   <span class="yuzo__text--title" style="font-size:13px;">Custom Rotary Knob Control for Android</span>
+							  
+							  
+							  </a>
+
+						  </span></div>
+						  <div class="relatedthumb relatedpost-1882" style="width: 126.5px; float: left; overflow: hidden; height: 151px;"><span class="equalizer-inner" style="display:block;">  
+							  
+							  <a href="http://www.pocketmagic.net/android-9-patch-images-for-custom-controls/">
+									  <div class="yuzo-img-wrap " style="/*width: 126.5px;height:88px;*/">
+										
+										<div class="yuzo-img" style="background:url(&#39;http://www.pocketmagic.net/wp-content/uploads/2011/03/9-patch-150x150.jpg&#39;) 50% 50% no-repeat;width: 126.5px;;max-width:100%;height:88px;margin-bottom: 5px;background-size: cover; "></div>
+									  </div>
+									  
+								   <span class="yuzo__text--title" style="font-size:13px;">Android 9 Patch images for custom controls</span>
+							  
+							  
+							  </a>
+
+						  </span></div>
+						  <div class="relatedthumb relatedpost-2713" style="width: 126.5px; float: left; overflow: hidden; height: 151px;"><span class="equalizer-inner" style="display:block;">  
+							  
+							  <a href="http://www.pocketmagic.net/anoto-bluetooth-pen-on-android-os/">
+									  <div class="yuzo-img-wrap " style="/*width: 126.5px;height:88px;*/">
+										
+										<div class="yuzo-img" style="background:url(&#39;http://www.pocketmagic.net/wp-content/plugins/yuzo-related-post/assets/images/default.png&#39;) 50% 50% no-repeat;width: 126.5px;;max-width:100%;height:88px;margin-bottom: 5px;background-size: cover; "></div>
+									  </div>
+									  
+								   <span class="yuzo__text--title" style="font-size:13px;">Anoto Bluetooth Digital Pen on Android OS</span>
+							  
+							  
+							  </a>
+
+						  </span></div></div> <!-- end wrap -->
+</div> <style>
+								.yuzo_related_post img{width:126.5px !important; height:88px !important;}
+								.yuzo_related_post .relatedthumb{line-height:15px;background: !important;color:!important;}
+								.yuzo_related_post .relatedthumb:hover{background:#fcfcf4 !important; -webkit-transition: background 0.2s linear; -moz-transition: background 0.2s linear; -o-transition: background 0.2s linear; transition: background 0.2s linear;;color:!important;}
+								.yuzo_related_post .relatedthumb a{color:!important;}
+								.yuzo_related_post .relatedthumb a:hover{ color:}!important;}
+								.yuzo_related_post .relatedthumb:hover a{ color:!important;}
+								.yuzo_related_post .relatedthumb:hover .yuzo__text--title{ color:!important;}
+								.yuzo_related_post .yuzo_text, .yuzo_related_post .yuzo_views_post {color:!important;}
+								.yuzo_related_post .relatedthumb:hover .yuzo_text, .yuzo_related_post:hover .yuzo_views_post {color:!important;}
+								.yuzo_related_post .relatedthumb{  margin: 0px  0px  0px  0px;   padding: 5px  5px  5px  5px;  }
+								
+								</style> <script>
+						  jQuery(document).ready(function( $ ){
+							jQuery('.yuzo_related_post .yuzo_wraps').equalizer({ columns : '> div' });
+						   });
+						  </script> <!-- End Yuzo :) --><span class="synved-social-container synved-social-container-share"><a class="synved-social-button synved-social-button-share synved-social-size-48 synved-social-resolution-normal synved-social-provider-facebook nolightbox" data-provider="facebook" target="_blank" rel="nofollow" title="Share on Facebook" href="http://www.facebook.com/sharer.php?u=http%3A%2F%2Fwww.pocketmagic.net%2Fandroid-ndk-for-windows-setup-guide%2F&amp;t=Android%20NDK%20for%20Windows%20setup%20guide&amp;s=100&amp;p[url]=http%3A%2F%2Fwww.pocketmagic.net%2Fandroid-ndk-for-windows-setup-guide%2F&amp;p[images][0]=http%3A%2F%2Fwww.pocketmagic.net%2Fwp-content%2Fuploads%2F2010%2F08%2F2.1.JPG&amp;p[title]=Android%20NDK%20for%20Windows%20setup%20guide" style="font-size: 0px; width:48px;height:48px;margin:0;margin-bottom:12px;margin-right:12px;"><img alt="Facebook" title="Share on Facebook" class="synved-share-image synved-social-image synved-social-image-share" width="48" height="48" style="display: inline; width:48px;height:48px; margin: 0; padding: 0; border: none; box-shadow: none;" src="./Android NDK for Windows setup guide - PocketMagic_files/facebook.png"></a><a class="synved-social-button synved-social-button-share synved-social-size-48 synved-social-resolution-normal synved-social-provider-twitter nolightbox" data-provider="twitter" target="_blank" rel="nofollow" title="Share on Twitter" href="http://twitter.com/share?url=http%3A%2F%2Fwww.pocketmagic.net%2Fandroid-ndk-for-windows-setup-guide%2F&amp;text=Hey%20check%20this%20out" style="font-size: 0px; width:48px;height:48px;margin:0;margin-bottom:12px;margin-right:12px;"><img alt="twitter" title="Share on Twitter" class="synved-share-image synved-social-image synved-social-image-share" width="48" height="48" style="display: inline; width:48px;height:48px; margin: 0; padding: 0; border: none; box-shadow: none;" src="./Android NDK for Windows setup guide - PocketMagic_files/twitter.png"></a><a class="synved-social-button synved-social-button-share synved-social-size-48 synved-social-resolution-normal synved-social-provider-google_plus nolightbox" data-provider="google_plus" target="_blank" rel="nofollow" title="Share on Google+" href="https://plus.google.com/share?url=http%3A%2F%2Fwww.pocketmagic.net%2Fandroid-ndk-for-windows-setup-guide%2F" style="font-size: 0px; width:48px;height:48px;margin:0;margin-bottom:12px;margin-right:12px;"><img alt="google_plus" title="Share on Google+" class="synved-share-image synved-social-image synved-social-image-share" width="48" height="48" style="display: inline; width:48px;height:48px; margin: 0; padding: 0; border: none; box-shadow: none;" src="./Android NDK for Windows setup guide - PocketMagic_files/google_plus.png"></a><a class="synved-social-button synved-social-button-share synved-social-size-48 synved-social-resolution-normal synved-social-provider-reddit nolightbox" data-provider="reddit" target="_blank" rel="nofollow" title="Share on Reddit" href="http://www.reddit.com/submit?url=http%3A%2F%2Fwww.pocketmagic.net%2Fandroid-ndk-for-windows-setup-guide%2F&amp;title=Android%20NDK%20for%20Windows%20setup%20guide" style="font-size: 0px; width:48px;height:48px;margin:0;margin-bottom:12px;margin-right:12px;"><img alt="reddit" title="Share on Reddit" class="synved-share-image synved-social-image synved-social-image-share" width="48" height="48" style="display: inline; width:48px;height:48px; margin: 0; padding: 0; border: none; box-shadow: none;" src="./Android NDK for Windows setup guide - PocketMagic_files/reddit.png"></a><a class="synved-social-button synved-social-button-share synved-social-size-48 synved-social-resolution-normal synved-social-provider-pinterest nolightbox" data-provider="pinterest" target="_blank" rel="nofollow" title="Pin it with Pinterest" href="http://pinterest.com/pin/create/button/?url=http%3A%2F%2Fwww.pocketmagic.net%2Fandroid-ndk-for-windows-setup-guide%2F&amp;media=http%3A%2F%2Fwww.pocketmagic.net%2Fwp-content%2Fuploads%2F2010%2F08%2F2.1.JPG&amp;description=Android%20NDK%20for%20Windows%20setup%20guide" style="font-size: 0px; width:48px;height:48px;margin:0;margin-bottom:12px;margin-right:12px;"><img alt="pinterest" title="Pin it with Pinterest" class="synved-share-image synved-social-image synved-social-image-share" width="48" height="48" style="display: inline; width:48px;height:48px; margin: 0; padding: 0; border: none; box-shadow: none;" src="./Android NDK for Windows setup guide - PocketMagic_files/pinterest.png"></a><a class="synved-social-button synved-social-button-share synved-social-size-48 synved-social-resolution-normal synved-social-provider-linkedin nolightbox" data-provider="linkedin" target="_blank" rel="nofollow" title="Share on Linkedin" href="http://www.linkedin.com/shareArticle?mini=true&amp;url=http%3A%2F%2Fwww.pocketmagic.net%2Fandroid-ndk-for-windows-setup-guide%2F&amp;title=Android%20NDK%20for%20Windows%20setup%20guide" style="font-size: 0px; width:48px;height:48px;margin:0;margin-bottom:12px;margin-right:12px;"><img alt="linkedin" title="Share on Linkedin" class="synved-share-image synved-social-image synved-social-image-share" width="48" height="48" style="display: inline; width:48px;height:48px; margin: 0; padding: 0; border: none; box-shadow: none;" src="./Android NDK for Windows setup guide - PocketMagic_files/linkedin.png"></a><a class="synved-social-button synved-social-button-share synved-social-size-48 synved-social-resolution-normal synved-social-provider-mail nolightbox" data-provider="mail" rel="nofollow" title="Share by email" href="mailto:?subject=Android%20NDK%20for%20Windows%20setup%20guide&amp;body=Hey%20check%20this%20out:%20http%3A%2F%2Fwww.pocketmagic.net%2Fandroid-ndk-for-windows-setup-guide%2F" style="font-size: 0px; width:48px;height:48px;margin:0;margin-bottom:12px;"><img alt="mail" title="Share by email" class="synved-share-image synved-social-image synved-social-image-share" width="48" height="48" style="display: inline; width:48px;height:48px; margin: 0; padding: 0; border: none; box-shadow: none;" src="./Android NDK for Windows setup guide - PocketMagic_files/mail.png"></a><a class="synved-social-button synved-social-button-share synved-social-size-48 synved-social-resolution-hidef synved-social-provider-facebook nolightbox" data-provider="facebook" target="_blank" rel="nofollow" title="Share on Facebook" href="http://www.facebook.com/sharer.php?u=http%3A%2F%2Fwww.pocketmagic.net%2Fandroid-ndk-for-windows-setup-guide%2F&amp;t=Android%20NDK%20for%20Windows%20setup%20guide&amp;s=100&amp;p[url]=http%3A%2F%2Fwww.pocketmagic.net%2Fandroid-ndk-for-windows-setup-guide%2F&amp;p[images][0]=http%3A%2F%2Fwww.pocketmagic.net%2Fwp-content%2Fuploads%2F2010%2F08%2F2.1.JPG&amp;p[title]=Android%20NDK%20for%20Windows%20setup%20guide" style="font-size: 0px; width:48px;height:48px;margin:0;margin-bottom:12px;margin-right:12px;"><img alt="Facebook" title="Share on Facebook" class="synved-share-image synved-social-image synved-social-image-share" width="48" height="48" style="display: inline; width:48px;height:48px; margin: 0; padding: 0; border: none; box-shadow: none;" src="./Android NDK for Windows setup guide - PocketMagic_files/facebook(1).png"></a><a class="synved-social-button synved-social-button-share synved-social-size-48 synved-social-resolution-hidef synved-social-provider-twitter nolightbox" data-provider="twitter" target="_blank" rel="nofollow" title="Share on Twitter" href="http://twitter.com/share?url=http%3A%2F%2Fwww.pocketmagic.net%2Fandroid-ndk-for-windows-setup-guide%2F&amp;text=Hey%20check%20this%20out" style="font-size: 0px; width:48px;height:48px;margin:0;margin-bottom:12px;margin-right:12px;"><img alt="twitter" title="Share on Twitter" class="synved-share-image synved-social-image synved-social-image-share" width="48" height="48" style="display: inline; width:48px;height:48px; margin: 0; padding: 0; border: none; box-shadow: none;" src="./Android NDK for Windows setup guide - PocketMagic_files/twitter(1).png"></a><a class="synved-social-button synved-social-button-share synved-social-size-48 synved-social-resolution-hidef synved-social-provider-google_plus nolightbox" data-provider="google_plus" target="_blank" rel="nofollow" title="Share on Google+" href="https://plus.google.com/share?url=http%3A%2F%2Fwww.pocketmagic.net%2Fandroid-ndk-for-windows-setup-guide%2F" style="font-size: 0px; width:48px;height:48px;margin:0;margin-bottom:12px;margin-right:12px;"><img alt="google_plus" title="Share on Google+" class="synved-share-image synved-social-image synved-social-image-share" width="48" height="48" style="display: inline; width:48px;height:48px; margin: 0; padding: 0; border: none; box-shadow: none;" src="./Android NDK for Windows setup guide - PocketMagic_files/google_plus(1).png"></a><a class="synved-social-button synved-social-button-share synved-social-size-48 synved-social-resolution-hidef synved-social-provider-reddit nolightbox" data-provider="reddit" target="_blank" rel="nofollow" title="Share on Reddit" href="http://www.reddit.com/submit?url=http%3A%2F%2Fwww.pocketmagic.net%2Fandroid-ndk-for-windows-setup-guide%2F&amp;title=Android%20NDK%20for%20Windows%20setup%20guide" style="font-size: 0px; width:48px;height:48px;margin:0;margin-bottom:12px;margin-right:12px;"><img alt="reddit" title="Share on Reddit" class="synved-share-image synved-social-image synved-social-image-share" width="48" height="48" style="display: inline; width:48px;height:48px; margin: 0; padding: 0; border: none; box-shadow: none;" src="./Android NDK for Windows setup guide - PocketMagic_files/reddit(1).png"></a><a class="synved-social-button synved-social-button-share synved-social-size-48 synved-social-resolution-hidef synved-social-provider-pinterest nolightbox" data-provider="pinterest" target="_blank" rel="nofollow" title="Pin it with Pinterest" href="http://pinterest.com/pin/create/button/?url=http%3A%2F%2Fwww.pocketmagic.net%2Fandroid-ndk-for-windows-setup-guide%2F&amp;media=http%3A%2F%2Fwww.pocketmagic.net%2Fwp-content%2Fuploads%2F2010%2F08%2F2.1.JPG&amp;description=Android%20NDK%20for%20Windows%20setup%20guide" style="font-size: 0px; width:48px;height:48px;margin:0;margin-bottom:12px;margin-right:12px;"><img alt="pinterest" title="Pin it with Pinterest" class="synved-share-image synved-social-image synved-social-image-share" width="48" height="48" style="display: inline; width:48px;height:48px; margin: 0; padding: 0; border: none; box-shadow: none;" src="./Android NDK for Windows setup guide - PocketMagic_files/pinterest(1).png"></a><a class="synved-social-button synved-social-button-share synved-social-size-48 synved-social-resolution-hidef synved-social-provider-linkedin nolightbox" data-provider="linkedin" target="_blank" rel="nofollow" title="Share on Linkedin" href="http://www.linkedin.com/shareArticle?mini=true&amp;url=http%3A%2F%2Fwww.pocketmagic.net%2Fandroid-ndk-for-windows-setup-guide%2F&amp;title=Android%20NDK%20for%20Windows%20setup%20guide" style="font-size: 0px; width:48px;height:48px;margin:0;margin-bottom:12px;margin-right:12px;"><img alt="linkedin" title="Share on Linkedin" class="synved-share-image synved-social-image synved-social-image-share" width="48" height="48" style="display: inline; width:48px;height:48px; margin: 0; padding: 0; border: none; box-shadow: none;" src="./Android NDK for Windows setup guide - PocketMagic_files/linkedin(1).png"></a><a class="synved-social-button synved-social-button-share synved-social-size-48 synved-social-resolution-hidef synved-social-provider-mail nolightbox" data-provider="mail" rel="nofollow" title="Share by email" href="mailto:?subject=Android%20NDK%20for%20Windows%20setup%20guide&amp;body=Hey%20check%20this%20out:%20http%3A%2F%2Fwww.pocketmagic.net%2Fandroid-ndk-for-windows-setup-guide%2F" style="font-size: 0px; width:48px;height:48px;margin:0;margin-bottom:12px;"><img alt="mail" title="Share by email" class="synved-share-image synved-social-image synved-social-image-share" width="48" height="48" style="display: inline; width:48px;height:48px; margin: 0; padding: 0; border: none; box-shadow: none;" src="./Android NDK for Windows setup guide - PocketMagic_files/mail(1).png"></a></span>										
+							<div class="clearfix"></div>
+						<div class="post-meta-top">
+							<div class="pull-right"></div>
+		<div class="pull-left"><i class="fa fa-calendar"></i> August 24, 2010 &nbsp; <i class="fa fa-user"></i> <a href="http://www.pocketmagic.net/author/radumotisan/" title="Posts by Radu Motisan" rel="author">Radu Motisan</a></div>
+	<div class="category-tag">
+	<i class="fa fa-folder-open"></i> &nbsp; <a href="http://www.pocketmagic.net/category/software/android/" rel="tag">Android</a>, <a href="http://www.pocketmagic.net/category/software/" rel="tag">Software</a>   &nbsp; <i class="fa fa-tags"></i> &nbsp; <a href="http://www.pocketmagic.net/tag/android/" rel="tag">Android</a>, <a href="http://www.pocketmagic.net/tag/java/" rel="tag">java</a>, <a href="http://www.pocketmagic.net/tag/jni/" rel="tag">jni</a>, <a href="http://www.pocketmagic.net/tag/native-code/" rel="tag">native code</a>, <a href="http://www.pocketmagic.net/tag/ndk/" rel="tag">ndk</a>, <a href="http://www.pocketmagic.net/tag/windows/" rel="tag">Windows</a>	 </div>
+						</div>		
+			
+							<div id="navigation">
+								<ul class="pager">
+									<li class="previous"><a href="http://www.pocketmagic.net/webcam-surveillance-with-motion-detection-algorithm/" rel="prev"><i class="fa fa-chevron-left"></i> Webcam Surveillance with motion detection algorithm</a></li>
+									<li class="next"><a href="http://www.pocketmagic.net/android-dynamic-no-xml-custom-adapter-listview/" rel="next">Android Dynamic (no xml) Custom Adapter Listview <i class="fa fa-chevron-right"></i></a></li>
+								</ul>
+							</div>
+						</div>
+<div class="post-comments">
+							<div class="post-comments-wrapper">
+								
+<div id="comments">
+	<h3 id="comments1">36 Responses to “Android NDK for Windows setup guide”</h3>
+		<ol class="commentlist">
+				<li class="comment even thread-even depth-1" id="comment-1359">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/180d172e881be22c96cea9f856f4c59c" srcset="http://1.gravatar.com/avatar/180d172e881be22c96cea9f856f4c59c?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment odd alt thread-odd thread-alt depth-1">Radu Motisan</span></strong> / 26 Aug 2010 1:38pm <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-1359" title="Comment Permalink">#</a> 			
+			<p>For debug output use ./ndk-build NDK_LOG=true APP=BlueInput V=1</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="comment-1532">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/57b359057314866d26b35cbc74269b58" srcset="http://2.gravatar.com/avatar/57b359057314866d26b35cbc74269b58?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment odd alt thread-odd thread-alt depth-1">George</span></strong> / 16 Nov 2010 7:52pm <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-1532" title="Comment Permalink">#</a> 			
+			<p>Thanks. That helper a lot.</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="pingback even thread-even depth-1" id="comment-1541">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/saved_resource" srcset="http://1.gravatar.com/avatar/?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo avatar-default" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="pingback odd alt thread-odd thread-alt depth-1"><a href="http://www.pocketmagic.net/?p=1462" rel="external nofollow" class="url">PocketMagic » Android C native development using the NDK under Windows</a></span></strong> / 18 Nov 2010 11:49am <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-1541" title="Comment Permalink">#</a> 			
+			<p>[…] NDK has been released and the JNI development is not only possible, but also easy. Have a look on this article on the Android NDK. The new challenge is to use the NDK to compile Native ARM-EABI executables that […]</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="comment-1672">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/58d2c0e006db402c7508016338c5b77f" srcset="http://2.gravatar.com/avatar/58d2c0e006db402c7508016338c5b77f?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment odd alt thread-odd thread-alt depth-1">Nikhil</span></strong> / 24 Dec 2010 1:42pm <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-1672" title="Comment Permalink">#</a> 			
+			<p>I get the error that GNUMAKE must be defined. for a sample app.<br>
+I am using android NDK r5</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="pingback even thread-even depth-1" id="comment-1767">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/saved_resource" srcset="http://0.gravatar.com/avatar/?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo avatar-default" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="pingback odd alt thread-odd thread-alt depth-1"><a href="http://www.pocketmagic.net/?p=1643" rel="external nofollow" class="url">PocketMagic » Developing for Android – the SDK – update 2011</a></span></strong> / 1 Feb 2011 3:35pm <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-1767" title="Comment Permalink">#</a> 			
+			<p>[…] Some additional resources: <a href="http://www.pocketmagic.net/?p=665" rel="nofollow">http://www.pocketmagic.net/?p=665</a> <a href="http://developer.android.com/sdk/installing.html" rel="nofollow">http://developer.android.com/sdk/installing.html</a> <a href="http://www.pocketmagic.net/?p=1332" rel="nofollow">http://www.pocketmagic.net/?p=1332</a> […]</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="pingback even thread-even depth-1" id="comment-1810">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/saved_resource" srcset="http://1.gravatar.com/avatar/?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo avatar-default" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="pingback odd alt thread-odd thread-alt depth-1"><a href="http://www.android-hilfe.de/android-app-entwicklung/79423-android-ndk-wie-verwenden.html#post1072494" rel="external nofollow" class="url">Android NDK: Wie verwenden? - Android-Hilfe.de</a></span></strong> / 14 Feb 2011 10:19pm <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-1810" title="Comment Permalink">#</a> 			
+			<p>[…] AW: Android NDK: Wie verwenden?    schau dir mal folgendes Tutorial an:  Android NDK for Windows setup guide « PocketMagic […]</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="comment-1942">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/1b5ccc0beaa9e95aa6bded1dd3efee5b" srcset="http://1.gravatar.com/avatar/1b5ccc0beaa9e95aa6bded1dd3efee5b?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment odd alt thread-odd thread-alt depth-1">Mehmet Yildirim</span></strong> / 15 Mar 2011 7:58pm <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-1942" title="Comment Permalink">#</a> 			
+			<p>I am trying to write some part of an indoor navigation application in my HTC Desire with Android 2.2 is installed in. I am currently working on writing a bluetooth device detector. I am going to use bluetooth headsets whose mac addresses already known and try to detect whether they are visible or not. I would like only to ping all the bluetooth devices in the list I have. Isn’t there any way to do that without using “hcitool” or “l2ping” applications and parsing their results? I dont want to root my phone if it is possible.</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment byuser comment-author-radumotisan bypostauthor even thread-even depth-1" id="comment-1943">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/180d172e881be22c96cea9f856f4c59c" srcset="http://1.gravatar.com/avatar/180d172e881be22c96cea9f856f4c59c?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment byuser comment-author-radumotisan bypostauthor odd alt thread-odd thread-alt depth-1">Radu Motisan</span></strong> / 15 Mar 2011 8:23pm <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-1943" title="Comment Permalink">#</a> 			
+			<p>Hi Mehmet , thanks for posting your message here.</p>
+<p>You said “..and try to detect whether they are visible or not” . If they are visible (discoverable), you can do a bluetooth discovery to detect the nearby devices. Would this suit you?</p>
+<p>l2cap is not implemented on all Android devices and a general solution is currently problematic.</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="comment-1944">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/1b5ccc0beaa9e95aa6bded1dd3efee5b" srcset="http://1.gravatar.com/avatar/1b5ccc0beaa9e95aa6bded1dd3efee5b?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment odd alt thread-odd thread-alt depth-1">Mehmet Yildirim</span></strong> / 15 Mar 2011 8:29pm <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-1944" title="Comment Permalink">#</a> 			
+			<p>The problem is, the devices I want to detect are not discoverable. They only stay discoverable for about 30 minutes, however I want them to use longer.</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment byuser comment-author-radumotisan bypostauthor even thread-even depth-1" id="comment-1945">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/180d172e881be22c96cea9f856f4c59c" srcset="http://1.gravatar.com/avatar/180d172e881be22c96cea9f856f4c59c?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment byuser comment-author-radumotisan bypostauthor odd alt thread-odd thread-alt depth-1">Radu Motisan</span></strong> / 15 Mar 2011 8:31pm <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-1945" title="Comment Permalink">#</a> 			
+			<p>if those remote devices as smartphones, you could write a service that runs on them and keeps a bluetooth host port open (serial, l2cap, etc).</p>
+<p>Then you can “detect” if they are in range by opening a connection to your predefined list of addresses.</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="comment-1946">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/1b5ccc0beaa9e95aa6bded1dd3efee5b" srcset="http://1.gravatar.com/avatar/1b5ccc0beaa9e95aa6bded1dd3efee5b?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment odd alt thread-odd thread-alt depth-1">Mehmet Yildirim</span></strong> / 15 Mar 2011 8:33pm <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-1946" title="Comment Permalink">#</a> 			
+			<p>No they are not smartphones, they are just bluetooth headsets. So I am not able to do anything on the other side.</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment byuser comment-author-radumotisan bypostauthor even thread-even depth-1" id="comment-1947">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/180d172e881be22c96cea9f856f4c59c" srcset="http://1.gravatar.com/avatar/180d172e881be22c96cea9f856f4c59c?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment byuser comment-author-radumotisan bypostauthor odd alt thread-odd thread-alt depth-1">Radu Motisan</span></strong> / 15 Mar 2011 8:42pm <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-1947" title="Comment Permalink">#</a> 			
+			<p>I see, unfortunately you can’t (yet) relay on L2CAP either.</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="comment-1948">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/1b5ccc0beaa9e95aa6bded1dd3efee5b" srcset="http://1.gravatar.com/avatar/1b5ccc0beaa9e95aa6bded1dd3efee5b?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment odd alt thread-odd thread-alt depth-1">Mehmet Yildirim</span></strong> / 15 Mar 2011 8:59pm <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-1948" title="Comment Permalink">#</a> 			
+			<p>Do you have any suggestions for my case then??</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment byuser comment-author-radumotisan bypostauthor even thread-even depth-1" id="comment-1950">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/180d172e881be22c96cea9f856f4c59c" srcset="http://1.gravatar.com/avatar/180d172e881be22c96cea9f856f4c59c?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment byuser comment-author-radumotisan bypostauthor odd alt thread-odd thread-alt depth-1">Radu Motisan</span></strong> / 15 Mar 2011 10:19pm <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-1950" title="Comment Permalink">#</a> 			
+			<p>Clearly what you need is L2CAP Ping. I’ve used it on Windows Mobile for a similar purpose and it works great.</p>
+<p>But on Android you’ll run into problems with L2CAP – it will only work on a few devices.</p>
+<p>If compatibility is not an issue for you, go for L2CAP Ping.</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="comment-1951">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/1b5ccc0beaa9e95aa6bded1dd3efee5b" srcset="http://1.gravatar.com/avatar/1b5ccc0beaa9e95aa6bded1dd3efee5b?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment odd alt thread-odd thread-alt depth-1">Mehmet Yildirim</span></strong> / 15 Mar 2011 11:25pm <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-1951" title="Comment Permalink">#</a> 			
+			<p>I am using an HTC Desire, I did not found “l2ping” inside the file system, is it possible to push “l2ping” somehow into the filesystem without root access and use it?</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment byuser comment-author-radumotisan bypostauthor even thread-even depth-1" id="comment-1952">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/180d172e881be22c96cea9f856f4c59c" srcset="http://1.gravatar.com/avatar/180d172e881be22c96cea9f856f4c59c?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment byuser comment-author-radumotisan bypostauthor odd alt thread-odd thread-alt depth-1">Radu Motisan</span></strong> / 15 Mar 2011 11:44pm <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-1952" title="Comment Permalink">#</a> 			
+			<p>Unfortunately, the Desire is one of the devices that doesn’t have L2CAP support.</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="comment-1953">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/1b5ccc0beaa9e95aa6bded1dd3efee5b" srcset="http://1.gravatar.com/avatar/1b5ccc0beaa9e95aa6bded1dd3efee5b?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment odd alt thread-odd thread-alt depth-1">Mehmet Yildirim</span></strong> / 15 Mar 2011 11:48pm <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-1953" title="Comment Permalink">#</a> 			
+			<p>Does it make sense to root my device and push “l2ping” inside?</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment byuser comment-author-radumotisan bypostauthor even thread-even depth-1" id="comment-1954">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/180d172e881be22c96cea9f856f4c59c" srcset="http://1.gravatar.com/avatar/180d172e881be22c96cea9f856f4c59c?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment byuser comment-author-radumotisan bypostauthor odd alt thread-odd thread-alt depth-1">Radu Motisan</span></strong> / 16 Mar 2011 12:01am <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-1954" title="Comment Permalink">#</a> 			
+			<p>No, it won’t work. The BlueZ stack installed on the Desire seems to be incomplete.</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="comment-2105">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/19a0b2468ceea26d60cd52184f9fc41e" srcset="http://1.gravatar.com/avatar/19a0b2468ceea26d60cd52184f9fc41e?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment odd alt thread-odd thread-alt depth-1">Peter</span></strong> / 17 Apr 2011 11:22am <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-2105" title="Comment Permalink">#</a> 			
+			<p>Hi!</p>
+<p>I’m trying to write an application that reads the rssi value of a connection, but I have difficulties connecting to the phone using MAC address.<br>
+I managed to build my project using ndk r5b, and I see the logs written in my C code, so the building is complete I think, but every time I want to connect to a device, my phone returns “can’t connect’. I copied all the needed header files into build path and libbluetooth.so too, rooted my phone using z4root and granted superuser rights to the app using “Process p=Runtime.getRuntime().exec(“su”);”(so my app asked for superuser rights and I granted it to it), but I couldn’t connect to any device so far using this code for connection:</p>
+<p>jint Java_com_bluetooth_RSSI_connectbt(JNIEnv* env, jobject this, jstring mac)<br>
+{<br>
+    int s, status;<br>
+	int dd;<br>
+	int i;<br>
+    struct sockaddr_rc addr = { 0 };<br>
+	struct hci_conn_info_req *cr;<br>
+	char * dest;// = “00:1E:E1:7D:54:B4”;<br>
+	struct timeval timeout;</p>
+<p>	dest = (*env)-&gt;GetStringUTFChars(env, mac, 0);</p>
+<p>    __android_log_print(ANDROID_LOG_INFO, TAG, “rfcomm %s”, dest);<br>
+    // allocate a socket<br>
+    s = socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM);</p>
+<p>    // set the connection parameters (who to connect to)<br>
+    addr.rc_family = AF_BLUETOOTH;<br>
+    addr.rc_channel = (uint8_t) 1;<br>
+    str2ba( dest, &amp;addr.rc_bdaddr );</p>
+<p>    // connect to server<br>
+    __android_log_print(ANDROID_LOG_INFO, TAG, ” Trying to connect”);</p>
+<p>    //setsockopt(s, SOL_SOCKET, SO_SNDTIMEO, &amp;timeout, sizeof(struct timeval));</p>
+<p>    status = connect(s, (struct sockaddr *)&amp;addr, sizeof(addr));<br>
+    if (status == 0){<br>
+    	__android_log_print(ANDROID_LOG_INFO, TAG, ” CONNECTED!!!”);<br>
+    	return s;<br>
+    }<br>
+    __android_log_print(ANDROID_LOG_INFO, TAG, ” no connect”);<br>
+	return -1;<br>
+}</p>
+<p>I get every time<br>
+04-17 11:08:11.524: INFO/native_service(7973):  Trying to connect<br>
+04-17 11:08:11.524: INFO/native_service(7973):  no connect</p>
+<p>Do you have any ide, what should be the problem?<br>
+Thanks in advice</p>
+<p>Peter</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="comment-2106">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/19a0b2468ceea26d60cd52184f9fc41e" srcset="http://1.gravatar.com/avatar/19a0b2468ceea26d60cd52184f9fc41e?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment odd alt thread-odd thread-alt depth-1">Peter</span></strong> / 17 Apr 2011 11:24am <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-2106" title="Comment Permalink">#</a> 			
+			<p>Oh, and I’m using Samsung Galaxy S(rooted, SDK 2.1) and tryed to connect to several phones/laptops.<br>
+Peter</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="comment-2138">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/f47fec1d2b2c302b26e483c11e107f33" srcset="http://0.gravatar.com/avatar/f47fec1d2b2c302b26e483c11e107f33?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment odd alt thread-odd thread-alt depth-1">Karen</span></strong> / 26 Apr 2011 8:21am <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-2138" title="Comment Permalink">#</a> 			
+			<p>Thanks man.  This got me up and running on Windows.</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment byuser comment-author-radumotisan bypostauthor even thread-even depth-1" id="comment-2139">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/180d172e881be22c96cea9f856f4c59c" srcset="http://1.gravatar.com/avatar/180d172e881be22c96cea9f856f4c59c?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment byuser comment-author-radumotisan bypostauthor odd alt thread-odd thread-alt depth-1">Radu Motisan</span></strong> / 26 Apr 2011 10:18am <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-2139" title="Comment Permalink">#</a> 			
+			<p>@Karen, you’re welcome, glad it helped</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="comment-2308">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/a4aafa174df4d55b2559cdee38002876" srcset="http://1.gravatar.com/avatar/a4aafa174df4d55b2559cdee38002876?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment odd alt thread-odd thread-alt depth-1">Kak0</span></strong> / 16 Jun 2011 5:00pm <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-2308" title="Comment Permalink">#</a> 			
+			<p>What if our pathes contain spaces ? I tried everything I could found (backslash before space, 40 instead of space, path between quotes,…) but it didn’t help.</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="comment-2336">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/5abfbf9ebefc76a865b13c3fe365dc8e" srcset="http://2.gravatar.com/avatar/5abfbf9ebefc76a865b13c3fe365dc8e?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment odd alt thread-odd thread-alt depth-1">kaps</span></strong> / 22 Jun 2011 9:33am <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-2336" title="Comment Permalink">#</a> 			
+			<p>I followed the steps, i’m getting following error,</p>
+<p>Android NDK: Your APP-BUILD_SCRIPT points to an unknown file: /cygdrive/c/ndkworkspace/ndkfoo/jni/Android.mk<br>
+/cygdrive/c/android-ndk-r5b/build/core/add-appplication.mk:116: *** Android NDK:Aborting…   .Stop.</p>
+<p>Strugling hard to fix this. Please suggest.</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="comment-2337">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/5abfbf9ebefc76a865b13c3fe365dc8e" srcset="http://2.gravatar.com/avatar/5abfbf9ebefc76a865b13c3fe365dc8e?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment odd alt thread-odd thread-alt depth-1">kaps</span></strong> / 22 Jun 2011 9:35am <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-2337" title="Comment Permalink">#</a> 			
+			<p>Sorry for the typo error. Its APP_BUILD_SCRIPT.</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="comment-2338">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/d83875badef995abd85e52201d613dda" srcset="http://1.gravatar.com/avatar/d83875badef995abd85e52201d613dda?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment odd alt thread-odd thread-alt depth-1">mvinay</span></strong> / 23 Jun 2011 7:37am <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-2338" title="Comment Permalink">#</a> 			
+			<p>wat does obj contain i thing it has object file where do i get this file…<br>
+can any body help me…</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="comment-2357">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/d2f2dc7d9090e597d569e8e8f0b2e669" srcset="http://1.gravatar.com/avatar/d2f2dc7d9090e597d569e8e8f0b2e669?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment odd alt thread-odd thread-alt depth-1">Jan Ehrhardt</span></strong> / 2 Jul 2011 10:59pm <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-2357" title="Comment Permalink">#</a> 			
+			<p>@Nikhil: Same here. Did you ever resolve it?</p>
+<p>$ ndk-build<br>
+ERROR: You are using a non-Cygwin compatible Make program.<br>
+Currently using: C:/utils/mingw/bin/mingw32-make.exe</p>
+<p>To solve the issue, follow these steps:</p>
+<p>1. Ensure that the Cygwin ‘make’ package is installed.<br>
+   NOTE: You will need GNU Make 3.81 or later!</p>
+<p>2. Define the GNUMAKE environment variable to point to it, as in:</p>
+<p>     export GNUMAKE=/usr/bin/make</p>
+<p>3. Call ‘ndk-build’ again.</p>
+<p>Administrator ~<br>
+$ c:/utils/mingw/bin/mingw32-make.exe –version<br>
+GNU Make 3.81<br>
+Copyright (C) 2006  Free Software Foundation, Inc.<br>
+This is free software; see the source for copying conditions.<br>
+There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</p>
+<p>This program built for i386-pc-mingw32</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="comment-2625">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/b3ac5402f8f1934cf15d9544381b74ee" srcset="http://2.gravatar.com/avatar/b3ac5402f8f1934cf15d9544381b74ee?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment odd alt thread-odd thread-alt depth-1">adam</span></strong> / 5 Oct 2011 12:11pm <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-2625" title="Comment Permalink">#</a> 			
+			<p>can i use this to change an imei?</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment byuser comment-author-radumotisan bypostauthor even thread-even depth-1" id="comment-2628">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/180d172e881be22c96cea9f856f4c59c" srcset="http://1.gravatar.com/avatar/180d172e881be22c96cea9f856f4c59c?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment byuser comment-author-radumotisan bypostauthor odd alt thread-odd thread-alt depth-1">Radu Motisan</span></strong> / 5 Oct 2011 2:17pm <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-2628" title="Comment Permalink">#</a> 			
+			<p>I don’t think you can.</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="comment-2684">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/b4b3edd20c991501cd39b9df94b14f64" srcset="http://2.gravatar.com/avatar/b4b3edd20c991501cd39b9df94b14f64?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment odd alt thread-odd thread-alt depth-1">Loy</span></strong> / 23 Oct 2011 8:17pm <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-2684" title="Comment Permalink">#</a> 			
+			<p>In what version of the windows does this work? Works on 7 too?</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="comment-3384">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/92d525d11fb389fb1f7c3473057e5a50" srcset="http://0.gravatar.com/avatar/92d525d11fb389fb1f7c3473057e5a50?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment odd alt thread-odd thread-alt depth-1">shah hassan</span></strong> / 13 May 2012 1:40pm <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-3384" title="Comment Permalink">#</a> 			
+			<p>i am having problem in my cygwin does not appear as here in @echo off instead is appear my laptop name that’s why the command chdir c:\cygwind\bin does not works what should i do to fix this please help me as soon as possible</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="pingback even thread-even depth-1" id="comment-3435">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/saved_resource(1)" srcset="http://0.gravatar.com/avatar/?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo avatar-default" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="pingback odd alt thread-odd thread-alt depth-1"><a href="http://www.android-hilfe.de/android-app-entwicklung/247385-building-pocketsphinx-android.html#post3329307" rel="external nofollow" class="url">Building Pocketsphinx For Android - Android-Hilfe.de</a></span></strong> / 25 May 2012 7:40am <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-3435" title="Comment Permalink">#</a> 			
+			<p>[…]  […]</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="comment-3804">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/ddc6880665f6810c3c185ca62bc16e15" srcset="http://1.gravatar.com/avatar/ddc6880665f6810c3c185ca62bc16e15?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment odd alt thread-odd thread-alt depth-1">SpiritMts</span></strong> / 5 Aug 2012 3:27pm <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-3804" title="Comment Permalink">#</a> 			
+			<p>Thank you Very much</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="comment-5393">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/48d0978e359aed668c0c23ff4b1c0076" srcset="http://1.gravatar.com/avatar/48d0978e359aed668c0c23ff4b1c0076?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment odd alt thread-odd thread-alt depth-1">SKC</span></strong> / 7 Dec 2012 1:51pm <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-5393" title="Comment Permalink">#</a> 			
+			<p>Hi, i am able to build using ndk-build from the project directory using cygwin in Windows 7, after that i refresh my eclipse project and try to run the android app.<br>
+Still i am getting a force close with the following exception:</p>
+<p>12-07 17:17:23.260: E/AndroidRuntime(713): FATAL EXCEPTION: main<br>
+12-07 17:17:23.260: E/AndroidRuntime(713): java.lang.ExceptionInInitializerError</p>
+<p>12-07 17:17:23.260: E/AndroidRuntime(713): Caused by: java.lang.UnsatisfiedLinkError: Couldn’t load test-jni: findLibrary returned null</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="comment-5796">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/8d7a1ecb627edf1200fcac7879580594" srcset="http://2.gravatar.com/avatar/8d7a1ecb627edf1200fcac7879580594?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment odd alt thread-odd thread-alt depth-1">Joel Nuesca</span></strong> / 14 Mar 2013 4:34am <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-5796" title="Comment Permalink">#</a> 			
+			<p>Hi,<br>
+It’s a good thing I came across this. Thanks for posting. Will I be able to get an idea from this on how I can pair and connect my android phone with a bluetooth mouse? Hope you can advise and guide me.<br>
+Thanks and have a nice day.<br>
+Joel</p>
+			        </div>
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="comment-5964">
+
+				<div class="comment-avatar"><img alt="" src="./Android NDK for Windows setup guide - PocketMagic_files/b58f0fe4fba735204aee47ab7108f169" srcset="http://2.gravatar.com/avatar/b58f0fe4fba735204aee47ab7108f169?s=96&amp;d=mm&amp;r=g 2x" class="avatar avatar-48 photo" height="48" width="48"></div>
+				<div class="comment-content comment-content-with-avatar">
+
+			<strong><span class="comment odd alt thread-odd thread-alt depth-1">azizachom</span></strong> / 6 May 2013 4:32pm <a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#comment-5964" title="Comment Permalink">#</a> 			
+			<p>hi,</p>
+<p>thanks for this tuto,</p>
+<p>so i have to change the cygwin.bat forr every project?</p>
+			        </div>
+	</li><!-- #comment-## -->
+		</ol>
+
+		
+	<section id="respond" class="respond-form">
+
+	<h3 id="comment-form-title"><i class="fa fa-comment"></i> Leave a Reply</h3>
+
+	<div id="cancel-comment-reply">
+		<p class="small pull-right">  <a rel="nofollow" id="cancel-comment-reply-link" href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#respond" style="display:none;"><i class="fa fa-remove"></i> Cancel</a></p>
+	</div>
+
+	
+	<form action="http://www.pocketmagic.net/wp-comments-post.php" method="post" class="form-vertical" id="commentform">
+	<input type="hidden" id="wp_unfiltered_html_comment" name="_wp_unfiltered_html_comment" value="972c29c95b">	
+	<ul id="comment-form-elements" class="clearfix">
+		
+		<li>
+			<div class="control-group">
+			  <label for="author">Name (required)</label>
+			  <div class="input-prepend">
+			  	<span class="add-on"><i class="fa fa-user"></i></span><input type="text" name="author" id="author" value="" placeholder="Your Name" tabindex="1" aria-required="true">
+			  </div>
+		  	</div>
+		</li>
+		
+		<li>
+			<div class="control-group">
+			  <label for="email">Mail (required)</label>
+			  <div class="input-prepend">
+			  	<span class="add-on"><i class="fa fa-envelope"></i></span><input type="email" name="email" id="email" value="" placeholder="Your Email" tabindex="2" aria-required="true">
+			  	<span class="help-inline">(will not be published)</span>
+			  </div>
+		  	</div>
+		</li>
+		
+		<li>
+			<div class="control-group">
+			  <label for="url">Website</label>
+			  <div class="input-prepend">
+			  <span class="add-on"><i class="fa fa-home"></i></span><input type="url" name="url" id="url" value="" placeholder="Your Website" tabindex="3">
+			  </div>
+		  	</div>
+		</li>
+		
+	</ul>
+
+		
+	<div class="clearfix">
+		<div class="input"> 
+			<textarea name="bd60a-comment" id="comment" rows="6" placeholder="Your Comment Here..." tabindex="4"></textarea><textarea name="comment" style="display:none" rows="1" cols="1"></textarea>
+		</div>
+	</div>
+	
+<input class="btn btn-primary" name="submit" type="submit" id="submit" tabindex="5" value="Submit Comment">
+	  <input type="hidden" name="comment_post_ID" value="1332" id="comment_post_ID">
+<input type="hidden" name="comment_parent" id="comment_parent" value="0">
+	</form>
+	
+	</section>
+
+</div>
+							</div>
+						</div>
+						
+					</div>
+									</div>
+
+		<div id="sidebar" class="col-sm-3 col-md-3 col-lg-3"><div class="sidebar-inner"><div id="sidebar-right" class="sidebar">
+<div id="yuzo_widget-3" class="widget yuzo_widget_wrap"><h3 class="widget-title"><span>Top posts</span></h3><div class="yuzo_related_post_widget style-1" data-version="5.12.45">
+					  <div class="relatedthumb" style="width: 207px; float: left; overflow: hidden; height: 181px;"><span class="equalizer-inner" style="display:block;">  
+						  
+						  <a rel="external" href="http://www.pocketmagic.net/electric-fence-20kv/">
+								  <div class="yuzo-img-wrap  ilen_shine " style="width: 207px;height:117px;">
+									 <span class="shine-effect"></span> 
+									<div class="yuzo-img" style="background:url(&#39;http://www.pocketmagic.net/wp-content/uploads/2011/09/20110825193033-150x150.jpg&#39;) 50% 50% no-repeat;width: 207px;height:117px;margin-bottom: 5px;background-size: cover; "></div>
+								  </div>
+							<div style="margin-top:10px;margin-bottom:15px;font-size:13px;;">Electric Fence – 20KV pulses for perimeter d...</div>
+									<div style="clear:both;display:block;"></div>
+						  
+						<div style="clear:both;display:block;"></div>
+						</a> </span></div>
+					  <div class="relatedthumb" style="width: 207px; float: left; overflow: hidden; height: 166px;"><span class="equalizer-inner" style="display:block;">  
+						  
+						  <a rel="external" href="http://www.pocketmagic.net/simple-switched-power-supplies/">
+								  <div class="yuzo-img-wrap  ilen_shine " style="width: 207px;height:117px;">
+									 <span class="shine-effect"></span> 
+									<div class="yuzo-img" style="background:url(&#39;http://www.pocketmagic.net/wp-content/uploads/2012/05/simple_smps-150x150.png&#39;) 50% 50% no-repeat;width: 207px;height:117px;margin-bottom: 5px;background-size: cover; "></div>
+								  </div>
+							<div style="margin-top:10px;margin-bottom:15px;font-size:13px;;">Simple Switched power Supplies</div>
+									<div style="clear:both;display:block;"></div>
+						  
+						<div style="clear:both;display:block;"></div>
+						</a> </span></div>
+					  <div class="relatedthumb" style="width: 207px; float: left; overflow: hidden; height: 181px;"><span class="equalizer-inner" style="display:block;">  
+						  
+						  <a rel="external" href="http://www.pocketmagic.net/injecting-events-programatically-on-android/">
+								  <div class="yuzo-img-wrap  ilen_shine " style="width: 207px;height:117px;">
+									 <span class="shine-effect"></span> 
+									<div class="yuzo-img" style="background:url(&#39;http://www.pocketmagic.net/wp-content/uploads/2012/04/android-inject-key-1-150x150.jpg&#39;) 50% 50% no-repeat;width: 207px;height:117px;margin-bottom: 5px;background-size: cover; "></div>
+								  </div>
+							<div style="margin-top:10px;margin-bottom:15px;font-size:13px;;">Programmatically Injecting Events on Android ̵...</div>
+									<div style="clear:both;display:block;"></div>
+						  
+						<div style="clear:both;display:block;"></div>
+						</a> </span></div>
+					  <div class="relatedthumb" style="width: 207px; float: left; overflow: hidden; height: 166px;"><span class="equalizer-inner" style="display:block;">  
+						  
+						  <a rel="external" href="http://www.pocketmagic.net/variable-regulated-power-supply/">
+								  <div class="yuzo-img-wrap  ilen_shine " style="width: 207px;height:117px;">
+									 <span class="shine-effect"></span> 
+									<div class="yuzo-img" style="background:url(&#39;http://www.pocketmagic.net/wp-content/uploads/2010/02/high_power_variable_power_supply_3-150x150.jpg&#39;) 50% 50% no-repeat;width: 207px;height:117px;margin-bottom: 5px;background-size: cover; "></div>
+								  </div>
+							<div style="margin-top:10px;margin-bottom:15px;font-size:13px;;">Variable regulated power supply</div>
+									<div style="clear:both;display:block;"></div>
+						  
+						<div style="clear:both;display:block;"></div>
+						</a> </span></div>
+					  <div class="relatedthumb" style="width: 207px; float: left; overflow: hidden; height: 181px;"><span class="equalizer-inner" style="display:block;">  
+						  
+						  <a rel="external" href="http://www.pocketmagic.net/bluetooth-and-ios-use-bluetooth-in-your-iphone-apps/">
+								  <div class="yuzo-img-wrap  ilen_shine " style="width: 207px;height:117px;">
+									 <span class="shine-effect"></span> 
+									<div class="yuzo-img" style="background:url(&#39;http://www.pocketmagic.net/wp-content/uploads/2012/07/ibluetoothze0-150x150.png&#39;) 50% 50% no-repeat;width: 207px;height:117px;margin-bottom: 5px;background-size: cover; "></div>
+								  </div>
+							<div style="margin-top:10px;margin-bottom:15px;font-size:13px;;">Bluetooth and iOS – Use Bluetooth in your iP...</div>
+									<div style="clear:both;display:block;"></div>
+						  
+						<div style="clear:both;display:block;"></div>
+						</a> </span></div>
+					  <div class="relatedthumb" style="width: 207px; float: left; overflow: hidden; height: 181px;"><span class="equalizer-inner" style="display:block;">  
+						  
+						  <a rel="external" href="http://www.pocketmagic.net/make-the-robot-follow-you/">
+								  <div class="yuzo-img-wrap  ilen_shine " style="width: 207px;height:117px;">
+									 <span class="shine-effect"></span> 
+									<div class="yuzo-img" style="background:url(&#39;http://www.pocketmagic.net/wp-content/uploads/2013/02/robot_cool_1-150x150.jpg&#39;) 50% 50% no-repeat;width: 207px;height:117px;margin-bottom: 5px;background-size: cover; "></div>
+								  </div>
+							<div style="margin-top:10px;margin-bottom:15px;font-size:13px;;">Building a robot – Make the robot follow you</div>
+									<div style="clear:both;display:block;"></div>
+						  
+						<div style="clear:both;display:block;"></div>
+						</a> </span></div>
+					  <div class="relatedthumb" style="width: 207px; float: left; overflow: hidden; height: 166px;"><span class="equalizer-inner" style="display:block;">  
+						  
+						  <a rel="external" href="http://www.pocketmagic.net/android-overlay-cursor/">
+								  <div class="yuzo-img-wrap  ilen_shine " style="width: 207px;height:117px;">
+									 <span class="shine-effect"></span> 
+									<div class="yuzo-img" style="background:url(&#39;http://www.pocketmagic.net/wp-content/uploads/2012/07/android-mouse-cursor-overlay-150x150.jpg&#39;) 50% 50% no-repeat;width: 207px;height:117px;margin-bottom: 5px;background-size: cover; "></div>
+								  </div>
+							<div style="margin-top:10px;margin-bottom:15px;font-size:13px;;">Android Overlay Mouse Cursor</div>
+									<div style="clear:both;display:block;"></div>
+						  
+						<div style="clear:both;display:block;"></div>
+						</a> </span></div>
+					  <div class="relatedthumb" style="width: 207px; float: left; overflow: hidden; height: 181px;"><span class="equalizer-inner" style="display:block;">  
+						  
+						  <a rel="external" href="http://www.pocketmagic.net/capacitor-discharge-microspot-welder-cutter/">
+								  <div class="yuzo-img-wrap  ilen_shine " style="width: 207px;height:117px;">
+									 <span class="shine-effect"></span> 
+									<div class="yuzo-img" style="background:url(&#39;http://www.pocketmagic.net/wp-content/uploads/2012/02/welder-sparks-7-150x150.jpg&#39;) 50% 50% no-repeat;width: 207px;height:117px;margin-bottom: 5px;background-size: cover; "></div>
+								  </div>
+							<div style="margin-top:10px;margin-bottom:15px;font-size:13px;;">Capacitor Discharge Microspot Welder / Cutter</div>
+									<div style="clear:both;display:block;"></div>
+						  
+						<div style="clear:both;display:block;"></div>
+						</a> </span></div>
+					  <div class="relatedthumb" style="width: 207px; float: left; overflow: hidden; height: 181px;"><span class="equalizer-inner" style="display:block;">  
+						  
+						  <a rel="external" href="http://www.pocketmagic.net/electric-fence-circuit-for-perimeter-protection/">
+								  <div class="yuzo-img-wrap  ilen_shine " style="width: 207px;height:117px;">
+									 <span class="shine-effect"></span> 
+									<div class="yuzo-img" style="background:url(&#39;http://www.pocketmagic.net/wp-content/uploads/2014/04/electric_fence_circuit_3-150x150.jpg&#39;) 50% 50% no-repeat;width: 207px;height:117px;margin-bottom: 5px;background-size: cover; "></div>
+								  </div>
+							<div style="margin-top:10px;margin-bottom:15px;font-size:13px;;">Electric Fence Circuit for perimeter protection</div>
+									<div style="clear:both;display:block;"></div>
+						  
+						<div style="clear:both;display:block;"></div>
+						</a> </span></div>
+					  <div class="relatedthumb" style="width: 207px; float: left; overflow: hidden; height: 181px;"><span class="equalizer-inner" style="display:block;">  
+						  
+						  <a rel="external" href="http://www.pocketmagic.net/write-on-the-android-read-only-file-system/">
+								  <div class="yuzo-img-wrap  ilen_shine " style="width: 207px;height:117px;">
+									 <span class="shine-effect"></span> 
+									<div class="yuzo-img" style="background:url(&#39;http://www.pocketmagic.net/wp-content/uploads/2009/05/rorw-150x150.gif&#39;) 50% 50% no-repeat;width: 207px;height:117px;margin-bottom: 5px;background-size: cover; "></div>
+								  </div>
+							<div style="margin-top:10px;margin-bottom:15px;font-size:13px;;">Write on the Android Read-only file system</div>
+									<div style="clear:both;display:block;"></div>
+						  
+						<div style="clear:both;display:block;"></div>
+						</a> </span></div></div> 
+ <style>
+						.yuzo_related_post_widget img{width:207px !important; height:117px !important;}
+						.yuzo_related_post_widget .relatedthumb{line-height:15px;background: !important;}.yuzo_related_post_widget .relatedthumb:hover{background:#fcfcf4 !important; -webkit-transition: background 0.2 s linear; -moz-transition: background 0.2 s linear; -o-transition: background 0.2 s linear; transition: background 0.2 s linear;}
+					.yuzo_related_post_widget .relatedthumb a{color:#000000;}
+					.yuzo_related_post_widget .yuzo_text, .yuzo_related_post .yuzo_views_post {color:!important;}
+					.yuzo_related_post_widget .relatedthumb:hover .yuzo_text, .yuzo_related_post:hover .yuzo_views_post {color:!important;}
+					.yuzo_related_post_widget .relatedthumb{  margin: 0px  8px  0px  0px!important;   padding: 5px  5px  5px  5px!important;  }
+					.yuzo_related_post_widget .relatedthumb{}
+					</style> <script>
+jQuery(document).ready(function() {
+	jQuery('.yuzo_related_post_widget').equalizer({ columns : '> div' });
+});
+</script> 
+ <div class="yuzo_clearfixed"></div>
+</div></div></div></div>	</div>
+</div>	
+</div>
+  <div id="scroll-top" style=""><a href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/#"><i class="fa fa-chevron-up fa-3x"></i></a></div>
+<div id="footer" class="container">
+	<div class="text-align-center">
+Copyright © 2016 PocketMagic   </div>
+</div>
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+<script type="text/javascript" src="./Android NDK for Windows setup guide - PocketMagic_files/plusone.js" gapi_processed="true"></script><style scoped="">.yuzo_related_post{}
+.yuzo_related_post .relatedthumb{}</style>
+	<script>
+		jQuery(document).ready(function($) {
+			var $scrolltotop = $("#scroll-top");
+			$scrolltotop.css('display', 'none');
+
+			$(function () {
+				$(window).scroll(function () {
+					if ($(this).scrollTop() > 100) {
+						$scrolltotop.slideDown('fast');
+					} else {
+						$scrolltotop.slideUp('fast');
+					}
+				});
+
+				$scrolltotop.click(function () {
+					$('body,html').animate({
+						scrollTop: 0
+					}, 'fast');
+					return false;
+				});
+			});
+		});
+
+	</script>
+		<script type="text/javascript">
+ jQuery(document).ready(function($) {
+  $('iframe').each(function() {
+    $(this).wrap('<div class="video-container"></div>');
+  });
+});
+</script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var ctcc_vars = {"expiry":"30","method":"1","version":"1"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="./Android NDK for Windows setup guide - PocketMagic_files/uk-cookie-consent-js.js"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var viewsCacheL10n = {"admin_ajax_url":"http:\/\/www.pocketmagic.net\/wp-admin\/admin-ajax.php","post_id":"1332","is_singular":"1"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="./Android NDK for Windows setup guide - PocketMagic_files/yuzo-postviews-cache.js"></script>
+<script type="text/javascript" src="./Android NDK for Windows setup guide - PocketMagic_files/jquery.equalizer.js"></script>
+<script type="text/javascript" src="./Android NDK for Windows setup guide - PocketMagic_files/bootstrap.min.js"></script>
+<script type="text/javascript" src="./Android NDK for Windows setup guide - PocketMagic_files/hover-dropdown.min.js"></script>
+<script type="text/javascript" src="./Android NDK for Windows setup guide - PocketMagic_files/wp-embed.min.js"></script>
+
+			
+
+			<script type="text/javascript">
+
+				jQuery(document).ready(function($){
+
+										if(!catapultReadCookie("catAccCookies")){ // If the cookie has not been set then show the bar
+						$("html").addClass("has-cookie-bar");
+						$("html").addClass("cookie-bar-top-bar");
+						$("html").addClass("cookie-bar-bar");
+													// Wait for the animation on the html to end before recalculating the required top margin
+							$("html").on('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', function(e) {
+								// code to execute after transition ends
+								var barHeight = $('#catapult-cookie-bar').outerHeight();
+								$("html").css("margin-top",barHeight);
+								$("body.admin-bar").css("margin-top",barHeight-32); // Push the body down if the admin bar is active
+							});
+											}
+
+					
+									});
+			</script>
+
+			
+
+		<div id="catapult-cookie-bar" class=""><div class="ctcc-inner "><span class="ctcc-left-side">This site uses cookies:  <a tabindex="1" target="_blank" href="http://www.pocketmagic.net/android-ndk-for-windows-setup-guide/">Find out more.</a></span><span class="ctcc-right-side"><button id="catapultCookie" tabindex="1" onclick="catapultAcceptCookies();">Okay, thanks</button></span></div><!-- custom wrapper class --></div><!-- #catapult-cookie-bar --><script type="text/javascript">
+//<![CDATA[
+(function() {
+var _analytics_scr = document.createElement('script');
+_analytics_scr.type = 'text/javascript'; _analytics_scr.async = true; _analytics_scr.src = '/_Incapsula_Resource?SWJIYLWA=2977d8d74f63d7f8fedbea018b7a1d05&ns=9';
+var _analytics_elem = document.getElementsByTagName('script')[0]; _analytics_elem.parentNode.insertBefore(_analytics_scr, _analytics_elem);
+})();
+// ]]>
+</script>
+
+</body></html>
