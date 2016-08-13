@@ -28,6 +28,8 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 
+import com.googlecode.tesseract.android.TessBaseAPI;
+
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
@@ -42,7 +44,10 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PipedOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -54,7 +59,7 @@ import java.util.Map;
  * Created by Marco on 21-04-2016.
  */
 public class ImageViewer extends Activity {
-    int image = R.drawable.vehicle_ex7;
+    int image = R.drawable.vehicle_ex;
     Map<Integer, Integer> patentIndexInImage = new HashMap<Integer, Integer>();
     private final boolean ADD_STEPS_TO_VIEW = true;
     List<Mat> finalCandidates = new ArrayList<Mat>();
@@ -85,6 +90,45 @@ public class ImageViewer extends Activity {
         }
     }
 
+    private void CopyAssets(String storageDirectory) {
+        AssetManager assetManager = getAssets();
+        String[] files = null;
+        try {
+            files = assetManager.list("tessdata");
+        } catch (IOException e) {
+            Log.e("tag", e.getMessage());
+        }
+
+        boolean success = false;
+        File folder = new File(storageDirectory);
+        if (!folder.exists()) {
+            success = folder.mkdir();
+        }
+        for(String filename : files) {
+            System.out.println("File name => "+filename);
+            InputStream in = null;
+            OutputStream out = null;
+            try {
+                in = assetManager.open("tessdata/"+filename);   // if files resides inside the "Files" directory itself
+                out = new FileOutputStream(storageDirectory +File.separator + "eng.traineddata");
+                copyFile(in, out);
+                in.close();
+                in = null;
+                out.flush();
+                out.close();
+                out = null;
+            } catch(Exception e) {
+                Log.e("tag", e.getMessage());
+            }
+        }
+    }
+    private void copyFile(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[1024];
+        int read;
+        while((read = in.read(buffer)) != -1){
+            out.write(buffer, 0, read);
+        }
+    }
     private void CodePostOpenCVLoaded() {
         //ImageView imgFp = (ImageView) findViewById(R.id.imageView);
         final boolean EXPERIMENTAL_EQUALITATION = false;
@@ -92,25 +136,6 @@ public class ImageViewer extends Activity {
         long time1 = System.currentTimeMillis();
         CandidatesFinder candidatesFinder;
 
-
-/*
-        TessBaseAPI baseApi = new TessBaseAPI();
-        // DATA_PATH = Path to the storage
-        // lang = for which the language data exists, usually "eng"
-        final String lang = "eng";
-        final String DATA_PATH = Environment.getExternalStorageDirectory() + "/DCIM/tessdata/";
-        baseApi.init(DATA_PATH, lang);*/
-        // Eg. baseApi.init("/mnt/sdcard/tesseract/tessdata/eng.traineddata", "eng");
-        /*Mat m = candidateSelector.GetFinalImage(true);
-        Bitmap bmp = Bitmap.createBitmap(m.cols(), m.rows(), Bitmap.Config.ARGB_8888);
-        Utils.matToBitmap(m, bmp);
-        baseApi.setImage(bmp);
-        String recognizedText = baseApi.getUTF8Text();
-        Log.d("output", recognizedText);
-        baseApi.end();
-        */
-        if (true)
-            return;
 
 
         Bitmap b;
@@ -136,6 +161,25 @@ public class ImageViewer extends Activity {
             b = BitmapFactory.decodeResource(getResources(), image);
         }
         candidatesFinder = new CandidatesFinder(b);
+
+
+
+
+
+        String baseDir = getExternalFilesDir(Environment.MEDIA_MOUNTED).toString();
+        String tessdataDir = baseDir + File.separator + "tessdata";
+        CopyAssets(tessdataDir);
+        TessBaseAPI baseApi = new TessBaseAPI();
+        baseApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SINGLE_CHAR);
+        // DATA_PATH = Path to the storage
+        // lang = for which the language data exists, usually "eng"
+        final String lang = "eng";
+        final String DATA_PATH = baseDir + File.separator;
+
+
+        baseApi.init(DATA_PATH, lang);
+
+
 
         long time2 = System.currentTimeMillis();
         candidatesFinder.ToGrayScale();
@@ -483,14 +527,27 @@ public class ImageViewer extends Activity {
             Log.d("Times", "----------------------------");
 
 
+            Mat m = candidateSelector.GetFinalImage(true);
+            Imgproc.threshold(m, m, 0, 255, Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);
+            Bitmap bmp = Bitmap.createBitmap(m.cols(), m.rows(), Bitmap.Config.ARGB_8888);
+            Utils.matToBitmap(m, bmp);
+            baseApi.setImage(bmp);
+            String recognizedText = baseApi.getUTF8Text();
+            Log.d("output", String.valueOf(baseApi.getPageSegMode()));
+            Log.d("output", recognizedText);
         }
-
+        baseApi.end();
 
 
         long time100 = System.currentTimeMillis();
         Log.d("Times", " Suma Final: " + String.valueOf(time100-time1));
         InitializeGallery();
         //DrawImages();
+
+        for (int i=0; i< finalCandidates.size(); ++i) {
+            CharacterSeparator characterSeparator = new CharacterSeparator(finalCandidates.get(i));
+
+        }
     }
     @TargetApi(23)
     private void getStorageAccessPermissions() {
