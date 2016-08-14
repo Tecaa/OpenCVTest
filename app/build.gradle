@@ -25,6 +25,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.3.0'
     compile project(':openCVLibrary300')
 
-    compile 'com.rmtheis:tess-two:5.4.0'
-    //compile project(path: ':tess-two')
+    //compile 'com.rmtheis:tess-two:5.4.0'
+    compile project(path: ':tess-two')
 }

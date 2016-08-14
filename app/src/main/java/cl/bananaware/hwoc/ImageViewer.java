@@ -25,6 +25,7 @@ import android.widget.BaseAdapter;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -59,8 +60,7 @@ import java.util.Map;
  * Created by Marco on 21-04-2016.
  */
 public class ImageViewer extends Activity {
-    int image = R.drawable.vehicle_ex;
-    Map<Integer, Integer> patentIndexInImage = new HashMap<Integer, Integer>();
+    int image = R.drawable.vehicle_ex11;
     private final boolean ADD_STEPS_TO_VIEW = true;
     List<Mat> finalCandidates = new ArrayList<Mat>();
     List<Mat> processSteps = new ArrayList<Mat>();
@@ -71,7 +71,6 @@ public class ImageViewer extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cameraview);
-        fillMap();
         getStorageAccessPermissions(); // Request storage read/write permissions from the user
     }
     public void onResume()
@@ -178,7 +177,6 @@ public class ImageViewer extends Activity {
 
 
         baseApi.init(DATA_PATH, lang);
-
 
 
         long time2 = System.currentTimeMillis();
@@ -351,7 +349,7 @@ public class ImageViewer extends Activity {
                 continue;
             }
 
-            if (    false && i==patentIndexInImage.get(image)) {
+            if (    false) {
                 // DRAW START DE INVENCION
                 Mat temp = candidateSelector.OriginalEqualizedImage.clone();
                 //Imgproc.cvtColor(temp, temp, Imgproc.COLOR_RGB2GRAY);
@@ -364,7 +362,7 @@ public class ImageViewer extends Activity {
             candidateSelector.TruncateBounds();
             candidateSelector.CropExtraBoundingBox(false);
 
-            if (false && i==patentIndexInImage.get(image)) {
+            if (false ) {
                 // DRAW START DE INVENCION
                 drawContornsToMatInBitmap(candidateSelector.CurrentImage, null, null);
                 break;
@@ -383,7 +381,7 @@ public class ImageViewer extends Activity {
             long time16_3 = System.currentTimeMillis();
 
 
-            if (false && i==patentIndexInImage.get(image)) {
+            if (false) {
                 // DRAW INVENCION DILATION
                 drawContornsToMatInBitmap(candidateSelector.CurrentImage, null, null);
                 break;
@@ -393,7 +391,7 @@ public class ImageViewer extends Activity {
             long time17 = System.currentTimeMillis();
 
             ////////////////////////////// END INVENCION MIA //////////////////////////////
-            if (false && i==patentIndexInImage.get(image)) {
+            if (false) {
                 // DRAW FINAL DE INVENCION
                 drawContornsToMatInBitmap(candidateSelector.CurrentImage, null, null);
                 break;
@@ -411,7 +409,7 @@ public class ImageViewer extends Activity {
 
             long time19 = System.currentTimeMillis();
 
-            if (false && i==patentIndexInImage.get(image)) {
+            if (false) {
                 // DRAW A SECTION WITH ITS CONTOURS
                 Mat colorCurrentImage = candidateSelector.CurrentImage.clone();
                 Imgproc.cvtColor(colorCurrentImage, colorCurrentImage, Imgproc.COLOR_GRAY2RGB);
@@ -440,7 +438,7 @@ public class ImageViewer extends Activity {
                 continue;
             }
             long time21 = System.currentTimeMillis();
-            if (false && i==patentIndexInImage.get(image)) {
+            if (false) {
                 // DRAWING ROTATED RECTANGLE
                 Mat tempCurrentImage = candidateSelector.CurrentImage.clone();
                 Imgproc.cvtColor(tempCurrentImage, tempCurrentImage, Imgproc.COLOR_GRAY2RGB);
@@ -501,7 +499,7 @@ public class ImageViewer extends Activity {
             long time26 = System.currentTimeMillis();
             finalCandidates.add(candidateSelector.GetFinalImage(true));
             long time27 = System.currentTimeMillis();
-            if (false && i==patentIndexInImage.get(image)) {
+            if (false) {
                 //Mostrar en pantalla resultado de la iteración
                 drawContornsToMatInBitmap(candidateSelector.CurrentImage, null);
                 break; // IMPORTANTE, PROBLEMA DE THREAD PARECE, SI NO HAY BREAK LA LÍNEA ANTERIOR SE CAE.
@@ -527,28 +525,72 @@ public class ImageViewer extends Activity {
             Log.d("Times", "----------------------------");
 
 
-            Mat m = candidateSelector.GetFinalImage(true);
-            Imgproc.threshold(m, m, 0, 255, Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);
-            Bitmap bmp = Bitmap.createBitmap(m.cols(), m.rows(), Bitmap.Config.ARGB_8888);
-            Utils.matToBitmap(m, bmp);
-            baseApi.setImage(bmp);
-            String recognizedText = baseApi.getUTF8Text();
-            Log.d("output", String.valueOf(baseApi.getPageSegMode()));
-            Log.d("output", recognizedText);
         }
-        baseApi.end();
 
 
         long time100 = System.currentTimeMillis();
         Log.d("Times", " Suma Final: " + String.valueOf(time100-time1));
-        InitializeGallery();
+
         //DrawImages();
 
+        List <Mat> process = new ArrayList<Mat>();
+        String plate = "";
         for (int i=0; i< finalCandidates.size(); ++i) {
-            CharacterSeparator characterSeparator = new CharacterSeparator(finalCandidates.get(i));
+            CharacterSeparator characterSeparator = new CharacterSeparator(finalCandidates.get(i).clone());
+            characterSeparator.AdaptiveThreshold();
+            characterSeparator.FindCountourns();
+            if(!characterSeparator.FilterCountourns())
+                continue;
+            characterSeparator.CalculatePlateLength();
+            characterSeparator.CalculateCharsPositions();
+            //characterSeparator.CalculateHistrograms();
+            characterSeparator.CropChars();
+
+            process.add(characterSeparator.ImageWithContourns.clone());
+            process.addAll(characterSeparator.CroppedChars);
+            String whiteList = "";
+            for (int n=0; n<characterSeparator.CroppedChars.size(); ++n) {
+                switch (n)
+                {
+                    case 0://1
+                        whiteList = "ABCDEFGHIJKLNPRSTUVXYZW";
+                        break;
+                    case 2://3
+                        plate +="-";
+                        whiteList = "BCDFGHJKLPRSTVXYZW0123456789";
+                        break;
+                    case 4://5
+                        plate +="-";
+                        whiteList = "0123456789";
+                        break;
+                }
+                baseApi.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST,whiteList);
+
+
+                Mat m = characterSeparator.CroppedChars.get(n);
+                Imgproc.cvtColor(m, m, Imgproc.COLOR_GRAY2RGB);
+                //Imgproc.threshold(m, m, 0, 255, Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);
+                Bitmap bmp = Bitmap.createBitmap(m.cols(), m.rows(), Bitmap.Config.ARGB_8888);
+                Utils.matToBitmap(m, bmp);
+                baseApi.setImage(bmp);
+                String recognizedText = baseApi.getUTF8Text();
+                Log.d("output", "n=" +n+" text:" +recognizedText);
+                plate += recognizedText;
+            }
+            plate += " ";
 
         }
+        baseApi.end();
+        finalCandidates.addAll(process);
+        InitializeGallery();
+        SetPlate(plate);
     }
+
+    private void SetPlate(String plate) {
+        TextView p = (TextView) findViewById(R.id.plateText);
+        p.setText(plate);
+    }
+
     @TargetApi(23)
     private void getStorageAccessPermissions() {
         int hasWriteStoragePermission = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
@@ -615,21 +657,6 @@ public class ImageViewer extends Activity {
             ii.setImageBitmap(bm);
             ll.addView(ii);
         }
-    }
-
-    private void fillMap() {
-        patentIndexInImage.put(R.drawable.vehicle_ex, 2);
-        patentIndexInImage.put(R.drawable.vehicle_ex2, 1);
-        patentIndexInImage.put(R.drawable.vehicle_ex3, 0);
-        patentIndexInImage.put(R.drawable.vehicle_ex4, 0);
-        patentIndexInImage.put(R.drawable.vehicle_ex5, 6);
-        patentIndexInImage.put(R.drawable.vehicle_ex6, 0);
-        patentIndexInImage.put(R.drawable.vehicle_ex7, 0);
-        patentIndexInImage.put(R.drawable.vehicle_ex8, 4);
-        patentIndexInImage.put(R.drawable.vehicle_ex9, 4);
-        patentIndexInImage.put(R.drawable.vehicle_ex10, 10);//?
-        patentIndexInImage.put(R.drawable.vehicle_ex11, 2); // ?
-        patentIndexInImage.put(R.drawable.vehicle_ex12, 2);
     }
 
     private void drawContornsToMatInBitmap(Mat m, List<MatOfPoint> cs, List<MatOfPoint> csRefine) {
