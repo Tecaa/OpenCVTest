@@ -1,22 +1,18 @@
 package cl.bananaware.hwoc;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.format.DateFormat;
 import android.util.Log;
-import android.widget.Toast;
+import android.view.View;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
@@ -26,14 +22,11 @@ import org.opencv.core.Mat;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 
 import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements CvCameraViewListener2
 {
-    public static final boolean TAKE_PICTURE = false;
+    public static final boolean UNFORCE_IMAGE = true ;
     private static final String TAG = "OCVSample::Activity";
 
     public MainActivity() {
@@ -133,17 +126,10 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     public void onStart()
     {
         super.onStart();
-        if (CameraCapturerFixer) {
-            if (TAKE_PICTURE) {
-                dispatchTakePictureIntent();
-            } else {
-                Intent i = new Intent(this, ImageViewer.class);
-                startActivity(i);
-            }
-        }
-        CameraCapturerFixer = false;
+
     }
     static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int SELECT_FILE = 2;
     Uri outputFileUri ;
     String imgPath;
     private void dispatchTakePictureIntent() {
@@ -165,22 +151,49 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            //Bundle extras = data.getExtras();
-            //Bitmap imageBitmap = (Bitmap) extras.get("data");
-
+        if (resultCode == RESULT_OK) {
             Intent intent = new Intent(this, ImageViewer.class);
-            //intent.putExtra("photo", imageBitmap);
-            //Uri asdf  = data.getData();
-
-
+            boolean captured;
+            switch (requestCode) {
+                case REQUEST_IMAGE_CAPTURE:
+                    captured = true;
+                    break;
+                case SELECT_FILE:
+                default:
+                    captured = false;
+                    if (data != null) {
+                        imgPath = data.getData().toString();
+                    }
+                    break;
+            }
             intent.putExtra("uri", imgPath);
+            intent.putExtra("captured", captured);
             startActivity(intent);
         }
+    }
+
+
+    public void cameraClick(View v) {
+        if (CameraCapturerFixer) {
+            if (UNFORCE_IMAGE) {
+                dispatchTakePictureIntent();
+            } else {
+                Intent i = new Intent(this, ImageViewer.class);
+                startActivity(i);
+            }
+        }
+        CameraCapturerFixer = false;
+    }
+
+    public void galleryClick(View v) {
+
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);//
+        startActivityForResult(Intent.createChooser(intent, "Select File"),SELECT_FILE);
     }
 
     public void onDestroy() {
         super.onDestroy();
     }
-
 }

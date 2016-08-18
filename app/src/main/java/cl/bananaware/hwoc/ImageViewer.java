@@ -3,7 +3,6 @@ package cl.bananaware.hwoc;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -16,7 +15,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,18 +47,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PipedOutputStream;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Marco on 21-04-2016.
  */
 public class ImageViewer extends Activity {
-    int image = R.drawable.vehicle_ex11;
+    int image = R.drawable.vehicle_ex2;
     private final boolean ADD_STEPS_TO_VIEW = true;
     List<Mat> finalCandidates = new ArrayList<Mat>();
     List<Mat> processSteps = new ArrayList<Mat>();
@@ -138,14 +132,19 @@ public class ImageViewer extends Activity {
 
 
         Bitmap b;
-        if (MainActivity.TAKE_PICTURE)
+        if (MainActivity.UNFORCE_IMAGE)
         {
             Intent intent = getIntent();
-            //b = (Bitmap) intent.getParcelableExtra("photo");
             String abs = intent.getExtras().getString("uri");
+            Boolean captured = intent.getExtras().getBoolean("captured");
+
             try {
-                BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-                b = BitmapFactory.decodeFile(abs,bmOptions);
+                if (captured) {
+                    BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+                    b = BitmapFactory.decodeFile(abs, bmOptions);
+                }
+                else
+                    b = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), Uri.parse(abs));
             } catch (Exception e) {
                 e.printStackTrace();
 
@@ -158,20 +157,15 @@ public class ImageViewer extends Activity {
         }
         else {
             b = BitmapFactory.decodeResource(getResources(), image);
+
         }
+
         candidatesFinder = new CandidatesFinder(b);
-
-
-
-
-
         String baseDir = getExternalFilesDir(Environment.MEDIA_MOUNTED).toString();
         String tessdataDir = baseDir + File.separator + "tessdata";
         CopyAssets(tessdataDir);
         TessBaseAPI baseApi = new TessBaseAPI();
         baseApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SINGLE_CHAR);
-        // DATA_PATH = Path to the storage
-        // lang = for which the language data exists, usually "eng"
         final String lang = "eng";
         final String DATA_PATH = baseDir + File.separator;
 
@@ -535,6 +529,7 @@ public class ImageViewer extends Activity {
 
         List <Mat> process = new ArrayList<Mat>();
         String plate = "";
+        final boolean CHARS = true;
         for (int i=0; i< finalCandidates.size(); ++i) {
             CharacterSeparator characterSeparator = new CharacterSeparator(finalCandidates.get(i).clone());
             characterSeparator.AdaptiveThreshold();
@@ -543,8 +538,11 @@ public class ImageViewer extends Activity {
                 continue;
             characterSeparator.CalculatePlateLength();
             characterSeparator.CalculateCharsPositions();
-            //characterSeparator.CalculateHistrograms();
-            characterSeparator.CropChars();
+                //characterSeparator.CalculateHistrograms();
+            if (CHARS)
+                characterSeparator.CropChars();
+            else
+                characterSeparator.CropAll();
 
             process.add(characterSeparator.ImageWithContourns.clone());
             process.addAll(characterSeparator.CroppedChars);
@@ -577,7 +575,7 @@ public class ImageViewer extends Activity {
                 Log.d("output", "n=" +n+" text:" +recognizedText);
                 plate += recognizedText;
             }
-            plate += " ";
+            plate += " || ";
 
         }
         baseApi.end();

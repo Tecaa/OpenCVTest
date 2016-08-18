@@ -20,6 +20,7 @@ import java.util.List;
 public class CharacterSeparator {
     public Mat CurrentImage;
     public Mat ImageWithContourns;
+    public Mat OriginalImage;
     private Mat VerticalHistogram;
     private List<MatOfPoint> contourns = new ArrayList<MatOfPoint>();
     private List<MatOfPoint> finalsContourns = new ArrayList<MatOfPoint>();
@@ -27,6 +28,7 @@ public class CharacterSeparator {
     private List<Double> correctRightPositions = new ArrayList<Double>();
     public CharacterSeparator(Mat mat) {
         CurrentImage = mat;
+        OriginalImage = mat.clone();
         ImageWithContourns = new Mat();
         VerticalHistogram = new Mat(new Size(1, CurrentImage.width()), CvType.CV_32SC1);
         correctLeftPositions.add(0.00);
@@ -208,8 +210,18 @@ public class CharacterSeparator {
             int xWidth = Math.min(positions.get(i).End - positions.get(i).Start+2*extra,CurrentImage.width()-xStart);
             int yWidth = Math.min(HeightChars+2*extra, CurrentImage.height() - yStart);
             Rect roi = new Rect(xStart, yStart, xWidth, yWidth);
-            Log.d("posi", "RealX [0," + CurrentImage.width()+ "] Corte ["+positions.get(i).Start + "," + positions.get(i).End + "]");
-            CroppedChars.add(new Mat(CurrentImage.clone(), roi));
+            CroppedChars.add(new Mat(CurrentImage.clone(), roi)); //black and white image
+            //CroppedChars.add(new Mat(OriginalImage.clone(), roi));  // gray scale image
         }
+    }
+    public void CropAll() {
+        int extra = Math.max(Math.round(charsPlateLength*0.0144f), 1);
+        int xStart = 0;//Math.max(positions.get(i).Start-extra, 0);
+        int yStart = Math.max(InitialPixelY-extra,0);
+        int xWidth = CurrentImage.width();//Math.min(positions.get(i).End - positions.get(i).Start+2*extra,CurrentImage.width()-xStart);
+        int yWidth = Math.min(HeightChars+2*extra, CurrentImage.height() - yStart);
+        Rect roi = new Rect(xStart, yStart, xWidth, yWidth);
+        //CroppedChars.add(new Mat(CurrentImage.clone(), roi)); //black and white image
+        CroppedChars.add(new Mat(OriginalImage.clone(), roi));  // gray scale image
     }
 }
