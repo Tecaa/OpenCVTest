@@ -36,7 +36,6 @@ import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
-import org.opencv.core.Point;
 import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
@@ -48,6 +47,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -56,6 +56,7 @@ import java.util.List;
 public class ImageViewer extends Activity {
     int image = R.drawable.vehicle_ex2;
     private final boolean ADD_STEPS_TO_VIEW = true;
+    public final static boolean SHOW_PROCESS_DEBUG = true;
     List<Mat> finalCandidates = new ArrayList<Mat>();
     List<Mat> processSteps = new ArrayList<Mat>();
 
@@ -123,9 +124,8 @@ public class ImageViewer extends Activity {
         }
     }
     private void CodePostOpenCVLoaded() {
-        //ImageView imgFp = (ImageView) findViewById(R.id.imageView);
         final boolean EXPERIMENTAL_EQUALITATION = false;
-
+        DebugHWOC debugHWOC = new DebugHWOC(getResources());
         long time1 = System.currentTimeMillis();
         CandidatesFinder candidatesFinder;
 
@@ -184,7 +184,7 @@ public class ImageViewer extends Activity {
         }
         long time2_5 = System.currentTimeMillis();
         boolean fueGaussianBlureada = false;
-        candidatesFinder.EqualizeHistOriginalImage(false);
+        candidatesFinder.EqualizeHistOriginalImage(true);
         if (ADD_STEPS_TO_VIEW)
             processSteps.add(candidatesFinder.CurrentImage.clone());
 
@@ -329,15 +329,24 @@ public class ImageViewer extends Activity {
         outlines.addAll(candidatesFinder.BlueCandidatesRR);
 
         //STEP 3: loop
+        List <Mat> process = new ArrayList<Mat>();
         for (int i=0; i<outlines.size(); ++i)
         {
             CandidateSelector candidateSelector =
-                    new CandidateSelector(candidatesFinder.OriginalEqualizedImage, candidatesFinder.OriginalImageRealSize, outlines.get(i));
+                    new CandidateSelector(candidatesFinder.OriginalEqualizedImage.clone(), candidatesFinder.OriginalImageRealSize.clone(), outlines.get(i));
             //STEP 4:
+
             long time14_5 = System.currentTimeMillis();
             candidateSelector.CalculateBounds();
+            candidateSelector.TruncateBounds();
+
+            debugHWOC.AddImage(process, R.drawable.ipp);
+            debugHWOC.AddCountournedImage(process, candidateSelector.OriginalEqualizedImage, candidateSelector.CandidateRect);
+
             long time15 = System.currentTimeMillis();
             if (!candidateSelector.PercentajeAreaCandidateCheck()) {
+                debugHWOC.AddImage(process, R.drawable.percentaje_area_candidate_check);
+                Log.d("filter","i=" + i + "!PercentajeAreaCandidateCheck");
                 Log.d("Times", "i=" + i + " Time 14_5-15: " + String.valueOf(time15-time14_5) + " Suma: " + String.valueOf(time15-time1));
                 Log.d("Times", "----------------------------");
                 continue;
@@ -348,12 +357,11 @@ public class ImageViewer extends Activity {
                 Mat temp = candidateSelector.OriginalEqualizedImage.clone();
                 //Imgproc.cvtColor(temp, temp, Imgproc.COLOR_RGB2GRAY);
                 Imgproc.cvtColor(temp, temp, Imgproc.COLOR_GRAY2RGB);
-                drawContornsToMatInBitmap(drawRotatedRectInMat(candidateSelector.CandidateRect,
+                drawContornsToMatInBitmap(DebugHWOC.drawRotatedRectInMat(candidateSelector.CandidateRect,
                         temp), null, null);
                 break;
             }
             //STEP 5:
-            candidateSelector.TruncateBounds();
             candidateSelector.CropExtraBoundingBox(false);
 
             if (false ) {
@@ -419,6 +427,7 @@ public class ImageViewer extends Activity {
 
             //STEP 9:
             if(!candidateSelector.FindMinAreaRectInMaxArea()) {
+                debugHWOC.AddImage(process, R.drawable.find_min_area_rect_in_max_area);
                 Log.d("Times", "i=" + i + " Time 14_5-15: " + String.valueOf(time15-time14_5) + " Suma: " + String.valueOf(time15-time1));
                 Log.d("Times", "i=" + i + " Time 15-16: " + String.valueOf(time16-time15) + " Suma: " + String.valueOf(time16-time1));
                 Log.d("Times", "i=" + i + " Time 16-16_1: " + String.valueOf(time16_1-time16) + " Suma: " + String.valueOf(time16_1-time1));
@@ -429,6 +438,7 @@ public class ImageViewer extends Activity {
                 Log.d("Times", "i=" + i + " Time 18-19: " + String.valueOf(time19-time18) + " Suma: " + String.valueOf(time19-time1));
                 Log.d("Times", "i=" + i + " Time 19-20: " + String.valueOf(time20-time19) + " Suma: " + String.valueOf(time20-time1));
                 Log.d("Times", "----------------------------");
+                Log.d("filter","i=" + i + " !FindMinAreaRectInMaxArea");
                 continue;
             }
             long time21 = System.currentTimeMillis();
@@ -436,7 +446,7 @@ public class ImageViewer extends Activity {
                 // DRAWING ROTATED RECTANGLE
                 Mat tempCurrentImage = candidateSelector.CurrentImage.clone();
                 Imgproc.cvtColor(tempCurrentImage, tempCurrentImage, Imgproc.COLOR_GRAY2RGB);
-                drawContornsToMatInBitmap(drawRotatedRectInMat(candidateSelector.MinAreaRect,
+                drawContornsToMatInBitmap(DebugHWOC.drawRotatedRectInMat(candidateSelector.MinAreaRect,
                         tempCurrentImage), null, null);
                 break;
             }
@@ -446,8 +456,10 @@ public class ImageViewer extends Activity {
             //STEP 10 and 11
             long time22 = System.currentTimeMillis();
             long time22_5;
-            if (!candidateSelector.DoChecks()) {
+            CandidateSelector.CheckError checkError = candidateSelector.DoChecks();
+            if (checkError != null) {
                 time22_5 = System.currentTimeMillis();
+                debugHWOC.AddImage(process, checkError.getValue());
                 Log.d("Times", "i=" + i + " Time 14_5-15: " + String.valueOf(time15-time14_5) + " Suma: " + String.valueOf(time15-time1));
                 Log.d("Times", "i=" + i + " Time 15-16: " + String.valueOf(time16-time15) + " Suma: " + String.valueOf(time16-time1));
                 Log.d("Times", "i=" + i + " Time 16-16_1: " + String.valueOf(time16_1-time16) + " Suma: " + String.valueOf(time16_1-time1));
@@ -461,6 +473,7 @@ public class ImageViewer extends Activity {
                 Log.d("Times", "i=" + i + " Time 21-22: " + String.valueOf(time22-time21) + " Suma: " + String.valueOf(time22-time1));
                 Log.d("Times", "i=" + i + " Time 22-22_5: " + String.valueOf(time22_5-time22) + " Suma: " + String.valueOf(time22_5-time1));
                 Log.d("Times", "----------------------------");
+                Log.d("filter","i=" + i + "!DoChecks");
                 continue;
             }
 
@@ -527,15 +540,19 @@ public class ImageViewer extends Activity {
 
         //DrawImages();
 
-        List <Mat> process = new ArrayList<Mat>();
+
         String plate = "";
         final boolean CHARS = true;
-        for (int i=0; i< finalCandidates.size(); ++i) {
-            CharacterSeparator characterSeparator = new CharacterSeparator(finalCandidates.get(i).clone());
+        for (int q=0; q< finalCandidates.size(); ++q) {
+            debugHWOC.AddImage(process, R.drawable.qpp);
+            CharacterSeparator characterSeparator = new CharacterSeparator(finalCandidates.get(q).clone());
             characterSeparator.AdaptiveThreshold();
             characterSeparator.FindCountourns();
-            if(!characterSeparator.FilterCountourns())
+            if(!characterSeparator.FilterCountourns()) {
+                debugHWOC.AddImage(process, R.drawable.filter_countourns);
+                Log.d("filter","q=" + q + " !FilterCountourns");
                 continue;
+            }
             characterSeparator.CalculatePlateLength();
             characterSeparator.CalculateCharsPositions();
                 //characterSeparator.CalculateHistrograms();
@@ -548,6 +565,7 @@ public class ImageViewer extends Activity {
             process.addAll(characterSeparator.CroppedChars);
             String whiteList = "";
             for (int n=0; n<characterSeparator.CroppedChars.size(); ++n) {
+                debugHWOC.AddImage(process, R.drawable.npp);
                 switch (n)
                 {
                     case 0://1
@@ -579,8 +597,12 @@ public class ImageViewer extends Activity {
 
         }
         baseApi.end();
-        finalCandidates.addAll(process);
-        InitializeGallery();
+
+        processSteps.addAll(process);
+        //finalCandidates.addAll(0,process);
+        //Collections.reverse(finalCandidates);
+        InitializeGallery1();
+        InitializeGallery2();
         SetPlate(plate);
     }
 
@@ -613,26 +635,26 @@ public class ImageViewer extends Activity {
         return currentImage;
     }
 
-    private void InitializeGallery() {
-        finalCandidates.addAll(processSteps); //agregamos pasos intermedios a los dibujos finales
+    private void InitializeGallery1() {
+        //finalCandidates.addAll(processSteps); //agregamos pasos intermedios a los dibujos finales
         // Note that Gallery view is deprecated in Android 4.1---
         Gallery gallery = (Gallery) findViewById(R.id.gallery1);
         gallery.setAdapter(new ImageAdapter(this));
         gallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position,long id)
             {
-                SetGalleryImage(position);
+                SetGallery1Image(position);
             }
         });
-        SetGalleryImage(0);
+        SetGallery1Image(0);
     }
 
-    private void SetGalleryImage(int position)
+    private void SetGallery1Image(int position)
     {
 
         if (position >= finalCandidates.size()) {
             Toast.makeText(getBaseContext(),"Position " + position + " not found.",
-                  Toast.LENGTH_SHORT).show();
+                    Toast.LENGTH_SHORT).show();
             // display the images selected
             return;
         }
@@ -641,6 +663,36 @@ public class ImageViewer extends Activity {
         Bitmap bm = Bitmap.createBitmap(finalCandidates.get(position).cols(),
                 finalCandidates.get(position).rows(), Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(finalCandidates.get(position), bm);
+        ImageView ii = (ImageView) findViewById(R.id.image1);
+        ii.setImageBitmap(bm);
+    }
+    private void InitializeGallery2() {
+        // Note that Gallery view is deprecated in Android 4.1---
+        Gallery gallery = (Gallery) findViewById(R.id.gallery2);
+        gallery.setAdapter(new ImageAdapter2(this));
+        gallery.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View v, int position,long id)
+            {
+                SetGallery2Image(position);
+            }
+        });
+        SetGallery2Image(0);
+    }
+
+    private void SetGallery2Image(int position)
+    {
+
+        if (position >= processSteps.size()) {
+            Toast.makeText(getBaseContext(),"Position " + position + " not found.",
+                    Toast.LENGTH_SHORT).show();
+            // display the images selected
+            return;
+        }
+
+
+        Bitmap bm = Bitmap.createBitmap(processSteps.get(position).cols(),
+                processSteps.get(position).rows(), Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(processSteps.get(position), bm);
         ImageView ii = (ImageView) findViewById(R.id.image1);
         ii.setImageBitmap(bm);
     }
@@ -692,15 +744,7 @@ public class ImageViewer extends Activity {
         drawContornsToMatInBitmap(m, l, null);
     }
 
-    private Mat drawRotatedRectInMat(RotatedRect rRect, Mat mat)
-    {
-        Point[] vertices = new Point[4];
-        rRect.points(vertices);
-        for (int j = 0; j < 4; j++){
-            Imgproc.line(mat, vertices[j], vertices[(j+1)%4], new Scalar(255,0,0));
-        }
-        return mat;
-    }
+
 
 
     public class ImageAdapter extends BaseAdapter {
@@ -739,7 +783,42 @@ public class ImageViewer extends Activity {
             return imageView;
         }
     }
+    public class ImageAdapter2 extends BaseAdapter {
+        private Context context;
+        private int itemBackground;
+        public ImageAdapter2(Context c)
+        {
+            context = c;
+            // sets a grey background; wraps around the images
+            TypedArray a =obtainStyledAttributes(R.styleable.MyGallery);
+            itemBackground = a.getResourceId(R.styleable.MyGallery_android_galleryItemBackground, 0);
+            a.recycle();
+        }
+        // returns the number of images
+        public int getCount() {
+            return processSteps.size();
+        }
+        // returns the ID of an item
+        public Object getItem(int position) {
+            return position;
+        }
+        // returns the ID of an item
+        public long getItemId(int position) {
+            return position;
+        }
+        // returns an ImageView view
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ImageView imageView = new ImageView(context);
 
+            Bitmap bm = Bitmap.createBitmap(processSteps.get(position).cols(),
+                    processSteps.get(position).rows(), Bitmap.Config.ARGB_8888);
+            Utils.matToBitmap(processSteps.get(position), bm);
+            imageView.setImageBitmap(bm);
+            imageView.setLayoutParams(new Gallery.LayoutParams(250, 250));
+            imageView.setBackgroundResource(itemBackground);
+            return imageView;
+        }
+    }
     private class DoAll extends AsyncTask<Void, Void, Void> {
         // Do the long-running work in here
         protected Void doInBackground(Void ... params) {

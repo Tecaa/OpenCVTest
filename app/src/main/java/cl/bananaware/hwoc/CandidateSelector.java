@@ -1,7 +1,6 @@
 package cl.bananaware.hwoc;
 
 import android.util.Log;
-import android.webkit.WebStorage;
 
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -25,8 +24,8 @@ public class CandidateSelector {
     public Mat CroppedExtraBoundingBox;
     private double MinAreaRectAngle;
     private Size MinAreaRectSize;
-    private int newWidth;
-    private int newHeight;
+    public int newWidth;
+    public int newHeight;
     private int maxAreaCandidateProIndex;
     private float horizontalDilatationAmplifier;
     public List<MatOfPoint> GreenCandidatesPro;
@@ -170,7 +169,7 @@ public class CandidateSelector {
 
     final double MIN_AREA = 420; //950 is a good value
     final double MAX_PERCENTAJE_AREA = 0.15;
-    public boolean DoChecks() {
+    public CheckError DoChecks() {
         // Autos chilenos 36cm x 13cm Concentrarse en éstos
         // Motos chilenas nuevas 14,5cm x 12cm.
         // Motos chilenas antiguas 14,5cm x 8cm.
@@ -186,23 +185,27 @@ public class CandidateSelector {
 
         double imageRatio = MinAreaRectSize.width / MinAreaRectSize.height;//Math.max(mr2.size.width,mr2.size.height)/Math.min(mr2.size.width,mr2.size.height);
         final double OFFICIAL_RATIO = 36f/13f;
-        final double MIN_RATIO = 2.2f;
+        final double MIN_RATIO = 2.1f;// funciona 2.2f;
         final double MAX_RATIO = 5.7f;
-        boolean ratioCorrect = false;
-        if (imageRatio >= MIN_RATIO && imageRatio <= MAX_RATIO)
-            ratioCorrect = true;
+        CheckError checkError = null;
 
-        boolean passChecks = false;
-        if (ratioCorrect)
+        if (imageRatio < MIN_RATIO)
+            checkError = CheckError.MinRatio;
+        if (imageRatio > MAX_RATIO)
+            checkError = CheckError.MaxRatio;
+
+        if (checkError == null)
         {
             // AREAS Y PORCENTAJE DE AREAS
             double area = MinAreaRectSize.width*MinAreaRectSize.height;
             double maxAreaImage = OriginalEqualizedImage.size().width * OriginalEqualizedImage.size().height;
             double percentajeImage = area/maxAreaImage;
-            if (area*scale >= MIN_AREA && percentajeImage <= MAX_PERCENTAJE_AREA)
-                passChecks = true;
+            if (area*scale < MIN_AREA)
+                checkError = CheckError.MinArea;
+            if (percentajeImage > MAX_PERCENTAJE_AREA)
+                checkError = CheckError.MaxPercentajeArea;
         }
-        return passChecks;
+        return checkError;
     }
     public void CropMinRotatedRect(boolean realSizeCrop) {
         // get the rotation matrix
@@ -239,5 +242,19 @@ public class CandidateSelector {
             CropMinRotatedRect(true);
         }
         return CurrentImage;//o CurrentImage.clone()?
+    }
+
+    public enum CheckError {
+        MinRatio(R.drawable.do_checks_min_rate), MinArea(R.drawable.do_checks_min_area),
+        MaxPercentajeArea(R.drawable.do_checks_max_percentaje_area), MaxRatio(R.drawable.do_checks_max_rate);
+
+        private final int value;
+        private CheckError(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
     }
 }

@@ -21,7 +21,7 @@
     <ImageView
         android:id="@+id/image1"
         android:layout_width="fill_parent"
-        android:layout_height="match_parent"
+        android:layout_height="700px"
         android:layout_gravity="center_horizontal"
         android:background="#cfcfcf"
         android:paddingTop="5dp"
@@ -29,5 +29,10 @@
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         />
+
+    <Gallery
+        android:id="@+id/gallery2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
 </LinearLayout>
