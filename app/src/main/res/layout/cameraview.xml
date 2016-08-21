@@ -5,11 +5,20 @@
     android:orientation="vertical"
     android:id="@+id/linearLayout">
 
-
     <Gallery
         android:id="@+id/gallery1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+    <Gallery
+        android:id="@+id/gallery2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <Gallery
+        android:id="@+id/gallery3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="50px"
@@ -21,7 +30,7 @@
     <ImageView
         android:id="@+id/image1"
         android:layout_width="fill_parent"
-        android:layout_height="700px"
+        android:layout_height="fill_parent"
         android:layout_gravity="center_horizontal"
         android:background="#cfcfcf"
         android:paddingTop="5dp"
@@ -30,9 +39,5 @@
         android:paddingRight="10dp"
         />
 
-    <Gallery
-        android:id="@+id/gallery2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
 
 </LinearLayout>
