@@ -21,7 +21,7 @@ public class CharacterSeparator {
     public Mat CurrentImage;
     public Mat ImageWithContourns;
     public Mat OriginalImage;
-    private Mat VerticalHistogram;
+    //private Mat VerticalHistogram;
     private List<MatOfPoint> contourns = new ArrayList<MatOfPoint>();
     private List<MatOfPoint> finalsContourns = new ArrayList<MatOfPoint>();
     private List<Double> correctLeftPositions = new ArrayList<Double>();
@@ -30,7 +30,7 @@ public class CharacterSeparator {
         CurrentImage = mat;
         OriginalImage = mat.clone();
         ImageWithContourns = new Mat();
-        VerticalHistogram = new Mat(new Size(1, CurrentImage.width()), CvType.CV_32SC1);
+      //  VerticalHistogram = new Mat(new Size(1, CurrentImage.width()), CvType.CV_32SC1);
         correctLeftPositions.add(0.00);
         correctLeftPositions.add(0.14);
         correctLeftPositions.add(0.36);
@@ -173,13 +173,13 @@ public class CharacterSeparator {
         }
         return -1;
     }
-
+/*
     public void CalculateHistrograms()
     {
         Core.reduce(CurrentImage, VerticalHistogram, 1, Core.REDUCE_SUM, CvType.CV_32SC1); //Is good the orientation?
         CurrentImage = VerticalHistogram;
 
-    }
+    }*/
     private boolean aspectRatioCheck(Rect br) {
         final double MIN_RATIO = 0.3;// estaba en 0.3
         final double MAX_RATIO = 2.4;

@@ -79,7 +79,7 @@ public class CandidateSelector {
             }
             if (roi.y + roi.height > OriginalEqualizedImage.height())
                 roi.height = OriginalEqualizedImage.height() - roi.y;
-            CurrentImage = new Mat(OriginalEqualizedImage, roi);
+            CurrentImage = new Mat(OriginalEqualizedImage, roi).clone();
         }
         Log.d("caida", "check 2.2.7");
         CroppedExtraBoundingBox = CurrentImage.clone();
@@ -101,7 +101,7 @@ public class CandidateSelector {
     }
 
     public void Dilate() {
-        float DILATION_AMPLIFIER = 1f;
+        float DILATION_AMPLIFIER = 1.3f;//1f; // EVALUAR HACERLO Dinámico
         horizontalDilatationAmplifier = calculateHorizontalAmplifier(CurrentImage.size());
         Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT,
                 new Size( Math.round(9*DILATION_AMPLIFIER*horizontalDilatationAmplifier), 3*DILATION_AMPLIFIER ));

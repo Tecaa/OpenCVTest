@@ -53,7 +53,7 @@ public class DebugHWOC {
         if (!ImageViewer.SHOW_PROCESS_DEBUG)
             return;
 
-        Mat temp = originalEqualizedImage.clone();
+        Mat temp = originalEqualizedImage;
         Imgproc.cvtColor(temp, temp, Imgproc.COLOR_GRAY2RGB);
 
         DebugHWOC.drawRotatedRectInMat(candidateRect, temp);

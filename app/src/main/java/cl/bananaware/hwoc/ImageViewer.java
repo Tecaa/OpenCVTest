@@ -333,7 +333,7 @@ public class ImageViewer extends Activity {
         for (int i=0; i<outlines.size(); ++i)
         {
             CandidateSelector candidateSelector =
-                    new CandidateSelector(candidatesFinder.OriginalEqualizedImage.clone(), candidatesFinder.OriginalImageRealSize.clone(), outlines.get(i));
+                    new CandidateSelector(candidatesFinder.OriginalEqualizedImage, candidatesFinder.OriginalImageRealSize, outlines.get(i));
             //STEP 4:
 
             long time14_5 = System.currentTimeMillis();
@@ -341,7 +341,7 @@ public class ImageViewer extends Activity {
             candidateSelector.TruncateBounds();
 
             debugHWOC.AddImage(firstProcessSteps, R.drawable.ipp);
-            debugHWOC.AddCountournedImage(firstProcessSteps, candidateSelector.OriginalEqualizedImage, candidateSelector.CandidateRect);
+            debugHWOC.AddCountournedImage(firstProcessSteps, candidateSelector.OriginalEqualizedImage.clone(), candidateSelector.CandidateRect.clone());
 
             long time15 = System.currentTimeMillis();
             if (!candidateSelector.PercentajeAreaCandidateCheck()) {
@@ -477,9 +477,11 @@ public class ImageViewer extends Activity {
                 continue;
             }
 
+            firstProcessSteps.add(candidateSelector.CurrentImage.clone());
             time22_5 = System.currentTimeMillis();
             candidateSelector.CropMinRotatedRect(false);
             long time23 = System.currentTimeMillis();
+            firstProcessSteps.add(candidateSelector.CurrentImage.clone());
 
             // Paso 11 sin rotación.
             //Mat sinCortar = candidatesFinder.OriginalImage.clone();
@@ -504,7 +506,7 @@ public class ImageViewer extends Activity {
             long time25 = System.currentTimeMillis();
 
             long time26 = System.currentTimeMillis();
-            finalCandidates.add(candidateSelector.GetFinalImage(true));
+            finalCandidates.add(candidateSelector.GetFinalImage(true).clone());
             long time27 = System.currentTimeMillis();
             if (false) {
                 //Mostrar en pantalla resultado de la iteración
@@ -544,17 +546,20 @@ public class ImageViewer extends Activity {
         String plate = "";
         final boolean CHARS = true;
         for (int q=0; q< finalCandidates.size(); ++q) {
+
             debugHWOC.AddImage(secondProcessSteps, R.drawable.qpp);
             CharacterSeparator characterSeparator = new CharacterSeparator(finalCandidates.get(q).clone());
             characterSeparator.AdaptiveThreshold();
             characterSeparator.FindCountourns();
 
             secondProcessSteps.add(characterSeparator.ImageWithContourns.clone());
+
             if(!characterSeparator.FilterCountourns()) {
                 debugHWOC.AddImage(secondProcessSteps, R.drawable.filter_countourns);
                 Log.d("filter","q=" + q + " !FilterCountourns");
                 continue;
             }
+
             characterSeparator.CalculatePlateLength();
             characterSeparator.CalculateCharsPositions();
                 //characterSeparator.CalculateHistrograms();
@@ -566,7 +571,7 @@ public class ImageViewer extends Activity {
             String whiteList = "";
             for (int n=0; n<characterSeparator.CroppedChars.size(); ++n) {
                 debugHWOC.AddImage(secondProcessSteps, R.drawable.npp);
-                secondProcessSteps.add(characterSeparator.CroppedChars.get(n));
+                secondProcessSteps.add(characterSeparator.CroppedChars.get(n).clone());
                 switch (n)
                 {
                     case 0://1
