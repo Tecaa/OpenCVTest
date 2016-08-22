@@ -38,27 +38,32 @@ public class CandidateSelector {
         this.CandidateRect = candidate;
         GreenCandidatesPro = new ArrayList<MatOfPoint>();
     }
-
+    int dx;
+    int dy;
     public void CalculateBounds() {
-
-        double dx = 0.15126 * CandidateRect.boundingRect().size().width;
-        double dy = 0.625* CandidateRect.boundingRect().size().height;;
-        newWidth = (int)(CandidateRect.boundingRect().size().width + dx);
-        newHeight = (int)(CandidateRect.boundingRect().size().height + dy);
+        //FUNCIONA MEJOR CON DX =0 DY=0 :o?
+        dx =0;// Math.round(0.15126f * (float)CandidateRect.boundingRect().size().width);
+        dy = 0;//Math.round(0.625f * (float)CandidateRect.boundingRect().size().height);;
+        newWidth = (int)(CandidateRect.boundingRect().size().width + 2*dx);
+        newHeight = (int)(CandidateRect.boundingRect().size().height + 2*dy);
     }
 
     public void TruncateBounds() {
+        newWidth = Math.min(newWidth, OriginalEqualizedImage.width() - CandidateRect.boundingRect().x-dx);
+        newHeight = Math.min(newHeight, OriginalEqualizedImage.height() - CandidateRect.boundingRect().y-dy);
+/*
         // si excedimos el ancho de la imagen, lo truncamos
         if (OriginalEqualizedImage.width() < CandidateRect.boundingRect().x + newWidth)
             newWidth = newWidth -  ((CandidateRect.boundingRect().x + newWidth) - OriginalEqualizedImage.width());
         // si excedimos el alto de la imagen, lo truncamos
         if (OriginalEqualizedImage.height() < CandidateRect.boundingRect().y + newHeight)
             newHeight = newHeight -  ((CandidateRect.boundingRect().y + newHeight) - OriginalEqualizedImage.height());
+            */
     }
 
     public void CropExtraBoundingBox(boolean realSizeCrop) {
-        Rect roi = new Rect(Math.max(CandidateRect.boundingRect().x, 0),
-                Math.max(CandidateRect.boundingRect().y,0), newWidth, newHeight);
+        Rect roi = new Rect(Math.max(CandidateRect.boundingRect().x -dx, 0),
+                Math.max(CandidateRect.boundingRect().y-dx,0), newWidth, newHeight);
         if (realSizeCrop) {
             Rect roiScaled = new Rect((int) (roi.x * scale),
                     (int) (roi.y * scale), (int) (roi.width * scale), (int) (roi.height * scale));
@@ -104,7 +109,7 @@ public class CandidateSelector {
         float DILATION_AMPLIFIER = 1.3f;//1f; // EVALUAR HACERLO Dinámico
         horizontalDilatationAmplifier = calculateHorizontalAmplifier(CurrentImage.size());
         Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT,
-                new Size( Math.round(9*DILATION_AMPLIFIER*horizontalDilatationAmplifier), 3*DILATION_AMPLIFIER ));
+                new Size( Math.round(12*DILATION_AMPLIFIER*horizontalDilatationAmplifier), 3*DILATION_AMPLIFIER ));
         Imgproc.dilate( CurrentImage, CurrentImage, element );
     }
 
@@ -168,7 +173,7 @@ public class CandidateSelector {
     }
 
     final double MIN_AREA = 420; //950 is a good value
-    final double MAX_PERCENTAJE_AREA = 0.15;
+    final double MAX_PERCENTAJE_AREA = 0.30;
     public CheckError DoChecks() {
         // Autos chilenos 36cm x 13cm Concentrarse en éstos
         // Motos chilenas nuevas 14,5cm x 12cm.

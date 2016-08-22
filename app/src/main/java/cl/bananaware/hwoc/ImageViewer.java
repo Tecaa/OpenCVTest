@@ -185,7 +185,7 @@ public class ImageViewer extends Activity {
         }
         long time2_5 = System.currentTimeMillis();
         boolean fueGaussianBlureada = false;
-        candidatesFinder.EqualizeHistOriginalImage(true);
+        candidatesFinder.EqualizeHistOriginalImage(false);
         if (ADD_STEPS_TO_VIEW)
             firstProcessSteps.add(candidatesFinder.CurrentImage.clone());
 
@@ -450,7 +450,7 @@ public class ImageViewer extends Activity {
                         tempCurrentImage), null, null);
                 break;
             }
-
+            debugHWOC.AddCountournedImage(firstProcessSteps, candidateSelector.CurrentImage.clone(), candidateSelector.MinAreaRect.clone());
 
 
             //STEP 10 and 11
@@ -552,14 +552,16 @@ public class ImageViewer extends Activity {
             characterSeparator.AdaptiveThreshold();
             characterSeparator.FindCountourns();
 
-            secondProcessSteps.add(characterSeparator.ImageWithContourns.clone());
 
             if(!characterSeparator.FilterCountourns()) {
+                secondProcessSteps.add(characterSeparator.ImageWithContourns.clone());
                 debugHWOC.AddImage(secondProcessSteps, R.drawable.filter_countourns);
                 Log.d("filter","q=" + q + " !FilterCountourns");
                 continue;
             }
 
+            secondProcessSteps.add(characterSeparator.ImageWithContourns.clone());
+            secondProcessSteps.add(characterSeparator.CleanedImage.clone());
             characterSeparator.CalculatePlateLength();
             characterSeparator.CalculateCharsPositions();
                 //characterSeparator.CalculateHistrograms();
@@ -603,13 +605,14 @@ public class ImageViewer extends Activity {
 
         }
         baseApi.end();
-
+        plate = plate.replace("\n", "").replace("\r", "");
         //finalCandidates.addAll(0,process);
         //Collections.reverse(finalCandidates);
         InitializeGallery(R.id.gallery1, firstProcessSteps);
         InitializeGallery(R.id.gallery2, secondProcessSteps);
         InitializeGallery(R.id.gallery3, finalCandidates);
         SetPlate(plate);
+        Log.d("output", "plate="+plate);
     }
 
     private void SetPlate(String plate) {

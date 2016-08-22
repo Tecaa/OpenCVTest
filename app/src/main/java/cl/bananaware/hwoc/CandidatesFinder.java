@@ -139,7 +139,8 @@ public class CandidatesFinder {
     }
 
     public void Erode2() {
-        Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 9, 3 ));
+        final float EROTATION_AMPLIFIER = 2.4F;
+        Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 9*EROTATION_AMPLIFIER, 3 ));
         Imgproc.erode( CurrentImage, CurrentImage, element);
     }
 

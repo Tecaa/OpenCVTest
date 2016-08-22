@@ -6,6 +6,7 @@ import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
@@ -19,6 +20,7 @@ import java.util.List;
  */
 public class CharacterSeparator {
     public Mat CurrentImage;
+    public Mat CleanedImage;
     public Mat ImageWithContourns;
     public Mat OriginalImage;
     //private Mat VerticalHistogram;
@@ -30,6 +32,7 @@ public class CharacterSeparator {
         CurrentImage = mat;
         OriginalImage = mat.clone();
         ImageWithContourns = new Mat();
+        CleanedImage = new Mat();
       //  VerticalHistogram = new Mat(new Size(1, CurrentImage.width()), CvType.CV_32SC1);
         correctLeftPositions.add(0.00);
         correctLeftPositions.add(0.14);
@@ -58,6 +61,7 @@ public class CharacterSeparator {
         Imgproc.findContours(CurrentImage.clone(),contourns,hierarchy,Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);
 
 
+
         Imgproc.cvtColor(CurrentImage, ImageWithContourns, Imgproc.COLOR_GRAY2RGB);
         for (int cId = 0; cId < contourns.size(); cId++) {
             Imgproc.drawContours(ImageWithContourns, contourns, cId, new Scalar(0, 255, 0), 1);
@@ -67,16 +71,89 @@ public class CharacterSeparator {
 
     public boolean FilterCountourns() {
 
+        int min_x = CurrentImage.width();
+        int max_x = 0;
+        int min_y = CurrentImage.height();
+        int max_y = 0;
+
+        final boolean REMOVE_OUTSIDE = true;
+        Mat maskInsideContour = Mat.zeros(CurrentImage.size(), CvType.CV_8UC1);
         for (int i=0; i<contourns.size(); ++i)
         {
             Rect boundingRect = Imgproc.boundingRect(contourns.get(i));
             if (areaCheck(boundingRect) && aspectRatioCheck(boundingRect))
             {
                 finalsContourns.add(contourns.get(i));
-            }
-                
-        }
+                if (min_x > boundingRect.x)
+                    min_x = boundingRect.x;
+                if (max_x < boundingRect.x + boundingRect.width)
+                    max_x = boundingRect.x + boundingRect.width;
+                if (min_y > boundingRect.y)
+                    min_y = boundingRect.y;
+                if (max_y < boundingRect.y + boundingRect.height)
+                    max_y = boundingRect.y + boundingRect.height;
 
+            }
+
+            if (REMOVE_OUTSIDE) {
+                if (boundingRect.area() >= 0.03 * CurrentImage.size().area()) {
+                    Imgproc.drawContours(maskInsideContour, contourns, i,
+                            new Scalar(255), -1); // This is a OpenCV function
+                }
+            }
+
+        }
+        Rect finalsContournsBoundingBox = new Rect(min_x, min_y, max_x-min_x, max_y-min_y);
+
+        // REMOVER LO QUE ESTÁ SOBRE LAS ROJAS Y BAJO ELLAS
+        // ADEMAS REMOVER LO QUE ES MUY  PEQUEÑO (CIRCULOS INTERIORES PARA EVITAR ERRORES)
+        if (REMOVE_OUTSIDE) {
+
+
+            // 'contours' is the vector of contours returned from findContours
+            // 'image' is the image you are masking
+
+            // Create mask for region within contour
+            //Mat maskInsideContour = Mat.zeros(CurrentImage.size(), CvType.CV_8UC1);
+
+            //for (int idxOfContour = 0; idxOfContour < contourns.size(); idxOfContour++) {
+            // Change to the index of the contour you wish to draw
+
+
+            //}
+
+            //Ajustamos debido a que es un borde interior, y ahora necesitamos el borde exterior del contorno.
+            final int LIMIT = 1;
+            min_y -= LIMIT;
+            min_y = Math.max(min_y,0);
+            min_x -= LIMIT;
+            min_x = Math.max(min_x,0);
+            max_y += LIMIT;
+            max_y = Math.min(max_y,CurrentImage.height());
+            max_x += LIMIT;
+            max_x = Math.min(max_x,CurrentImage.width());
+            if (0 != min_y)
+                Imgproc.rectangle(CurrentImage, new Point(0,0), new Point(CurrentImage.width(), min_y), new Scalar(0,0,0), -1);
+            if (0 != min_x)
+                Imgproc.rectangle(CurrentImage, new Point(0,0), new Point(min_x, CurrentImage.height()), new Scalar(0,0,0), -1);
+            if (CurrentImage.height() != max_y)
+                Imgproc.rectangle(CurrentImage, new Point(0,max_y), new Point(CurrentImage.width(), CurrentImage.height()), new Scalar(0,0,0), -1);
+            if (CurrentImage.width() != max_x)
+                Imgproc.rectangle(CurrentImage, new Point(max_x,0), new Point(CurrentImage.width(), CurrentImage.height()), new Scalar(0,0,0), -1);
+
+            // At this point, maskInsideContour has value of 255 for pixels
+            // within the contour and value of 0 for those not in contour.
+
+            Mat maskedImage = new Mat(CurrentImage.size(), CvType.CV_8UC1);  // Assuming you have 3 channel image
+
+            // Do one of the two following lines:
+            maskedImage.setTo(new Scalar(0, 0, 0));  // Set all pixels to (180, 180, 180)
+            CurrentImage.copyTo(maskedImage, maskInsideContour);  // Copy pixels within contour to maskedImage.
+            CurrentImage = maskedImage;
+            // Now regions outside the contour in maskedImage is set to (180, 180, 180) and region
+            // within it is set to the value of the pixels in the contour.
+            CleanedImage = maskedImage.clone();
+        }
         for (int cId = 0; cId < finalsContourns.size(); cId++) {
             Imgproc.drawContours(ImageWithContourns, finalsContourns, cId, new Scalar(255, 0, 0), 1);
         }
@@ -203,12 +280,15 @@ public class CharacterSeparator {
 
     List<Mat> CroppedChars = new ArrayList<Mat>();
     public void CropChars() {
+        final float PERCENTAJE_PLATE_X = 0.018F; //0.018 funciona bien
+        final float PERCENTAJE_PLATE_Y = 0.035F;
         for(int i=0; i<positions.size(); ++i) {
-            int extra = Math.max(Math.round(charsPlateLength*0.0144f), 1);
-            int xStart = Math.max(positions.get(i).Start-extra, 0);
-            int yStart = Math.max(InitialPixelY-extra,0);
-            int xWidth = Math.min(positions.get(i).End - positions.get(i).Start+2*extra,CurrentImage.width()-xStart);
-            int yWidth = Math.min(HeightChars+2*extra, CurrentImage.height() - yStart);
+            int extra_x = Math.max(Math.round(charsPlateLength*PERCENTAJE_PLATE_X), 1);
+            int extra_y = Math.max(Math.round(charsPlateLength*PERCENTAJE_PLATE_Y), 1);
+            int xStart = Math.max(positions.get(i).Start-extra_x, 0);
+            int yStart = Math.max(InitialPixelY-extra_y,0);
+            int xWidth = Math.min(positions.get(i).End - positions.get(i).Start+2*extra_x,CurrentImage.width()-xStart);
+            int yWidth = Math.min(HeightChars+2*extra_y, CurrentImage.height() - yStart);
             Rect roi = new Rect(xStart, yStart, xWidth, yWidth);
             CroppedChars.add(new Mat(CurrentImage.clone(), roi)); //black and white image
             //CroppedChars.add(new Mat(OriginalImage.clone(), roi));  // gray scale image
