@@ -55,7 +55,6 @@ import java.util.List;
  */
 public class ImageViewer extends Activity {
     int image = R.drawable.vehicle_ex2;
-    private final boolean ADD_STEPS_TO_VIEW = true;
     public final static boolean SHOW_PROCESS_DEBUG = true;
     List<Mat> finalCandidates = new ArrayList<Mat>();
     List<Mat> firstProcessSteps = new ArrayList<Mat>();
@@ -85,67 +84,36 @@ public class ImageViewer extends Activity {
         }
     }
 
-    private void CopyAssets(String storageDirectory) {
-        AssetManager assetManager = getAssets();
-        String[] files = null;
-        try {
-            files = assetManager.list("tessdata");
-        } catch (IOException e) {
-            Log.e("tag", e.getMessage());
-        }
 
-        boolean success = false;
-        File folder = new File(storageDirectory);
-        if (!folder.exists()) {
-            success = folder.mkdir();
-        }
-        for(String filename : files) {
-            System.out.println("File name => "+filename);
-            InputStream in = null;
-            OutputStream out = null;
-            try {
-                in = assetManager.open("tessdata/"+filename);   // if files resides inside the "Files" directory itself
-                out = new FileOutputStream(storageDirectory +File.separator + "eng.traineddata");
-                copyFile(in, out);
-                in.close();
-                in = null;
-                out.flush();
-                out.close();
-                out = null;
-            } catch(Exception e) {
-                Log.e("tag", e.getMessage());
-            }
-        }
-    }
-    private void copyFile(InputStream in, OutputStream out) throws IOException {
-        byte[] buffer = new byte[1024];
-        int read;
-        while((read = in.read(buffer)) != -1){
-            out.write(buffer, 0, read);
-        }
-    }
     private void CodePostOpenCVLoaded() {
         final boolean EXPERIMENTAL_EQUALITATION = false;
         DebugHWOC debugHWOC = new DebugHWOC(getResources());
-        long time1 = System.currentTimeMillis();
+        TimeProfiler.CheckPoint(0);
         CandidatesFinder candidatesFinder;
-
+        TimeProfiler.CheckPoint(0.1);
 
 
         Bitmap b;
         if (MainActivity.UNFORCE_IMAGE)
         {
+            TimeProfiler.CheckPoint(0.2);
             Intent intent = getIntent();
+            TimeProfiler.CheckPoint(0.3);
             String abs = intent.getExtras().getString("uri");
+            TimeProfiler.CheckPoint(0.4);
             Boolean captured = intent.getExtras().getBoolean("captured");
+            TimeProfiler.CheckPoint(0.5);
 
             try {
                 if (captured) {
                     BitmapFactory.Options bmOptions = new BitmapFactory.Options();
                     b = BitmapFactory.decodeFile(abs, bmOptions);
                 }
-                else
+                else {
+                    TimeProfiler.CheckPoint(0.55);
                     b = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), Uri.parse(abs));
+                    TimeProfiler.CheckPoint(0.6);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
 
@@ -160,34 +128,19 @@ public class ImageViewer extends Activity {
             b = BitmapFactory.decodeResource(getResources(), image);
 
         }
-
+        TimeProfiler.CheckPoint(1);
         candidatesFinder = new CandidatesFinder(b);
-        String baseDir = getExternalFilesDir(Environment.MEDIA_MOUNTED).toString();
-        String tessdataDir = baseDir + File.separator + "tessdata";
-        CopyAssets(tessdataDir);
-        TessBaseAPI baseApi = new TessBaseAPI();
-        baseApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SINGLE_CHAR);
-        final String lang = "eng";
-        final String DATA_PATH = baseDir + File.separator;
 
 
-        baseApi.init(DATA_PATH, lang);
-
-
-        long time2 = System.currentTimeMillis();
+        TimeProfiler.CheckPoint(2);
         candidatesFinder.ToGrayScale();
 
-        if (false) {
-            // DRAWING IMAGE BEFORE EQUALIZING
-            drawContornsToMatInBitmap(candidatesFinder.CurrentImage, null,
-                    null);
-            return;
-        }
-        long time2_5 = System.currentTimeMillis();
+        TimeProfiler.CheckPoint(3);
         boolean fueGaussianBlureada = false;
         candidatesFinder.EqualizeHistOriginalImage(false);
-        if (ADD_STEPS_TO_VIEW)
-            firstProcessSteps.add(candidatesFinder.CurrentImage.clone());
+
+        debugAddStep(firstProcessSteps, candidatesFinder.CurrentImage);
+
 
         if (EXPERIMENTAL_EQUALITATION) {
             Imgproc.GaussianBlur(candidatesFinder.OriginalEqualizedImage, candidatesFinder.CurrentImage, new Size(25, 25), 25);
@@ -195,293 +148,159 @@ public class ImageViewer extends Activity {
 
         }
 
-        if (false) {
-            // DRAWING IMAGE AFTER EQUALIZING
-            drawContornsToMatInBitmap(candidatesFinder.CurrentImage, null,
-                    null);
-            return;
-        }
-        long time3 = System.currentTimeMillis();
+        TimeProfiler.CheckPoint(4);
         candidatesFinder.Dilate();
-        if (ADD_STEPS_TO_VIEW)
-            firstProcessSteps.add(candidatesFinder.CurrentImage.clone());
-        if (false) {
-            // DRAWING dilate 1
-            drawContornsToMatInBitmap(candidatesFinder.CurrentImage, null, null);
-            return;
-        }
 
-        long time4 = System.currentTimeMillis();
+        debugAddStep(firstProcessSteps, candidatesFinder.CurrentImage);
+
+        TimeProfiler.CheckPoint(5);
         candidatesFinder.Erode();
-        if (ADD_STEPS_TO_VIEW)
-            firstProcessSteps.add(candidatesFinder.CurrentImage.clone());
 
-        if (false) {
-            // DRAWING erode 1
-            drawContornsToMatInBitmap(candidatesFinder.CurrentImage, null, null);
-            return;
-        }
-        long time5 = System.currentTimeMillis();
+        debugAddStep(firstProcessSteps, candidatesFinder.CurrentImage);
+
+        TimeProfiler.CheckPoint(6);
 
 
         candidatesFinder.Substraction();
-        if (ADD_STEPS_TO_VIEW)
-            firstProcessSteps.add(candidatesFinder.CurrentImage.clone());
-        long time6 = System.currentTimeMillis();
 
-        if (false) {
-            // DRAWING substraction
-            drawContornsToMatInBitmap(candidatesFinder.CurrentImage, null, null);
-            return;
-        }
+        debugAddStep(firstProcessSteps, candidatesFinder.CurrentImage);
+
+        TimeProfiler.CheckPoint(7);
 
 
         candidatesFinder.Sobel();
-        if (ADD_STEPS_TO_VIEW)
-            firstProcessSteps.add(candidatesFinder.CurrentImage.clone());
-        long time7 = System.currentTimeMillis();
-        if (false) {
-            // DRAWING sobel
-            drawContornsToMatInBitmap(candidatesFinder.CurrentImage, null, null);
-            return;
-        }
+        debugAddStep(firstProcessSteps, candidatesFinder.CurrentImage);
+        TimeProfiler.CheckPoint(8);
+
 
 
         candidatesFinder.GaussianBlur();
-        if (ADD_STEPS_TO_VIEW)
-            firstProcessSteps.add(candidatesFinder.CurrentImage.clone());
-        long time8 = System.currentTimeMillis();
+        debugAddStep(firstProcessSteps, candidatesFinder.CurrentImage);
+        TimeProfiler.CheckPoint(9);
         List<RotatedRect> outlines = new ArrayList<RotatedRect>();
-        if (false) {
-            // DRAWING gaussianblur
-            drawContornsToMatInBitmap(candidatesFinder.CurrentImage, null, null);
-            return;
-        }
 
-        Log.d("Times", "Time 1-2: " + String.valueOf(time2-time1) + " Suma: " + String.valueOf(time2-time1));
-        Log.d("Times", "Time 2-2_5: " + String.valueOf(time2_5-time2) + " Suma: " + String.valueOf(time2_5-time1));
-        Log.d("Times", "Time 2_5-3: " + String.valueOf(time3-time2_5) + " Suma: " + String.valueOf(time3-time2_5));
-        Log.d("Times", "Time 3-4: " + String.valueOf(time4-time3) + " Suma: " + String.valueOf(time4-time1));
-        Log.d("Times", "Time 4-5: " + String.valueOf(time5-time4) + " Suma: " + String.valueOf(time5-time1));
-        Log.d("Times", "Time 5-6: " + String.valueOf(time6-time5) + " Suma: " + String.valueOf(time6-time1));
-        Log.d("Times", "Time 6-7: " + String.valueOf(time7-time6) + " Suma: " + String.valueOf(time7-time1));
-        Log.d("Times", "Time 7-8: " + String.valueOf(time8-time7) + " Suma: " + String.valueOf(time8-time1));
         for (ImageSize is : ImageSize.values())
         {
-            long time8_5 = System.currentTimeMillis();
+            TimeProfiler.CheckPoint(10, is.Index);
             candidatesFinder.Dilate2(is);
-            long time9 = System.currentTimeMillis();
+            TimeProfiler.CheckPoint(11, is.Index);
             candidatesFinder.Erode2();
-            long time10 = System.currentTimeMillis();
+            TimeProfiler.CheckPoint(12, is.Index);
 
-            if (false && is == ImageSize.MEDIANA) {
-                // DRAWING erode
-                drawContornsToMatInBitmap(candidatesFinder.CurrentImage, null, null);
-                return;
-            }
-
-            long time11 = System.currentTimeMillis();
             candidatesFinder.OtsusThreshold();
-            long time12 = System.currentTimeMillis();
-            if (false && is == ImageSize.GRANDE) {
-                // DRAWING otsu
-                drawContornsToMatInBitmap(candidatesFinder.CurrentImage, null, null);
-                return;
-            }
+            TimeProfiler.CheckPoint(13, is.Index);
 
 
             //STEP 1: start Finding outlines in the binary image
             candidatesFinder.FindOutlines();
-            long time13 = System.currentTimeMillis();
+            TimeProfiler.CheckPoint(14, is.Index);
 
 
             //STEP 2: start selecting outlines
             candidatesFinder.OutlinesSelection();
-            long time14 = System.currentTimeMillis();
-
-            if (false && is == ImageSize.MEDIANA) {
-                // DRAWING GREEN AND BLUE LINES IN COLOR IMAGE
-                drawContornsToMatInBitmap(candidatesFinder.OriginalEqualizedImage.clone(), candidatesFinder.LastGreenCandidates,
-                        candidatesFinder.LastBlueCandidates);
-                return;
-            }
-
-            if (false && is == ImageSize.MEDIANA) {
-                // DRAWING GREEN AND BLUE LINES IN GRAY SCALE IMAGE
-                Mat temp = candidatesFinder.CurrentImage.clone();
-                Imgproc.cvtColor(temp, temp, Imgproc.COLOR_GRAY2RGB);
-                drawContornsToMatInBitmap(temp, candidatesFinder.LastGreenCandidates,
-                        candidatesFinder.LastBlueCandidates);
-                return;
-            }
+            TimeProfiler.CheckPoint(15, is.Index);
 
 
-            Log.d("Times", "Size=" +is.name() + " Count=" + candidatesFinder.LastBlueCandidates.size());
-            Log.d("Times", "Size=" + is.name() + " Time 8_5-9: " + String.valueOf(time9-time8_5) + " Suma: " + String.valueOf(time9-time1));
-            Log.d("Times", "Size=" + is.name() + " Time 9-10: " + String.valueOf(time10-time9) + " Suma: " + String.valueOf(time10-time1));
-            Log.d("Times", "Size=" + is.name() + " Time 10-11: " + String.valueOf(time11-time10) + " Suma: " + String.valueOf(time11-time1));
-            Log.d("Times", "Size=" + is.name() + " Time 11-12: " + String.valueOf(time12-time11) + " Suma: " + String.valueOf(time12-time1));
-            Log.d("Times", "Size=" + is.name() + " Time 12-13: " + String.valueOf(time13-time12) + " Suma: " + String.valueOf(time13-time1));
-            Log.d("Times", "Size=" + is.name() + " Time 13-14: " + String.valueOf(time14-time13) + " Suma: " + String.valueOf(time14-time1));
-            if (ADD_STEPS_TO_VIEW)
-                firstProcessSteps.add(PutContourns(candidatesFinder.CurrentImage.clone(), candidatesFinder.LastGreenCandidates,
-                    candidatesFinder.LastBlueCandidates));
+           debugAddStepWithContourns(firstProcessSteps, candidatesFinder.CurrentImage,
+                   candidatesFinder.LastGreenCandidates, candidatesFinder.LastBlueCandidates);
+
+            TimeProfiler.CheckPoint(15.5, is.Index);
         }
         outlines.addAll(candidatesFinder.BlueCandidatesRR);
 
+        TimeProfiler.CheckPoint(16);
         //STEP 3: loop
         for (int i=0; i<outlines.size(); ++i)
         {
+            TimeProfiler.CheckPoint(17, i);
             CandidateSelector candidateSelector =
                     new CandidateSelector(candidatesFinder.OriginalEqualizedImage, candidatesFinder.OriginalImageRealSize, outlines.get(i));
             //STEP 4:
 
-            long time14_5 = System.currentTimeMillis();
+            TimeProfiler.CheckPoint(18, i);
             candidateSelector.CalculateBounds();
             candidateSelector.TruncateBounds();
 
-            debugHWOC.AddImage(firstProcessSteps, R.drawable.ipp);
-            debugHWOC.AddCountournedImage(firstProcessSteps, candidateSelector.OriginalEqualizedImage.clone(), candidateSelector.CandidateRect.clone());
-
-            long time15 = System.currentTimeMillis();
-            if (!candidateSelector.PercentajeAreaCandidateCheck()) {
-                debugHWOC.AddImage(firstProcessSteps, R.drawable.percentaje_area_candidate_check);
-                Log.d("filter","i=" + i + "!PercentajeAreaCandidateCheck");
-                Log.d("Times", "i=" + i + " Time 14_5-15: " + String.valueOf(time15-time14_5) + " Suma: " + String.valueOf(time15-time1));
-                Log.d("Times", "----------------------------");
-                continue;
+            if (ADD_STEPS_TO_VIEW) {
+                debugHWOC.AddImage(firstProcessSteps, R.drawable.ipp);
+                debugHWOC.AddCountournedImage(firstProcessSteps, candidateSelector.OriginalEqualizedImage.clone(), candidateSelector.CandidateRect.clone());
             }
 
-            if (    false) {
-                // DRAW START DE INVENCION
-                Mat temp = candidateSelector.OriginalEqualizedImage.clone();
-                //Imgproc.cvtColor(temp, temp, Imgproc.COLOR_RGB2GRAY);
-                Imgproc.cvtColor(temp, temp, Imgproc.COLOR_GRAY2RGB);
-                drawContornsToMatInBitmap(DebugHWOC.drawRotatedRectInMat(candidateSelector.CandidateRect,
-                        temp), null, null);
-                break;
+            TimeProfiler.CheckPoint(19, i);
+            if (!candidateSelector.PercentajeAreaCandidateCheck()) {
+                if (ADD_STEPS_TO_VIEW)
+                    debugHWOC.AddImage(firstProcessSteps, R.drawable.percentaje_area_candidate_check);
+                Log.d("filter","i=" + i + "!PercentajeAreaCandidateCheck");
+                continue;
             }
             //STEP 5:
             candidateSelector.CropExtraBoundingBox(false);
 
-            if (false ) {
-                // DRAW START DE INVENCION
-                drawContornsToMatInBitmap(candidateSelector.CurrentImage, null, null);
-                break;
-            }
-            long time16 = System.currentTimeMillis();
-
+            TimeProfiler.CheckPoint(20, i);
 
             ////////////////////////////// START INVENCION MIA //////////////////////////////
 
 
             candidateSelector.Sobel();
-            long time16_1 = System.currentTimeMillis();
+            TimeProfiler.CheckPoint(21, i);
             candidateSelector.GaussianBlur();
-            long time16_2 = System.currentTimeMillis();
+            TimeProfiler.CheckPoint(22, i);
             candidateSelector.Dilate();
-            long time16_3 = System.currentTimeMillis();
+            TimeProfiler.CheckPoint(23, i);
 
 
-            if (false) {
-                // DRAW INVENCION DILATION
-                drawContornsToMatInBitmap(candidateSelector.CurrentImage, null, null);
-                break;
-            }
 
             candidateSelector.Erode();
-            long time17 = System.currentTimeMillis();
+            TimeProfiler.CheckPoint(24, i);
 
             ////////////////////////////// END INVENCION MIA //////////////////////////////
-            if (false) {
-                // DRAW FINAL DE INVENCION
-                drawContornsToMatInBitmap(candidateSelector.CurrentImage, null, null);
-                break;
-            }
-
-
 
             //STEP 6:
             candidateSelector.OtsusThreshold();
-            long time18 = System.currentTimeMillis();
+            TimeProfiler.CheckPoint(25, i);
 
 
             //STEP 7:
             candidateSelector.FindOutlines();
 
-            long time19 = System.currentTimeMillis();
-
-            if (false) {
-                // DRAW A SECTION WITH ITS CONTOURS
-                Mat colorCurrentImage = candidateSelector.CurrentImage.clone();
-                Imgproc.cvtColor(colorCurrentImage, colorCurrentImage, Imgproc.COLOR_GRAY2RGB);
-                drawContornsToMatInBitmap(colorCurrentImage, candidateSelector.GreenCandidatesPro, null);
-                break;
-            }
-
-
+            TimeProfiler.CheckPoint(26, i);
 
             //STEP 8:
             candidateSelector.FindMaxAreaCandidatePro();
-            long time20 = System.currentTimeMillis();
+            TimeProfiler.CheckPoint(27, i);
 
             //STEP 9:
             if(!candidateSelector.FindMinAreaRectInMaxArea()) {
-                debugHWOC.AddImage(firstProcessSteps, R.drawable.find_min_area_rect_in_max_area);
-                Log.d("Times", "i=" + i + " Time 14_5-15: " + String.valueOf(time15-time14_5) + " Suma: " + String.valueOf(time15-time1));
-                Log.d("Times", "i=" + i + " Time 15-16: " + String.valueOf(time16-time15) + " Suma: " + String.valueOf(time16-time1));
-                Log.d("Times", "i=" + i + " Time 16-16_1: " + String.valueOf(time16_1-time16) + " Suma: " + String.valueOf(time16_1-time1));
-                Log.d("Times", "i=" + i + " Time 16_1-16_2: " + String.valueOf(time16_2-time16_1) + " Suma: " + String.valueOf(time16_2-time1));
-                Log.d("Times", "i=" + i + " Time 16_2-16_3: " + String.valueOf(time16_3-time16_2) + " Suma: " + String.valueOf(time16_3-time1));
-                Log.d("Times", "i=" + i + " Time 16_3-17: " + String.valueOf(time17-time16_3) + " Suma: " + String.valueOf(time17-time1));
-                Log.d("Times", "i=" + i + " Time 17-18: " + String.valueOf(time18-time17) + " Suma: " + String.valueOf(time18-time1));
-                Log.d("Times", "i=" + i + " Time 18-19: " + String.valueOf(time19-time18) + " Suma: " + String.valueOf(time19-time1));
-                Log.d("Times", "i=" + i + " Time 19-20: " + String.valueOf(time20-time19) + " Suma: " + String.valueOf(time20-time1));
-                Log.d("Times", "----------------------------");
+                if (ADD_STEPS_TO_VIEW)
+                    debugHWOC.AddImage(firstProcessSteps, R.drawable.find_min_area_rect_in_max_area);
                 Log.d("filter","i=" + i + " !FindMinAreaRectInMaxArea");
                 continue;
             }
-            long time21 = System.currentTimeMillis();
-            if (false) {
-                // DRAWING ROTATED RECTANGLE
-                Mat tempCurrentImage = candidateSelector.CurrentImage.clone();
-                Imgproc.cvtColor(tempCurrentImage, tempCurrentImage, Imgproc.COLOR_GRAY2RGB);
-                drawContornsToMatInBitmap(DebugHWOC.drawRotatedRectInMat(candidateSelector.MinAreaRect,
-                        tempCurrentImage), null, null);
-                break;
-            }
-            debugHWOC.AddCountournedImage(firstProcessSteps, candidateSelector.CurrentImage.clone(), candidateSelector.MinAreaRect.clone());
+            TimeProfiler.CheckPoint(28, i);
+
+            if (ADD_STEPS_TO_VIEW)
+                debugHWOC.AddCountournedImage(firstProcessSteps, candidateSelector.CurrentImage.clone(), candidateSelector.MinAreaRect.clone());
 
 
             //STEP 10 and 11
-            long time22 = System.currentTimeMillis();
-            long time22_5;
+            TimeProfiler.CheckPoint(29, i);
+            TimeProfiler.CheckPoint(30, i);
             CandidateSelector.CheckError checkError = candidateSelector.DoChecks();
             if (checkError != null) {
-                time22_5 = System.currentTimeMillis();
-                debugHWOC.AddImage(firstProcessSteps, checkError.getValue());
-                Log.d("Times", "i=" + i + " Time 14_5-15: " + String.valueOf(time15-time14_5) + " Suma: " + String.valueOf(time15-time1));
-                Log.d("Times", "i=" + i + " Time 15-16: " + String.valueOf(time16-time15) + " Suma: " + String.valueOf(time16-time1));
-                Log.d("Times", "i=" + i + " Time 16-16_1: " + String.valueOf(time16_1-time16) + " Suma: " + String.valueOf(time16_1-time1));
-                Log.d("Times", "i=" + i + " Time 16_1-16_2: " + String.valueOf(time16_2-time16_1) + " Suma: " + String.valueOf(time16_2-time1));
-                Log.d("Times", "i=" + i + " Time 16_2-16_3: " + String.valueOf(time16_3-time16_2) + " Suma: " + String.valueOf(time16_3-time1));
-                Log.d("Times", "i=" + i + " Time 16_3-17: " + String.valueOf(time17-time16_3) + " Suma: " + String.valueOf(time17-time1));
-                Log.d("Times", "i=" + i + " Time 17-18: " + String.valueOf(time18-time17) + " Suma: " + String.valueOf(time18-time1));
-                Log.d("Times", "i=" + i + " Time 18-19: " + String.valueOf(time19-time18) + " Suma: " + String.valueOf(time19-time1));
-                Log.d("Times", "i=" + i + " Time 19-20: " + String.valueOf(time20-time19) + " Suma: " + String.valueOf(time20-time1));
-                Log.d("Times", "i=" + i + " Time 20-21: " + String.valueOf(time21-time20) + " Suma: " + String.valueOf(time21-time1));
-                Log.d("Times", "i=" + i + " Time 21-22: " + String.valueOf(time22-time21) + " Suma: " + String.valueOf(time22-time1));
-                Log.d("Times", "i=" + i + " Time 22-22_5: " + String.valueOf(time22_5-time22) + " Suma: " + String.valueOf(time22_5-time1));
-                Log.d("Times", "----------------------------");
+                TimeProfiler.CheckPoint(31, i);
+                if (ADD_STEPS_TO_VIEW)
+                    debugHWOC.AddImage(firstProcessSteps, checkError.getValue());
                 Log.d("filter","i=" + i + "!DoChecks");
                 continue;
             }
-
-            firstProcessSteps.add(candidateSelector.CurrentImage.clone());
-            time22_5 = System.currentTimeMillis();
+            TimeProfiler.CheckPoint(31, i);
+            if (ADD_STEPS_TO_VIEW)
+                firstProcessSteps.add(candidateSelector.CurrentImage.clone());
+            TimeProfiler.CheckPoint(32, i);
             candidateSelector.CropMinRotatedRect(false);
-            long time23 = System.currentTimeMillis();
-            firstProcessSteps.add(candidateSelector.CurrentImage.clone());
+            TimeProfiler.CheckPoint(33, i);
+            if (ADD_STEPS_TO_VIEW)
+                firstProcessSteps.add(candidateSelector.CurrentImage.clone());
 
             // Paso 11 sin rotación.
             //Mat sinCortar = candidatesFinder.OriginalImage.clone();
@@ -500,80 +319,65 @@ public class ImageViewer extends Activity {
             //
             //
 
-            long time24 = System.currentTimeMillis();
+            TimeProfiler.CheckPoint(34, i);
 
 
-            long time25 = System.currentTimeMillis();
-
-            long time26 = System.currentTimeMillis();
             finalCandidates.add(candidateSelector.GetFinalImage(true).clone());
-            long time27 = System.currentTimeMillis();
-            if (false) {
-                //Mostrar en pantalla resultado de la iteración
-                drawContornsToMatInBitmap(candidateSelector.CurrentImage, null);
-                break; // IMPORTANTE, PROBLEMA DE THREAD PARECE, SI NO HAY BREAK LA LÍNEA ANTERIOR SE CAE.
-            }
-
-            Log.d("Times", "i=" + i + " Time 14_5-15: " + String.valueOf(time15-time14_5) + " Suma: " + String.valueOf(time15-time1));
-            Log.d("Times", "i=" + i + " Time 15-16: " + String.valueOf(time16-time15) + " Suma: " + String.valueOf(time16-time1));
-            Log.d("Times", "i=" + i + " Time 16-16_1: " + String.valueOf(time16_1-time16) + " Suma: " + String.valueOf(time16_1-time1));
-            Log.d("Times", "i=" + i + " Time 16_1-16_2: " + String.valueOf(time16_2-time16_1) + " Suma: " + String.valueOf(time16_2-time1));
-            Log.d("Times", "i=" + i + " Time 16_2-16_3: " + String.valueOf(time16_3-time16_2) + " Suma: " + String.valueOf(time16_3-time1));
-            Log.d("Times", "i=" + i + " Time 16_3-17: " + String.valueOf(time17-time16_3) + " Suma: " + String.valueOf(time17-time1));
-            Log.d("Times", "i=" + i + " Time 17-18: " + String.valueOf(time18-time17) + " Suma: " + String.valueOf(time18-time1));
-            Log.d("Times", "i=" + i + " Time 18-19: " + String.valueOf(time19-time18) + " Suma: " + String.valueOf(time19-time1));
-            Log.d("Times", "i=" + i + " Time 19-20: " + String.valueOf(time20-time19) + " Suma: " + String.valueOf(time20-time1));
-            Log.d("Times", "i=" + i + " Time 20-21: " + String.valueOf(time21-time20) + " Suma: " + String.valueOf(time21-time1));
-            Log.d("Times", "i=" + i + " Time 21-22: " + String.valueOf(time22-time21) + " Suma: " + String.valueOf(time22-time1));
-            Log.d("Times", "i=" + i + " Time 22-22_5: " + String.valueOf(time22_5-time22) + " Suma: " + String.valueOf(time22_5-time1));
-            Log.d("Times", "i=" + i + " Time 22_5-23: " + String.valueOf(time23-time22_5) + " Suma: " + String.valueOf(time23-time1));
-            Log.d("Times", "i=" + i + " Time 23-24: " + String.valueOf(time24-time23) + " Suma: " + String.valueOf(time24-time1));
-            Log.d("Times", "i=" + i + " Time 24-25: " + String.valueOf(time25-time24) + " Suma: " + String.valueOf(time25-time1));
-            Log.d("Times", "i=" + i + " Time 25-26: " + String.valueOf(time26-time25) + " Suma: " + String.valueOf(time26-time1));
-            Log.d("Times", "i=" + i + " Time 26-27: " + String.valueOf(time27-time26) + " Suma: " + String.valueOf(time27-time1));
-            Log.d("Times", "----------------------------");
-
-
+            TimeProfiler.CheckPoint(35, i);
         }
 
 
-        long time100 = System.currentTimeMillis();
-        Log.d("Times", " Suma Final: " + String.valueOf(time100-time1));
-
+        TimeProfiler.CheckPoint(36);
         //DrawImages();
-
 
         String plate = "";
         final boolean CHARS = true;
         for (int q=0; q< finalCandidates.size(); ++q) {
-
-            debugHWOC.AddImage(secondProcessSteps, R.drawable.qpp);
+            TimeProfiler.CheckPoint(37, q);
+            if (ADD_STEPS_TO_VIEW)
+                debugHWOC.AddImage(secondProcessSteps, R.drawable.qpp);
             CharacterSeparator characterSeparator = new CharacterSeparator(finalCandidates.get(q).clone());
+            TimeProfiler.CheckPoint(38, q);
             characterSeparator.AdaptiveThreshold();
+            TimeProfiler.CheckPoint(39, q);
             characterSeparator.FindCountourns();
+            TimeProfiler.CheckPoint(40, q);
 
 
             if(!characterSeparator.FilterCountourns()) {
-                secondProcessSteps.add(characterSeparator.ImageWithContourns.clone());
-                debugHWOC.AddImage(secondProcessSteps, R.drawable.filter_countourns);
+                TimeProfiler.CheckPoint(41, q);
+                if (ADD_STEPS_TO_VIEW) {
+                    secondProcessSteps.add(characterSeparator.ImageWithContourns.clone());
+                    debugHWOC.AddImage(secondProcessSteps, R.drawable.filter_countourns);
+                }
                 Log.d("filter","q=" + q + " !FilterCountourns");
                 continue;
             }
+            TimeProfiler.CheckPoint(41, q);
 
-            secondProcessSteps.add(characterSeparator.ImageWithContourns.clone());
-            secondProcessSteps.add(characterSeparator.CleanedImage.clone());
+            if (ADD_STEPS_TO_VIEW) {
+                secondProcessSteps.add(characterSeparator.ImageWithContourns.clone());
+                secondProcessSteps.add(characterSeparator.CleanedImage.clone());
+            }
             characterSeparator.CalculatePlateLength();
+            TimeProfiler.CheckPoint(42, q);
             characterSeparator.CalculateCharsPositions();
-                //characterSeparator.CalculateHistrograms();
+            TimeProfiler.CheckPoint(43, q);
+            //characterSeparator.CalculateHistrograms();
             if (CHARS)
                 characterSeparator.CropChars();
             else
                 characterSeparator.CropAll();
 
+            TimeProfiler.CheckPoint(44, q);
+
             String whiteList = "";
             for (int n=0; n<characterSeparator.CroppedChars.size(); ++n) {
-                debugHWOC.AddImage(secondProcessSteps, R.drawable.npp);
-                secondProcessSteps.add(characterSeparator.CroppedChars.get(n).clone());
+                TimeProfiler.CheckPoint(45, q, n);
+                if (ADD_STEPS_TO_VIEW) {
+                    debugHWOC.AddImage(secondProcessSteps, R.drawable.npp);
+                    secondProcessSteps.add(characterSeparator.CroppedChars.get(n).clone());
+                }
                 switch (n)
                 {
                     case 0://1
@@ -588,31 +392,49 @@ public class ImageViewer extends Activity {
                         whiteList = "0123456789";
                         break;
                 }
-                baseApi.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST,whiteList);
-
+                TimeProfiler.CheckPoint(46, q, n);
+                MainActivity.baseApi.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST,whiteList);
+                TimeProfiler.CheckPoint(47, q, n);
 
                 Mat m = characterSeparator.CroppedChars.get(n);
                 Imgproc.cvtColor(m, m, Imgproc.COLOR_GRAY2RGB);
                 //Imgproc.threshold(m, m, 0, 255, Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);
                 Bitmap bmp = Bitmap.createBitmap(m.cols(), m.rows(), Bitmap.Config.ARGB_8888);
+                TimeProfiler.CheckPoint(48, q, n);
                 Utils.matToBitmap(m, bmp);
-                baseApi.setImage(bmp);
-                String recognizedText = baseApi.getUTF8Text();
+                MainActivity.baseApi.setImage(bmp);
+                String recognizedText = MainActivity.baseApi.getUTF8Text();
                 Log.d("output", "n=" +n+" text:" +recognizedText);
                 plate += recognizedText;
+                TimeProfiler.CheckPoint(49, q, n);
             }
             plate += " || ";
 
         }
-        baseApi.end();
+//        MainActivity.baseApi.end();
         plate = plate.replace("\n", "").replace("\r", "");
-        //finalCandidates.addAll(0,process);
-        //Collections.reverse(finalCandidates);
-        InitializeGallery(R.id.gallery1, firstProcessSteps);
-        InitializeGallery(R.id.gallery2, secondProcessSteps);
-        InitializeGallery(R.id.gallery3, finalCandidates);
+
+        TimeProfiler.CheckPoint(50);
+        if (ADD_STEPS_TO_VIEW) {
+            InitializeGallery(R.id.gallery1, firstProcessSteps);
+            InitializeGallery(R.id.gallery2, secondProcessSteps);
+            InitializeGallery(R.id.gallery3, finalCandidates);
+        }
         SetPlate(plate);
         Log.d("output", "plate="+plate);
+        Log.d("times", TimeProfiler.GetTotalTime());
+        Log.d("times", TimeProfiler.GetTimes(true, 10));
+        Log.d("times", TimeProfiler.GetTimes(false, 0.0, 6.0));
+    }
+
+    private void debugAddStepWithContourns(List<Mat> list, Mat img, List<MatOfPoint> green, List<MatOfPoint> blue) {
+        if (SHOW_PROCESS_DEBUG)
+            list.add(PutContourns(img.clone(), green, blue));
+    }
+
+    private void debugAddStep(List<Mat> list, Mat img) {
+        if (SHOW_PROCESS_DEBUG)
+            list.add(img.clone());
     }
 
     private void SetPlate(String plate) {

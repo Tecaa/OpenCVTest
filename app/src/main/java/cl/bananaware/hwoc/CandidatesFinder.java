@@ -31,15 +31,23 @@ public class CandidatesFinder {
 
     public CandidatesFinder(Bitmap bm)
     {
+
+        TimeProfiler.CheckPoint(1.1);
         OriginalImage = new Mat();
         OriginalEqualizedImage = new Mat();
         PreMultiDilationImage = new Mat();
+        TimeProfiler.CheckPoint(1.2);
         Utils.bitmapToMat(bm, OriginalImage);
+        TimeProfiler.CheckPoint(1.3);
         OriginalImageRealSize = OriginalImage.clone();
+        TimeProfiler.CheckPoint(1.4);
 
         OriginalImage = Resize(OriginalImage);
+        TimeProfiler.CheckPoint(1.5);
         scale = OriginalImageRealSize.size().width/OriginalImage.size().width;
+        TimeProfiler.CheckPoint(1.6);
         CurrentImage = OriginalImage.clone();
+        TimeProfiler.CheckPoint(1.7);
         BlueCandidates = new ArrayList<MatOfPoint>();
         BlueCandidatesRR = new ArrayList<RotatedRect>();
         GreenCandidates = new ArrayList<MatOfPoint>();

@@ -4,14 +4,16 @@ package cl.bananaware.hwoc;
  * Created by fergu on 07-08-2016.
  */
 public enum ImageSize {
-    PEQUEÑA (1.2f),
-    MEDIANA (2.9f),
-    GRANDE (5.5f);
+    PEQUEÑA (1.2f, 0),
+    MEDIANA (2.9f, 1),
+    GRANDE (5.5f, 2);
 
     public final float DilationAmplifier;
+    public final int Index;
 
-    ImageSize(float dilationAmp)
+    ImageSize(float dilationAmp, int index)
     {
         this.DilationAmplifier = dilationAmp;
+        this.Index = index;
     }
 }

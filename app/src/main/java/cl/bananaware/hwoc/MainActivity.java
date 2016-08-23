@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
@@ -14,6 +15,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.googlecode.tesseract.android.TessBaseAPI;
+
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
 import org.opencv.android.LoaderCallbackInterface;
@@ -22,6 +25,10 @@ import org.opencv.core.Mat;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements CvCameraViewListener2
@@ -38,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
-
+    public static TessBaseAPI baseApi;
     /**
      * Checks if the app has permission to write to device storage
      *
@@ -80,7 +87,59 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.show_camera);
 
+        String baseDir = getExternalFilesDir(Environment.MEDIA_MOUNTED).toString();
+        String tessdataDir = baseDir + File.separator + "tessdata";
+        CopyAssets(tessdataDir);
+        baseApi = new TessBaseAPI();
+        baseApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SINGLE_CHAR);
+        final String lang = "eng";
+        final String DATA_PATH = baseDir + File.separator;
 
+
+        baseApi.init(DATA_PATH, lang);
+
+
+    }
+    private void CopyAssets(String storageDirectory) {
+        AssetManager assetManager = getAssets();
+        String[] files = null;
+        try {
+            files = assetManager.list("tessdata");
+        } catch (IOException e) {
+            Log.e("tag", e.getMessage());
+        }
+
+        boolean success = false;
+        File folder = new File(storageDirectory);
+        if (!folder.exists()) {
+            success = folder.mkdir();
+        }
+        for(String filename : files) {
+            System.out.println("File name => "+filename);
+            InputStream in = null;
+            OutputStream out = null;
+            try {
+                in = assetManager.open("tessdata/"+filename);   // if files resides inside the "Files" directory itself
+                out = new FileOutputStream(storageDirectory +File.separator + "eng.traineddata");
+                copyFile(in, out);
+                in.close();
+                in = null;
+                out.flush();
+                out.close();
+                out = null;
+            } catch(Exception e) {
+                Log.e("tag", e.getMessage());
+            }
+        }
+    }
+
+
+    private void copyFile(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[1024];
+        int read;
+        while((read = in.read(buffer)) != -1){
+            out.write(buffer, 0, read);
+        }
     }
 
     @Override
