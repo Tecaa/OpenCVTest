@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.RotatedRect;
@@ -59,6 +60,37 @@ public class DebugHWOC {
         DebugHWOC.drawRotatedRectInMat(candidateRect, temp);
         process.add(temp);
     }
+
+    public void AddStepWithContourns(List<Mat> list, Mat img, List<MatOfPoint> green, List<MatOfPoint> blue) {
+        if (!ImageViewer.SHOW_PROCESS_DEBUG)
+            return;
+
+        list.add(PutContourns(img.clone(), green, blue));
+    }
+
+    public void AddStep(List<Mat> list, Mat img) {
+        if (!ImageViewer.SHOW_PROCESS_DEBUG)
+            return;
+        list.add(img.clone());
+    }
+    private Mat PutContourns(Mat currentImage, List<MatOfPoint> lastGreenCandidates, List<MatOfPoint> lastBlueCandidates) {
+        Imgproc.cvtColor(currentImage, currentImage, Imgproc.COLOR_GRAY2RGB); //Convert to gray scale
+        if (lastGreenCandidates != null)
+        {
+            for (int cId = 0; cId < lastGreenCandidates.size(); cId++) {
+                Imgproc.drawContours(currentImage, lastGreenCandidates, cId, new Scalar(0, 255, 0), 1);
+            }
+        }
+        if (lastBlueCandidates != null)
+        {
+            for (int cId = 0; cId < lastBlueCandidates.size(); cId++) {
+                Imgproc.drawContours(currentImage, lastBlueCandidates, cId, new Scalar(0, 0, 255), 6);
+            }
+        }
+        return currentImage;
+    }
+
+
 
     public static Mat drawRotatedRectInMat(RotatedRect rRect, Mat mat)
     {

@@ -17,6 +17,10 @@ public final class TimeProfiler {
 
     private TimeProfiler(){
     }
+
+    public static void ResetCheckPoints() {
+        times.clear();
+    }
     public static void CheckPoint(Double i) {
         CheckPoint(i, null);
     }
