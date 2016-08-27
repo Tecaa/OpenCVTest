@@ -38,6 +38,7 @@ public class CandidatesFinder {
         OriginalImageRealSize = OriginalImage.clone();
 
         OriginalImage = Resize(OriginalImage);
+        //OriginalImageRealSize = OriginalImage.clone(); //test
         scale = OriginalImageRealSize.size().width/OriginalImage.size().width;
         CurrentImage = OriginalImage.clone();
         BlueCandidates = new ArrayList<MatOfPoint>();
@@ -48,7 +49,7 @@ public class CandidatesFinder {
     }
 
     private Mat Resize(Mat originalImage) {
-        final int MAX_PIXELS = 1000;
+        final int MAX_PIXELS = 1000; //NOTA: PROBAR USANDO 400 Y ADAPTANDO TODO A ESTO (ANTES ESTABA EN 1000)
         Size s = originalImage.size();
         Size newSize = new Size();
         double ratio = s.width/s.height;

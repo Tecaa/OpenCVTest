@@ -316,7 +316,7 @@ public class ImageViewer extends Activity {
         String plate = "";
         final boolean CHARS = true;
         for (int q=0; q< finalCandidates.size(); ++q) {
-
+            //NOTA: ACA RECIEN OBTENER IMAGEN TAMAÑO REAL.
             debugHWOC.AddImage(secondProcessSteps, R.drawable.qpp);
 
             CharacterSeparator characterSeparator = new CharacterSeparator(finalCandidates.get(q).clone());
