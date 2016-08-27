@@ -54,6 +54,10 @@ public final class TimeProfiler {
     {
         return GetTimes(sort, null, null, count);
     }
+    public static String GetTimes(boolean sort, Integer from, Integer to)
+    {
+        return GetTimes(sort, (double)from, (double)to, null);
+    }
     public static String GetTimes(boolean sort, Double from, Double to)
     {
         return GetTimes(sort, from, to, null);
@@ -79,6 +83,7 @@ public final class TimeProfiler {
         to = (to == null ? Integer.MAX_VALUE : to);
         count = (count == null ? Integer.MAX_VALUE : count);
 
+        double sum = 0;
         for (int i=0, j=0 ; i<tpp.size(); ++i) {
             TimeProfilerElement first = tpp.get(i).First;
             TimeProfilerElement last = tpp.get(i).Last;
@@ -89,20 +94,26 @@ public final class TimeProfiler {
             if (first.PrincipalIndex < from || last.PrincipalIndex > to)
                 continue;
 
+            double delta = last.TimeMillis - first.TimeMillis;
+            sum += delta;
             String line = "[" + i + "]" + " ";
 
             line += first.PrincipalIndex;
             line += (first.IterationIndex == null ? "" : "." + first.IterationIndex);
             line += (first.IterationIndex2 == null ? "" : "." + first.IterationIndex2);
 
-            line += " -> ";
+            line += "\t-> ";
 
             line += last.PrincipalIndex;
             line += (last.IterationIndex == null ? "" : "." + last.IterationIndex);
             line += (last.IterationIndex2 == null ? "" : "." + last.IterationIndex2);
 
-            line += " = ";
-            line += last.TimeMillis - first.TimeMillis;
+            line += "\t= ";
+            line += delta;
+            line += " [ms]";
+
+            line += "\tSum: ";
+            line += sum;
             line += " [ms]";
 
             output += line + "\n";

@@ -6,6 +6,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
+import android.graphics.Rect;
+import android.graphics.YuvImage;
+import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -24,6 +30,7 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -87,6 +94,11 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.show_camera);
 
+        InitOCT();
+
+    }
+
+    private void InitOCT() {
         String baseDir = getExternalFilesDir(Environment.MEDIA_MOUNTED).toString();
         String tessdataDir = baseDir + File.separator + "tessdata";
         CopyAssets(tessdataDir);
@@ -95,11 +107,10 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         final String lang = "eng";
         final String DATA_PATH = baseDir + File.separator;
 
-
         baseApi.init(DATA_PATH, lang);
 
-
     }
+
     private void CopyAssets(String storageDirectory) {
         AssetManager assetManager = getAssets();
         String[] files = null;
@@ -115,7 +126,6 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
             success = folder.mkdir();
         }
         for(String filename : files) {
-            System.out.println("File name => "+filename);
             InputStream in = null;
             OutputStream out = null;
             try {
@@ -231,7 +241,19 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         }
     }
 
-
+    private Camera.PreviewCallback  previewCallback= new Camera.PreviewCallback()
+    {
+        @Override
+        public void onPreviewFrame(byte[] data,Camera cam)
+        {
+            Camera.Size previewSize = cam.getParameters().getPreviewSize();
+            YuvImage yuvImage = new YuvImage(data, ImageFormat.NV21,previewSize.width,previewSize.height, null);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            yuvImage.compressToJpeg(new Rect(0,0,previewSize.width,previewSize.height),80,baos);
+            byte[] jdata = baos.toByteArray();
+            Bitmap bitmap = BitmapFactory.decodeByteArray(jdata,0,jdata.length);
+        }
+    };
     public void cameraClick(View v) {
         if (CameraCapturerFixer) {
             if (UNFORCE_IMAGE) {
@@ -243,6 +265,12 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         }
         CameraCapturerFixer = false;
     }
+    public void camera2Click(View v) {
+        Intent i = new Intent(this, CameraContinously.class);
+        startActivity(i);
+    }
+
+
 
     public void galleryClick(View v) {
 

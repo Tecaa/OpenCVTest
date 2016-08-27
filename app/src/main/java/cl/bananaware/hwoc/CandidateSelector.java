@@ -1,5 +1,6 @@
 package cl.bananaware.hwoc;
 
+import android.media.Image;
 import android.util.Log;
 
 import org.opencv.core.Core;
@@ -19,6 +20,7 @@ import java.util.List;
  * Created by fergu on 07-08-2016.
  */
 public class CandidateSelector {
+    private double OriginalAngle;
     public RotatedRect CandidateRect, MinAreaRect;
     public Mat OriginalEqualizedImage, CurrentImage, OriginalImageRealSize;
     public Mat CroppedExtraBoundingBox;
@@ -37,6 +39,10 @@ public class CandidateSelector {
         scale = OriginalImageRealSize.size().width/OriginalEqualizedImage.size().width;
         this.CandidateRect = candidate;
         GreenCandidatesPro = new ArrayList<MatOfPoint>();
+        double angle  = candidate.angle;
+        if (angle < -45.)
+            angle += 90.0;
+        this.OriginalAngle = angle;
     }
     int dx;
     int dy;
@@ -60,6 +66,84 @@ public class CandidateSelector {
             newHeight = newHeight -  ((CandidateRect.boundingRect().y + newHeight) - OriginalEqualizedImage.height());
             */
     }
+
+    public void CropExtraRotatedRect(boolean realSize) {
+        /*Rect roi = new Rect(Math.max(CandidateRect.boundingRect().x -dx, 0),
+                Math.max(CandidateRect.boundingRect().y-dx,0), newWidth, newHeight);
+
+        if (roi.x + roi.width > OriginalEqualizedImage.width()) {
+            roi.width = OriginalEqualizedImage.width() - roi.x;
+        }
+        if (roi.y + roi.height > OriginalEqualizedImage.height())
+            roi.height = OriginalEqualizedImage.height() - roi.y;
+        */
+
+        if (realSize) {
+            RotatedRect rr = CandidateRect.clone();
+            rr.size.width *= 1.1*scale;
+            rr.size.height *= 1.1*scale;
+            rr.center.x *= scale;
+            rr.center.y *= scale;
+
+            if (rr.angle < -45.) {
+                rr.angle += 90.0;
+
+                double widthTemp = rr.size.width;
+                rr.size.width = rr.size.height;
+                rr.size.height = widthTemp;
+            }
+            OriginalAngle = rr.angle;
+            Mat matrix = Imgproc.getRotationMatrix2D(rr.center, /*MinAreaRectAngle + */rr.angle, 1.0);
+            // perform the affine transformation
+            Mat rotated = new Mat();
+            CurrentImage = new Mat();
+            Mat precrop = new Mat();
+
+            Imgproc.cvtColor(OriginalImageRealSize, precrop, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
+
+            Imgproc.warpAffine(precrop, rotated, matrix, precrop.size(), Imgproc.INTER_CUBIC); // SLOW OPERATION
+            // crop the resulting image
+            Imgproc.getRectSubPix(rotated, rr.size, rr.center, CurrentImage);
+
+            if (ImageViewer.SHOW_PROCESS_DEBUG)
+                CroppedExtraBoundingBox = CurrentImage.clone();
+
+        }
+        else {
+
+
+            RotatedRect rr = CandidateRect.clone();
+            rr.size.width *= 1.1;
+            rr.size.height *= 1.1;
+
+            if (rr.angle < -45.) {
+                rr.angle += 90.0;
+
+                double widthTemp = rr.size.width;
+                rr.size.width = rr.size.height;
+                rr.size.height = widthTemp;
+            }
+            OriginalAngle = rr.angle;
+            Mat matrix = Imgproc.getRotationMatrix2D(rr.center, /*MinAreaRectAngle + */rr.angle, 1.0);
+            // perform the affine transformation
+            Mat rotated = new Mat();
+            CurrentImage = new Mat();
+            Mat precrop = OriginalEqualizedImage.clone();
+            Imgproc.warpAffine(precrop, rotated, matrix, precrop.size(), Imgproc.INTER_CUBIC);
+            // crop the resulting image
+            Imgproc.getRectSubPix(rotated, rr.size, rr.center, CurrentImage);
+            if (ImageViewer.SHOW_PROCESS_DEBUG)
+                CroppedExtraBoundingBox = CurrentImage.clone();
+
+        }
+
+        /*
+        CurrentImage = new Mat(OriginalEqualizedImage, roi).clone();
+        Log.d("caida", "check 2.2.7");
+        CroppedExtraBoundingBox = CurrentImage.clone();
+        Log.d("caida", "check 2.2.8");*/
+    }
+
 
     public void CropExtraBoundingBox(boolean realSizeCrop) {
         Rect roi = new Rect(Math.max(CandidateRect.boundingRect().x -dx, 0),
@@ -87,7 +171,8 @@ public class CandidateSelector {
             CurrentImage = new Mat(OriginalEqualizedImage, roi).clone();
         }
         Log.d("caida", "check 2.2.7");
-        CroppedExtraBoundingBox = CurrentImage.clone();
+        if (ImageViewer.SHOW_PROCESS_DEBUG)
+            CroppedExtraBoundingBox = CurrentImage.clone();
         Log.d("caida", "check 2.2.8");
     }
 
@@ -220,14 +305,23 @@ public class CandidateSelector {
             MinAreaRect.size.width *= scale;
             MinAreaRect.size.height *= scale;
 
-            Imgproc.cvtColor(CroppedExtraBoundingBox, CroppedExtraBoundingBox, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
-            Imgproc.cvtColor(CurrentImage, CurrentImage, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
+//            Imgproc.cvtColor(CroppedExtraBoundingBox, CroppedExtraBoundingBox, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
+//            Imgproc.cvtColor(CurrentImage, CurrentImage, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
         }
-        Mat matrix = Imgproc.getRotationMatrix2D(MinAreaRect.center, MinAreaRectAngle, 1.0);
+
+/*
+        if (MinAreaRectAngle < -45.) {
+            MinAreaRectAngle += 90.0;
+        }*/
+
+        Log.d("angles", String.valueOf(MinAreaRectAngle));
+        Log.d("angles", String.valueOf(this.OriginalAngle));
+
+        Mat matrix = Imgproc.getRotationMatrix2D(MinAreaRect.center, MinAreaRectAngle  /*this.OriginalAngle */, 1.0);
         // perform the affine transformation
         Mat rotated = new Mat();
-        Mat precrop = CroppedExtraBoundingBox.clone();
-        //Imgproc.cvtColor(precrop, precrop, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
+        Mat precrop = CurrentImage;
+        //Mat precrop = CroppedExtraBoundingBox.clone();
         Imgproc.warpAffine(precrop, rotated, matrix, precrop.size(), Imgproc.INTER_CUBIC);
         // crop the resulting image
         Imgproc.getRectSubPix(rotated, MinAreaRectSize, MinAreaRect.center, CurrentImage);
@@ -243,10 +337,26 @@ public class CandidateSelector {
     public Mat GetFinalImage(boolean realSizeCrop) {
         if (realSizeCrop)
         {
-            CropExtraBoundingBox(true);
+            //CropExtraBoundingBox(true);
+            CropExtraRotatedRect(true);
             CropMinRotatedRect(true);
         }
         return CurrentImage;//o CurrentImage.clone()?
+    }
+
+    public RotatedRect DEBUGR() {
+        RotatedRect rr = CandidateRect.clone();
+        rr.size.width *= 1.1*scale;
+        rr.size.height *= 1.1*scale;
+
+        if (rr.angle < -45.) {
+            rr.angle += 90.0;
+
+            double widthTemp = rr.size.width;
+            rr.size.width = rr.size.height;
+            rr.size.height = widthTemp;
+        }
+        return rr;
     }
 
     public enum CheckError {

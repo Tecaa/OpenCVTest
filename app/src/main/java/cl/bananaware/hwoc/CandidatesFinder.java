@@ -31,23 +31,15 @@ public class CandidatesFinder {
 
     public CandidatesFinder(Bitmap bm)
     {
-
-        TimeProfiler.CheckPoint(1.1);
         OriginalImage = new Mat();
         OriginalEqualizedImage = new Mat();
         PreMultiDilationImage = new Mat();
-        TimeProfiler.CheckPoint(1.2);
         Utils.bitmapToMat(bm, OriginalImage);
-        TimeProfiler.CheckPoint(1.3);
         OriginalImageRealSize = OriginalImage.clone();
-        TimeProfiler.CheckPoint(1.4);
 
         OriginalImage = Resize(OriginalImage);
-        TimeProfiler.CheckPoint(1.5);
         scale = OriginalImageRealSize.size().width/OriginalImage.size().width;
-        TimeProfiler.CheckPoint(1.6);
         CurrentImage = OriginalImage.clone();
-        TimeProfiler.CheckPoint(1.7);
         BlueCandidates = new ArrayList<MatOfPoint>();
         BlueCandidatesRR = new ArrayList<RotatedRect>();
         GreenCandidates = new ArrayList<MatOfPoint>();
@@ -169,19 +161,22 @@ public class CandidatesFinder {
         LastBlueCandidates = new ArrayList<MatOfPoint>();
         for(int i=0; i<contours.size(); ++i)
         {
-            MatOfPoint mop = contours.get(i);
-            MatOfPoint2f mop2f = mopToMop2f(mop);
-            RotatedRect mr = Imgproc.minAreaRect(mop2f);
+            RotatedRect mr = Imgproc.minAreaRect(mopToMop2f(contours.get(i)));
 
             double area = Math.abs(Imgproc.contourArea(contours.get(i)));
             double bbArea=mr.size.width * mr.size.height;
             float ratio = (float)(area/bbArea);
+
+
 
             if( (ratio < 0.45) || (bbArea*scale/2 < 400) ){
                 ;// do nothing
             }else{
                 BlueCandidatesRR.add(mr);
                 LastBlueCandidates.add(contours.get(i));
+
+                if (ImageViewer.TRAMPA && LastBlueCandidates.size()>4)
+                    break;
             }
         }
 
