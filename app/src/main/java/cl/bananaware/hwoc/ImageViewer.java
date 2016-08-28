@@ -297,19 +297,24 @@ public class ImageViewer extends Activity {
             //
 
             //debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage.clone());
-
+    //        debugHWOC.AddStep(firstProcessSteps, candidateSelector.OriginalEqualizedImage.clone());
             //debugHWOC.AddStep(firstProcessSteps, candidateSelector.GetFinalImage(true).clone());
 
             //InitializeGallery(R.id.gallery1, firstProcessSteps);
             //if(i==i)
 //                return;
+
+
             finalCandidates.add(candidateSelector.GetFinalImage(true));
 
 
-
         }
-
-
+/*
+        if (1==1) {
+            InitializeGallery(R.id.gallery1, firstProcessSteps);
+            return;
+        }
+*/
         TimeProfiler.CheckPoint(5);
         //DrawImages();
 

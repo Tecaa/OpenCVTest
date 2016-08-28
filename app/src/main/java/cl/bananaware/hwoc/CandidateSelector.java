@@ -30,6 +30,7 @@ public class CandidateSelector {
     public int newHeight;
     private int maxAreaCandidateProIndex;
     private float horizontalDilatationAmplifier;
+    final double EXTRA = 1.1;
     public List<MatOfPoint> GreenCandidatesPro;
     private double scale;
     public CandidateSelector(Mat OriginalEqualizedImage, Mat OriginalImageRealSize, RotatedRect candidate)
@@ -80,8 +81,8 @@ public class CandidateSelector {
 
         if (realSize) {
             RotatedRect rr = CandidateRect.clone();
-            rr.size.width *= 1.1*scale;
-            rr.size.height *= 1.1*scale;
+            rr.size.width *= EXTRA*scale;
+            rr.size.height *= EXTRA*scale;
             rr.center.x *= scale;
             rr.center.y *= scale;
 
@@ -113,8 +114,8 @@ public class CandidateSelector {
 
 
             RotatedRect rr = CandidateRect.clone();
-            rr.size.width *= 1.1;
-            rr.size.height *= 1.1;
+            rr.size.width *= EXTRA;
+            rr.size.height *= EXTRA;
 
             if (rr.angle < -45.) {
                 rr.angle += 90.0;
@@ -179,6 +180,7 @@ public class CandidateSelector {
     public void Sobel() {
         Mat grad_x2 = new Mat();
         Mat abs_grad_x2 = new Mat();
+        //Imgproc.Sobel(CurrentImage, grad_x2, CvType.CV_8U, 1, 0, 3, 1, Core.BORDER_DEFAULT); //Antiguo Sobel
         Imgproc.Sobel(CurrentImage, grad_x2, CvType.CV_8U, 1, 0, 3, 1, Core.BORDER_DEFAULT);
 
         Core.convertScaleAbs(grad_x2, abs_grad_x2);
@@ -191,7 +193,7 @@ public class CandidateSelector {
     }
 
     public void Dilate() {
-        float DILATION_AMPLIFIER = 1.3f;//1f; // EVALUAR HACERLO Dinámico
+        float DILATION_AMPLIFIER = 1.3f;//1.3f //1f; // EVALUAR HACERLO Dinámico
         horizontalDilatationAmplifier = calculateHorizontalAmplifier(CurrentImage.size());
         Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT,
                 new Size( Math.round(12*DILATION_AMPLIFIER*horizontalDilatationAmplifier), 3*DILATION_AMPLIFIER ));
@@ -300,22 +302,17 @@ public class CandidateSelector {
     public void CropMinRotatedRect(boolean realSizeCrop) {
         // get the rotation matrix
         if (realSizeCrop) {
-            MinAreaRect.center.x *= scale;
-            MinAreaRect.center.y *= scale;
-            MinAreaRect.size.width *= scale;
+
+            MinAreaRect.center.x *= scale*EXTRA;
+            MinAreaRect.center.y *= scale*EXTRA;
             MinAreaRect.size.height *= scale;
+            MinAreaRect.size.width *= scale;
 
 //            Imgproc.cvtColor(CroppedExtraBoundingBox, CroppedExtraBoundingBox, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
 //            Imgproc.cvtColor(CurrentImage, CurrentImage, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
         }
 
-/*
-        if (MinAreaRectAngle < -45.) {
-            MinAreaRectAngle += 90.0;
-        }*/
 
-        Log.d("angles", String.valueOf(MinAreaRectAngle));
-        Log.d("angles", String.valueOf(this.OriginalAngle));
 
         Mat matrix = Imgproc.getRotationMatrix2D(MinAreaRect.center, MinAreaRectAngle  /*this.OriginalAngle */, 1.0);
         // perform the affine transformation
@@ -338,7 +335,18 @@ public class CandidateSelector {
         if (realSizeCrop)
         {
             //CropExtraBoundingBox(true);
+
+  /*          MinAreaRect.size.height *= scale*EXTRA;
+            MinAreaRect.size.width *= scale*EXTRA;
+            MinAreaRect.center.y *= scale;
+            MinAreaRect.center.x *= scale;
+
+            if (MinAreaRect.angle < -45.) {
+                MinAreaRect.angle += 90.0;
+            }
+*/
             CropExtraRotatedRect(true);
+            //DebugHWOC.drawRotatedRectInMat(MinAreaRect, this.CurrentImage);
             CropMinRotatedRect(true);
         }
         return CurrentImage;//o CurrentImage.clone()?
@@ -346,8 +354,8 @@ public class CandidateSelector {
 
     public RotatedRect DEBUGR() {
         RotatedRect rr = CandidateRect.clone();
-        rr.size.width *= 1.1*scale;
-        rr.size.height *= 1.1*scale;
+        rr.size.width *= EXTRA*scale;
+        rr.size.height *= EXTRA*scale;
 
         if (rr.angle < -45.) {
             rr.angle += 90.0;
