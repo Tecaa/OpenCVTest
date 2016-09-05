@@ -13,6 +13,8 @@ public enum ImageSize {
 
     ImageSize(float dilationAmp, int index)
     {
+        /*if (!ImageViewer.GOOD_SIZE)
+            dilationAmp /= 10;*/
         this.DilationAmplifier = dilationAmp;
         this.Index = index;
     }

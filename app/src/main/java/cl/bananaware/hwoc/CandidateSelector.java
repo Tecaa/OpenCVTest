@@ -49,8 +49,9 @@ public class CandidateSelector {
     int dy;
     public void CalculateBounds() {
         //FUNCIONA MEJOR CON DX =0 DY=0 :o?
-        dx =0;// Math.round(0.15126f * (float)CandidateRect.boundingRect().size().width);
-        dy = 0;//Math.round(0.625f * (float)CandidateRect.boundingRect().size().height);;
+        dx = Math.round(0.01f * (float)CandidateRect.boundingRect().size().width);//Math.round(0.02f * (float)CandidateRect.boundingRect().size().width);
+        dy = Math.round(0.05f * (float)CandidateRect.boundingRect().size().height);;//Math.round(0.06f * (float)CandidateRect.boundingRect().size().height);;
+
         newWidth = (int)(CandidateRect.boundingRect().size().width + 2*dx);
         newHeight = (int)(CandidateRect.boundingRect().size().height + 2*dy);
     }
@@ -81,17 +82,23 @@ public class CandidateSelector {
 
         if (realSize) {
             RotatedRect rr = CandidateRect.clone();
+            /*rr.size.width *= EXTRA;
+            rr.size.height *= EXTRA;
+            */
+            rr.size.width = newWidth * EXTRA*scale;
+            rr.size.height = newHeight * EXTRA*scale;
+            /*
             rr.size.width *= EXTRA*scale;
-            rr.size.height *= EXTRA*scale;
-            rr.center.x *= scale;
-            rr.center.y *= scale;
+            rr.size.height *= EXTRA*scale;*/
+            rr.center.x = (rr.center.x - dx) *scale;
+            rr.center.y = (rr.center.y - dy) *scale;
 
             if (rr.angle < -45.) {
                 rr.angle += 90.0;
-
+/*
                 double widthTemp = rr.size.width;
                 rr.size.width = rr.size.height;
-                rr.size.height = widthTemp;
+                rr.size.height = widthTemp;*/
             }
             OriginalAngle = rr.angle;
             Mat matrix = Imgproc.getRotationMatrix2D(rr.center, /*MinAreaRectAngle + */rr.angle, 1.0);
@@ -114,15 +121,21 @@ public class CandidateSelector {
 
 
             RotatedRect rr = CandidateRect.clone();
-            rr.size.width *= EXTRA;
+            /*rr.size.width *= EXTRA;
             rr.size.height *= EXTRA;
+            */
+            rr.size.width = newWidth * EXTRA;
+            rr.size.height = newHeight * EXTRA;
+
+            rr.center.x -= dx;
+            rr.center.y -= dy;
 
             if (rr.angle < -45.) {
                 rr.angle += 90.0;
 
-                double widthTemp = rr.size.width;
+                /*double widthTemp = rr.size.width;
                 rr.size.width = rr.size.height;
-                rr.size.height = widthTemp;
+                rr.size.height = widthTemp;*/
             }
             OriginalAngle = rr.angle;
             Mat matrix = Imgproc.getRotationMatrix2D(rr.center, /*MinAreaRectAngle + */rr.angle, 1.0);
@@ -181,7 +194,10 @@ public class CandidateSelector {
         Mat grad_x2 = new Mat();
         Mat abs_grad_x2 = new Mat();
         //Imgproc.Sobel(CurrentImage, grad_x2, CvType.CV_8U, 1, 0, 3, 1, Core.BORDER_DEFAULT); //Antiguo Sobel
-        Imgproc.Sobel(CurrentImage, grad_x2, CvType.CV_8U, 1, 0, 3, 1, Core.BORDER_DEFAULT);
+        if (ImageViewer.GOOD_SIZE)
+            Imgproc.Sobel(CurrentImage, grad_x2, CvType.CV_8U, 1, 0, 3, 1, Core.BORDER_DEFAULT);
+        else
+            Imgproc.Sobel(CurrentImage, grad_x2, CvType.CV_8U, 1, 0, 1, 1, Core.BORDER_DEFAULT);
 
         Core.convertScaleAbs(grad_x2, abs_grad_x2);
         //Core.convertScaleAbs(grad_y, abs_grad_y);
@@ -189,19 +205,41 @@ public class CandidateSelector {
     }
 
     public void GaussianBlur() {
-        Imgproc.GaussianBlur(CurrentImage, CurrentImage, new Size(5,5), 2);
+
+        int factor = GetGaussianBlurFactor(CurrentImage.size());
+        Imgproc.GaussianBlur(CurrentImage, CurrentImage, new Size(factor,factor), 2);
+    }
+
+    private int GetGaussianBlurFactor(Size size) {
+
+        return 1;
     }
 
     public void Dilate() {
-        float DILATION_AMPLIFIER = 1.3f;//1.3f //1f; // EVALUAR HACERLO Dinámico
+        float DILATION_AMPLIFIER;//1.3f //1f; // EVALUAR HACERLO Dinámico
         horizontalDilatationAmplifier = calculateHorizontalAmplifier(CurrentImage.size());
-        Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT,
-                new Size( Math.round(12*DILATION_AMPLIFIER*horizontalDilatationAmplifier), 3*DILATION_AMPLIFIER ));
+        Mat element;
+        if (ImageViewer.GOOD_SIZE) {
+            DILATION_AMPLIFIER = 1.3f;
+            element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT,
+                    new Size( Math.round(12*DILATION_AMPLIFIER*horizontalDilatationAmplifier), 3*DILATION_AMPLIFIER ));
+        }
+        else {
+            DILATION_AMPLIFIER = 1f; //1.2 estaba, evaluar hacerlo dinámico
+            element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT,
+                    new Size( Math.round(12*DILATION_AMPLIFIER*horizontalDilatationAmplifier), 2 /* estaba en 1 */ ));
+        }
+
+
         Imgproc.dilate( CurrentImage, CurrentImage, element );
     }
 
     public void Erode() {
-        float EROTION_AMPLIFIER= 1f;
+        float EROTION_AMPLIFIER;
+        if (ImageViewer.GOOD_SIZE)
+            EROTION_AMPLIFIER = 1;
+        else
+            EROTION_AMPLIFIER = 0.6f;
         Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT,
                 new Size( Math.round(9*EROTION_AMPLIFIER*horizontalDilatationAmplifier), 3*EROTION_AMPLIFIER ));
         Imgproc.erode( CurrentImage, CurrentImage, element);

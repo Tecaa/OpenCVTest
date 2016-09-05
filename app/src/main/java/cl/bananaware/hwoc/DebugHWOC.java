@@ -25,7 +25,6 @@ import java.util.Map;
 public class DebugHWOC {
    // Map<Integer, Mat> images = new HashMap<Integer, Mat>();
     private Resources resources;
-
     public DebugHWOC(Bitmap q, Bitmap i, Bitmap n)
     {/*
         Mat m = new Mat();
@@ -41,8 +40,8 @@ public class DebugHWOC {
         resources = res;
     }
 
-    public void AddImage(List<Mat> process, int element) {
-        if (!ImageViewer.SHOW_PROCESS_DEBUG)
+    public void AddImage(List<Mat> process, int element, int level) {
+        if (!ImageViewer.SHOW_PROCESS_DEBUG || ImageViewer.I_LEVEL < level)
             return;
 
         Mat m = new Mat();
@@ -50,8 +49,9 @@ public class DebugHWOC {
         process.add(m);
     }
 
-    public void AddCountournedImage(List<Mat> process, Mat originalEqualizedImage, RotatedRect candidateRect) {
-        if (!ImageViewer.SHOW_PROCESS_DEBUG)
+    public void AddCountournedImage(List<Mat> process, Mat originalEqualizedImage,
+                                    RotatedRect candidateRect, int level) {
+        if (!ImageViewer.SHOW_PROCESS_DEBUG || ImageViewer.I_LEVEL < level)
             return;
 
         Mat temp = originalEqualizedImage;
@@ -61,15 +61,16 @@ public class DebugHWOC {
         process.add(temp);
     }
 
-    public void AddStepWithContourns(List<Mat> list, Mat img, List<MatOfPoint> green, List<MatOfPoint> blue) {
-        if (!ImageViewer.SHOW_PROCESS_DEBUG)
+    public void AddStepWithContourns(List<Mat> list, Mat img, List<MatOfPoint> green,
+                                     List<MatOfPoint> blue, int level) {
+        if (!ImageViewer.SHOW_PROCESS_DEBUG || ImageViewer.I_LEVEL < level)
             return;
 
         list.add(PutContourns(img.clone(), green, blue));
     }
 
-    public void AddStep(List<Mat> list, Mat img) {
-        if (!ImageViewer.SHOW_PROCESS_DEBUG)
+    public void AddStep(List<Mat> list, Mat img, int level) {
+        if (!ImageViewer.SHOW_PROCESS_DEBUG || ImageViewer.I_LEVEL < level)
             return;
         list.add(img.clone());
     }

@@ -2,6 +2,7 @@ package cl.bananaware.hwoc;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.util.Log;
 
 import org.opencv.android.Utils;
@@ -25,7 +26,7 @@ public class CandidatesFinder {
     public Mat CurrentImage;
     public Mat PreMultiDilationImage;
     public List<MatOfPoint> BlueCandidates, LastBlueCandidates;
-    public List<RotatedRect> BlueCandidatesRR;
+    //public List<RotatedRect> BlueCandidatesRR;
     public List<MatOfPoint> GreenCandidates, LastGreenCandidates;
     private double scale;
 
@@ -42,14 +43,18 @@ public class CandidatesFinder {
         scale = OriginalImageRealSize.size().width/OriginalImage.size().width;
         CurrentImage = OriginalImage.clone();
         BlueCandidates = new ArrayList<MatOfPoint>();
-        BlueCandidatesRR = new ArrayList<RotatedRect>();
+        //BlueCandidatesRR = new ArrayList<RotatedRect>();
         GreenCandidates = new ArrayList<MatOfPoint>();
         LastGreenCandidates = new ArrayList<MatOfPoint>();
         LastBlueCandidates = new ArrayList<MatOfPoint>();
     }
 
     private Mat Resize(Mat originalImage) {
-        final int MAX_PIXELS = 1000; //NOTA: PROBAR USANDO 400 Y ADAPTANDO TODO A ESTO (ANTES ESTABA EN 1000)
+        final int MAX_PIXELS;
+        if (ImageViewer.GOOD_SIZE)
+            MAX_PIXELS = 1000; //NOTA: PROBAR USANDO 400 Y ADAPTANDO TODO A ESTO (ANTES ESTABA EN 1000)
+        else
+            MAX_PIXELS = 400; //NOTA: PROBAR USANDO 400 Y ADAPTANDO TODO A ESTO (ANTES ESTABA EN 1000)
         Size s = originalImage.size();
         Size newSize = new Size();
         double ratio = s.width/s.height;
@@ -80,13 +85,13 @@ public class CandidatesFinder {
     }
 
     public void Dilate() {
-        final float DILATATION_AMPLIFIER = 1.4f;
+        final float DILATATION_AMPLIFIER = 1.25f; //Estaba en 1.4
         Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 9*DILATATION_AMPLIFIER, 3*DILATATION_AMPLIFIER ));
         Imgproc.dilate( CurrentImage, CurrentImage, element);
     }
 
     public void Erode() {
-        final float EROTION_AMPLIFIER= 1;
+        final float EROTION_AMPLIFIER= 1.9f; //estaba en 1. 1.5 funciona tb
         Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 9*EROTION_AMPLIFIER, 3*EROTION_AMPLIFIER ));
         Imgproc.erode( CurrentImage, CurrentImage, element);
     }
@@ -127,7 +132,17 @@ public class CandidatesFinder {
     }
 
     public void GaussianBlur() {
-        Imgproc.GaussianBlur(CurrentImage, PreMultiDilationImage, new Size(5,5), 2);
+        Size size;
+        int sigma;
+        //if (ImageViewer.GOOD_SIZE) {
+            size = new Size(5, 5);
+            sigma = 2;
+        /*}
+        else {
+            size = new Size(3, 3);
+            sigma = 1;
+        }*/
+        Imgproc.GaussianBlur(CurrentImage, PreMultiDilationImage, size, sigma);
     }
 
     public void Dilate2(ImageSize imSize) {
@@ -140,7 +155,12 @@ public class CandidatesFinder {
     }
 
     public void Erode2() {
-        final float EROTATION_AMPLIFIER = 2.4F;
+
+        final float EROTATION_AMPLIFIER;
+        if (ImageViewer.GOOD_SIZE)
+            EROTATION_AMPLIFIER = 2.4F;
+        else
+            EROTATION_AMPLIFIER = 1.5F;
         Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 9*EROTATION_AMPLIFIER, 3 ));
         Imgproc.erode( CurrentImage, CurrentImage, element);
     }
@@ -157,23 +177,28 @@ public class CandidatesFinder {
         GreenCandidates.addAll(LastGreenCandidates);
     }
 
+    final double MAX_AREA_PERC = 0.35;
+    public List<RotatedRect> LastBlueCandidatesMAR;
     public void OutlinesSelection() {
         List<MatOfPoint> contours = LastGreenCandidates;
         LastBlueCandidates = new ArrayList<MatOfPoint>();
+        LastBlueCandidatesMAR = new ArrayList<RotatedRect>();
         for(int i=0; i<contours.size(); ++i)
         {
             RotatedRect mr = Imgproc.minAreaRect(mopToMop2f(contours.get(i)));
 
             double area = Math.abs(Imgproc.contourArea(contours.get(i)));
-            double bbArea=mr.size.width * mr.size.height;
-            float ratio = (float)(area/bbArea);
+            double rrArea=mr.size.width * mr.size.height;
+            double bbArea = mr.boundingRect().area();
+            float ratio = (float)(area/rrArea);
+            double area_perc =rrArea /CurrentImage.size().area();
 
-
-
-            if( (ratio < 0.45) || (bbArea*scale/2 < 400) ){
+            //TODO: Poner un máximo de area?
+            if( (ratio < 0.45) || (bbArea*scale/2 < 450)/*antes era 400*/ || area_perc > MAX_AREA_PERC ){
                 ;// do nothing
             }else{
-                BlueCandidatesRR.add(mr);
+                //BlueCandidatesRR.add(mr);
+                LastBlueCandidatesMAR.add(mr);
                 LastBlueCandidates.add(contours.get(i));
 
                 if (ImageViewer.TRAMPA && LastBlueCandidates.size()>4)
@@ -181,10 +206,57 @@ public class CandidatesFinder {
             }
         }
 
-        BlueCandidates.addAll(LastBlueCandidates);
+
     }
     private MatOfPoint2f mopToMop2f(MatOfPoint mop) {
         return new MatOfPoint2f( mop.toArray() );
+    }
+
+    public void OutlinesFilter() {
+
+        quicksort(LastBlueCandidatesMAR, 0, LastBlueCandidatesMAR.size()-1, LastBlueCandidates);
+        LastBlueCandidates = LastBlueCandidates.subList(0, Math.min(3, LastBlueCandidates.size()));
+        LastBlueCandidatesMAR = LastBlueCandidatesMAR.subList(0, Math.min(3, LastBlueCandidatesMAR.size()));
+    }
+    public void quicksort(List<RotatedRect> A, int izq, int der, List<MatOfPoint> B) {
+
+        if (der <= izq)
+            return;
+        double pivote= distanceToCenter(A.get(izq)); // tomamos primer elemento como pivote
+        RotatedRect pivoteMat = A.get(izq);
+        MatOfPoint pivoteMat2 = B.get(izq);
+        int i=izq; // i realiza la búsqueda de izquierda a derecha
+        int j=der; // j realiza la búsqueda de derecha a izquierda
+        RotatedRect aux;
+        MatOfPoint aux2;
+
+        while(i<j){            // mientras no se crucen las búsquedas
+            while(distanceToCenter(A.get(i))<=pivote && i<j) i++; // busca elemento mayor que pivote
+            while(distanceToCenter(A.get(j))>pivote) j--;         // busca elemento menor que pivote
+            if (i<j) {                      // si no se han cruzado
+                aux= A.get(i);                  // los intercambia
+                A.set(i, A.get(j));
+                A.set(j, aux);
+
+                aux2= B.get(i);                  // los intercambia
+                B.set(i, B.get(j));
+                B.set(j, aux2);
+            }
+        }
+        A.set(izq, A.get(j)); // se coloca el pivote en su lugar de forma que tendremos
+        A.set(j, pivoteMat); // los menores a su izquierda y los mayores a su derecha
+
+        B.set(izq, B.get(j)); // se coloca el pivote en su lugar de forma que tendremos
+        B.set(j, pivoteMat2); // los menores a su izquierda y los mayores a su derecha
+
+        if(izq<j-1)
+            quicksort(A,izq,j-1, B); // ordenamos subarray izquierdo
+        if(j+1 <der)
+            quicksort(A,j+1,der, B); // ordenamos subarray derecho
+    }
+    private double distanceToCenter (RotatedRect rr)
+    {
+        return Math.pow(rr.center.y-CurrentImage.height()/2,2) + Math.pow(rr.center.x-CurrentImage.width()/2,2);
     }
 
 }

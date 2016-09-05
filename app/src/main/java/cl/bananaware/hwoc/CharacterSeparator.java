@@ -232,7 +232,7 @@ public class CharacterSeparator {
         {
             Rect r = Imgproc.boundingRect(finalsContourns.get(i));
             float pos = (float)(r.x - InitialPixelX + r.width)/(float)(charsPlateLength);
-            Log.d("posi", "i="+i+" " +pos+ "]");
+            //Log.d("posi", "i="+i+" " +pos+ "]");
             if (Math.abs(pos - correctRightPositions.get(j)) <= ERROR_PERCENTAJE)
                 return Math.round(pos * charsPlateLength) + InitialPixelX;
         }
@@ -244,7 +244,7 @@ public class CharacterSeparator {
         {
             Rect r = Imgproc.boundingRect(finalsContourns.get(i));
             float pos = (float) (r.x - InitialPixelX)/(float)charsPlateLength;
-            Log.d("posi", "i="+i + " ["+pos);
+            //Log.d("posi", "i="+i + " ["+pos);
             if (Math.abs(pos - correctLeftPositions.get(j)) <= ERROR_PERCENTAJE)
                 return Math.round(pos * charsPlateLength) + InitialPixelX;
         }

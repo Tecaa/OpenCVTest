@@ -56,6 +56,8 @@ import java.util.List;
  */
 public class ImageViewer extends Activity {
     public final static boolean SHOW_PROCESS_DEBUG = true;
+    public final static boolean GOOD_SIZE = false;
+    public final static int I_LEVEL = 90;
     public final static boolean TRAMPA = false;
     public final static boolean EXPERIMENTAL_EQUALITATION = false;
     List<Mat> finalCandidates;
@@ -90,7 +92,6 @@ public class ImageViewer extends Activity {
         finalCandidates = new ArrayList<Mat>();
         firstProcessSteps = new ArrayList<Mat>();
         secondProcessSteps = new ArrayList<Mat>();
-        //debugHWOC.CleanAll();
     }
 
 
@@ -136,7 +137,7 @@ public class ImageViewer extends Activity {
         boolean fueGaussianBlureada = false;
         candidatesFinder.EqualizeHistOriginalImage(false);
 
-        debugHWOC.AddStep(firstProcessSteps, candidatesFinder.CurrentImage);
+        debugHWOC.AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 1);
 
 
         if (EXPERIMENTAL_EQUALITATION) {
@@ -148,36 +149,41 @@ public class ImageViewer extends Activity {
 
         candidatesFinder.Dilate();
 
-        debugHWOC.AddStep(firstProcessSteps, candidatesFinder.CurrentImage);
+        debugHWOC.AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 2);
 
         candidatesFinder.Erode();
 
-        debugHWOC.AddStep(firstProcessSteps, candidatesFinder.CurrentImage);
+        debugHWOC.AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 3);
 
         TimeProfiler.CheckPoint(2);
 
 
         candidatesFinder.Substraction();
 
-        debugHWOC.AddStep(firstProcessSteps, candidatesFinder.CurrentImage);
+        debugHWOC.AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 4);
 
 
 
 
         candidatesFinder.Sobel();
-        debugHWOC.AddStep(firstProcessSteps, candidatesFinder.CurrentImage);
+        debugHWOC.AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 5);
 
 
 
 
         candidatesFinder.GaussianBlur();
-        debugHWOC.AddStep(firstProcessSteps, candidatesFinder.CurrentImage);
+        debugHWOC.AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 6);
 
         List<RotatedRect> outlines = new ArrayList<RotatedRect>();
         TimeProfiler.CheckPoint(3);
         for (ImageSize is : ImageSize.values())
         {
-
+            if (!ImageViewer.GOOD_SIZE) {/*
+                if (is == ImageSize.PEQUEÑA)
+                    continue;
+                if (is == ImageSize.GRANDE)
+                    continue;*/
+            }
             candidatesFinder.Dilate2(is);
             candidatesFinder.Erode2();
 
@@ -190,14 +196,16 @@ public class ImageViewer extends Activity {
 
             //STEP 2: start selecting outlines
             candidatesFinder.OutlinesSelection();
-
+            debugHWOC.AddStepWithContourns(firstProcessSteps, candidatesFinder.CurrentImage,
+                    candidatesFinder.LastGreenCandidates, candidatesFinder.LastBlueCandidates, 7);
+            candidatesFinder.OutlinesFilter();
 
             debugHWOC.AddStepWithContourns(firstProcessSteps, candidatesFinder.CurrentImage,
-                   candidatesFinder.LastGreenCandidates, candidatesFinder.LastBlueCandidates);
+                   candidatesFinder.LastGreenCandidates, candidatesFinder.LastBlueCandidates, 7);
 
-
+            outlines.addAll(candidatesFinder.LastBlueCandidatesMAR);
         }
-        outlines.addAll(candidatesFinder.BlueCandidatesRR);
+        //outlines.addAll(candidatesFinder.);
 
         TimeProfiler.CheckPoint(4);
         //STEP 3: loop
@@ -210,12 +218,13 @@ public class ImageViewer extends Activity {
             candidateSelector.CalculateBounds();
             candidateSelector.TruncateBounds();
 
-            debugHWOC.AddImage(firstProcessSteps, R.drawable.ipp);
-            debugHWOC.AddCountournedImage(firstProcessSteps, candidateSelector.OriginalEqualizedImage.clone(), candidateSelector.CandidateRect.clone());
+            debugHWOC.AddImage(firstProcessSteps, R.drawable.ipp, 8);
+            debugHWOC.AddCountournedImage(firstProcessSteps,
+                    candidateSelector.OriginalEqualizedImage.clone(), candidateSelector.CandidateRect.clone(), 9);
 
 
             if (!candidateSelector.PercentajeAreaCandidateCheck()) {
-                debugHWOC.AddImage(firstProcessSteps, R.drawable.percentaje_area_candidate_check);
+                debugHWOC.AddImage(firstProcessSteps, R.drawable.percentaje_area_candidate_check, 10);
                 Log.d("filter","i=" + i + "!PercentajeAreaCandidateCheck");
                 continue;
             }
@@ -227,24 +236,24 @@ public class ImageViewer extends Activity {
 
             ////////////////////////////// START INVENCION MIA //////////////////////////////
 
-            debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage);
+            debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage, 10);
             candidateSelector.Sobel();
-            debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage);
+            debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage, 11);
             candidateSelector.GaussianBlur();
-            debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage);
+            debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage, 12);
             candidateSelector.Dilate();
-            debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage);
+            debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage, 13);
 
 
             candidateSelector.Erode();
-            debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage);
+            debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage, 14);
             ////////////////////////////// END INVENCION MIA //////////////////////////////
 
 
             //STEP 6:
             candidateSelector.OtsusThreshold();
 
-            debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage);
+            debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage, 15);
 
             //STEP 7:
             candidateSelector.FindOutlines();
@@ -257,14 +266,15 @@ public class ImageViewer extends Activity {
 
             //STEP 9:
             if(!candidateSelector.FindMinAreaRectInMaxArea()) {
-                debugHWOC.AddImage(firstProcessSteps, R.drawable.find_min_area_rect_in_max_area);
+                debugHWOC.AddImage(firstProcessSteps, R.drawable.find_min_area_rect_in_max_area, 16);
                 Log.d("filter","i=" + i + " !FindMinAreaRectInMaxArea");
                 continue;
             }
 
 
 
-            debugHWOC.AddCountournedImage(firstProcessSteps, candidateSelector.CurrentImage.clone(), candidateSelector.MinAreaRect.clone());
+            debugHWOC.AddCountournedImage(firstProcessSteps, candidateSelector.CurrentImage.clone(),
+                    candidateSelector.MinAreaRect.clone(), 17);
 
 
             //STEP 10 and 11
@@ -272,7 +282,7 @@ public class ImageViewer extends Activity {
             CandidateSelector.CheckError checkError = candidateSelector.DoChecks();
             if (checkError != null) {
 
-                debugHWOC.AddImage(firstProcessSteps, checkError.getValue());
+                debugHWOC.AddImage(firstProcessSteps, checkError.getValue(), 18);
                 Log.d("filter","i=" + i + "!DoChecks");
                 continue;
             }
@@ -306,6 +316,7 @@ public class ImageViewer extends Activity {
 
 
             finalCandidates.add(candidateSelector.GetFinalImage(true));
+            debugHWOC.AddStep(firstProcessSteps, candidateSelector.GetFinalImage(false), 19);
 
 
         }
@@ -322,10 +333,10 @@ public class ImageViewer extends Activity {
         final boolean CHARS = true;
         for (int q=0; q< finalCandidates.size(); ++q) {
             //NOTA: ACA RECIEN OBTENER IMAGEN TAMAÑO REAL.
-            debugHWOC.AddImage(secondProcessSteps, R.drawable.qpp);
+            debugHWOC.AddImage(secondProcessSteps, R.drawable.qpp, 19);
 
             CharacterSeparator characterSeparator = new CharacterSeparator(finalCandidates.get(q).clone());
-            debugHWOC.AddStep(secondProcessSteps, characterSeparator.CurrentImage);
+            debugHWOC.AddStep(secondProcessSteps, characterSeparator.CurrentImage, 20);
 
             characterSeparator.AdaptiveThreshold();
 
@@ -335,8 +346,8 @@ public class ImageViewer extends Activity {
 
             if(!characterSeparator.FilterCountourns()) {
 
-                debugHWOC.AddStep(secondProcessSteps, characterSeparator.ImageWithContourns);
-                debugHWOC.AddImage(secondProcessSteps, R.drawable.filter_countourns);
+                debugHWOC.AddStep(secondProcessSteps, characterSeparator.ImageWithContourns, 21);
+                debugHWOC.AddImage(secondProcessSteps, R.drawable.filter_countourns, 22);
 
                 Log.d("filter","q=" + q + " !FilterCountourns");
                 continue;
@@ -344,8 +355,8 @@ public class ImageViewer extends Activity {
 
 
 
-            debugHWOC.AddStep(secondProcessSteps, characterSeparator.ImageWithContourns);
-            debugHWOC.AddStep(secondProcessSteps, characterSeparator.CleanedImage);
+            debugHWOC.AddStep(secondProcessSteps, characterSeparator.ImageWithContourns, 23);
+            debugHWOC.AddStep(secondProcessSteps, characterSeparator.CleanedImage, 24);
 
             characterSeparator.CalculatePlateLength();
 
@@ -362,8 +373,8 @@ public class ImageViewer extends Activity {
             String whiteList = "";
             for (int n=0; n<characterSeparator.CroppedChars.size(); ++n) {
 
-                debugHWOC.AddImage(secondProcessSteps, R.drawable.npp);
-                debugHWOC.AddStep(secondProcessSteps, characterSeparator.CroppedChars.get(n));
+                debugHWOC.AddImage(secondProcessSteps, R.drawable.npp, 25);
+                debugHWOC.AddStep(secondProcessSteps, characterSeparator.CroppedChars.get(n), 26);
                 switch (n)
                 {
                     case 0://1
@@ -383,7 +394,7 @@ public class ImageViewer extends Activity {
 
 
                 Mat m = characterSeparator.CroppedChars.get(n);
-                Imgproc.cvtColor(m, m, Imgproc.COLOR_GRAY2RGB);
+                //Imgproc.cvtColor(m, m, Imgproc.COLOR_GRAY2RGB);
                 //Imgproc.threshold(m, m, 0, 255, Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);
                 Bitmap bmp = Bitmap.createBitmap(m.cols(), m.rows(), Bitmap.Config.ARGB_8888);
 
@@ -406,9 +417,15 @@ public class ImageViewer extends Activity {
         }
         SetPlate(plate);
         Log.d("output", "plate="+plate);
-        Log.d("times", TimeProfiler.GetTotalTime());
+        //Log.d("times", TimeProfiler.GetTotalTime());
+        SetTime(TimeProfiler.GetTotalTime());
         Log.d("times", TimeProfiler.GetTimes(true, 10));
         Log.d("times", TimeProfiler.GetTimes(false));
+    }
+
+    private void SetTime(String s) {
+        TextView p = (TextView) findViewById(R.id.totalTime);
+        p.setText(s);
     }
 
     private void SetPlate(String plate) {
