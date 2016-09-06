@@ -775,21 +775,21 @@ public class Imgproc {
         return;
     }
 
-    //javadoc: GaussianBlur(src, dst, ksize, sigmaX, sigmaY)
-    public static void GaussianBlur(Mat src, Mat dst, Size ksize, double sigmaX, double sigmaY)
-    {
-        
-        GaussianBlur_1(src.nativeObj, dst.nativeObj, ksize.width, ksize.height, sigmaX, sigmaY);
-        
-        return;
-    }
-
     //javadoc: GaussianBlur(src, dst, ksize, sigmaX)
     public static void GaussianBlur(Mat src, Mat dst, Size ksize, double sigmaX)
     {
-        
+
         GaussianBlur_2(src.nativeObj, dst.nativeObj, ksize.width, ksize.height, sigmaX);
-        
+
+        return;
+    }
+
+    //javadoc: GaussianBlur(src, dst, ksize, sigmaX, sigmaY)
+    public static void GaussianBlur(Mat src, Mat dst, Size ksize, double sigmaX, double sigmaY)
+    {
+
+        GaussianBlur_1(src.nativeObj, dst.nativeObj, ksize.width, ksize.height, sigmaX, sigmaY);
+
         return;
     }
 

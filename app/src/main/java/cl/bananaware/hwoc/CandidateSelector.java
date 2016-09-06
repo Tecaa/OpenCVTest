@@ -127,8 +127,8 @@ public class CandidateSelector {
             rr.size.width = newWidth * EXTRA;
             rr.size.height = newHeight * EXTRA;
 
-            rr.center.x -= dx;
-            rr.center.y -= dy;
+            //rr.center.x -= dx;
+            //rr.center.y -= dy;
 
             if (rr.angle < -45.) {
                 rr.angle += 90.0;
@@ -403,6 +403,10 @@ public class CandidateSelector {
             rr.size.height = widthTemp;
         }
         return rr;
+    }
+
+    public void Equalize() {
+        Imgproc.equalizeHist( CurrentImage, CurrentImage);/// Apply Histogram Equalization
     }
 
     public enum CheckError {

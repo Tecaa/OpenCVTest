@@ -228,10 +228,11 @@ public class ImageViewer extends Activity {
                 Log.d("filter","i=" + i + "!PercentajeAreaCandidateCheck");
                 continue;
             }
-
+            Log.d("caida", "i=" + String.valueOf(i));
             candidateSelector.CropExtraRotatedRect(false);   //STEP 5:
 //            candidateSelector.CropExtraBoundget(i).angle);
-
+            debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage, 9);
+            candidateSelector.Equalize();
 
 
             ////////////////////////////// START INVENCION MIA //////////////////////////////
