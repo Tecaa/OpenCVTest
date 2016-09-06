@@ -58,7 +58,7 @@ public class ImageViewer extends Activity {
     public final static boolean SHOW_PROCESS_DEBUG = true;
     public final static boolean GOOD_SIZE = false;
     public final static int I_LEVEL = 90;
-    public final static boolean TRAMPA = false;
+    public final static boolean SMALLER_CHARACTERS = false;
     public final static boolean EXPERIMENTAL_EQUALITATION = false;
     List<Mat> finalCandidates;
     List<Mat> firstProcessSteps;
@@ -76,7 +76,6 @@ public class ImageViewer extends Activity {
     {
         super.onResume();
         MainActivity.CameraCapturerFixer = true;
-//        CodePostOpenCVLoaded();
         CleanAll();
 
         if (!OpenCVLoader.initDebug()) {
@@ -205,7 +204,7 @@ public class ImageViewer extends Activity {
 
             outlines.addAll(candidatesFinder.LastBlueCandidatesMAR);
         }
-        //outlines.addAll(candidatesFinder.);
+
 
         TimeProfiler.CheckPoint(4);
         //STEP 3: loop
@@ -220,7 +219,7 @@ public class ImageViewer extends Activity {
 
             debugHWOC.AddImage(firstProcessSteps, R.drawable.ipp, 8);
             debugHWOC.AddCountournedImage(firstProcessSteps,
-                    candidateSelector.OriginalEqualizedImage.clone(), candidateSelector.CandidateRect.clone(), 9);
+                    candidateSelector.OriginalEqualizedImage, candidateSelector.CandidateRect, 9);
 
 
             if (!candidateSelector.PercentajeAreaCandidateCheck()) {
@@ -228,7 +227,7 @@ public class ImageViewer extends Activity {
                 Log.d("filter","i=" + i + "!PercentajeAreaCandidateCheck");
                 continue;
             }
-            Log.d("caida", "i=" + String.valueOf(i));
+
             candidateSelector.CropExtraRotatedRect(false);   //STEP 5:
 //            candidateSelector.CropExtraBoundget(i).angle);
             debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage, 9);
@@ -274,8 +273,8 @@ public class ImageViewer extends Activity {
 
 
 
-            debugHWOC.AddCountournedImage(firstProcessSteps, candidateSelector.CurrentImage.clone(),
-                    candidateSelector.MinAreaRect.clone(), 17);
+            debugHWOC.AddCountournedImage(firstProcessSteps, candidateSelector.CurrentImage,
+                    candidateSelector.MinAreaRect, 17);
 
 
             //STEP 10 and 11
@@ -317,7 +316,7 @@ public class ImageViewer extends Activity {
 
 
             finalCandidates.add(candidateSelector.GetFinalImage(true));
-            debugHWOC.AddStep(firstProcessSteps, candidateSelector.GetFinalImage(false), 19);
+            debugHWOC.AddStep(firstProcessSteps, finalCandidates.get(finalCandidates.size()-1), 19);
 
 
         }
@@ -336,7 +335,12 @@ public class ImageViewer extends Activity {
             //NOTA: ACA RECIEN OBTENER IMAGEN TAMAÑO REAL.
             debugHWOC.AddImage(secondProcessSteps, R.drawable.qpp, 19);
 
-            CharacterSeparator characterSeparator = new CharacterSeparator(finalCandidates.get(q).clone());
+            Mat img = finalCandidates.get(q);
+
+            if (SHOW_PROCESS_DEBUG)
+                img = img.clone();
+
+            CharacterSeparator characterSeparator = new CharacterSeparator(img);
             debugHWOC.AddStep(secondProcessSteps, characterSeparator.CurrentImage, 20);
 
             characterSeparator.AdaptiveThreshold();
@@ -485,41 +489,6 @@ public class ImageViewer extends Activity {
             ii.setImageBitmap(bm);
             ll.addView(ii);
         }
-    }
-
-    private void drawContornsToMatInBitmap(Mat m, List<MatOfPoint> cs, List<MatOfPoint> csRefine) {
-        Mat finalMat = m.clone();
-        //Imgproc.cvtColor(finalMat, finalMat, Imgproc.COLOR_GRAY2RGB); //USAR SI APLICA, SI SE CAE LA APP, Convert to RGB
-        if (cs != null)
-        {
-            for (int cId = 0; cId < cs.size(); cId++) {
-                Imgproc.drawContours(finalMat, cs, cId, new Scalar(0, 255, 0), 1);
-            }
-        }
-        if (csRefine != null)
-        {
-            for (int cId = 0; cId < csRefine.size(); cId++) {
-                Imgproc.drawContours(finalMat, csRefine, cId, new Scalar(0, 0, 255), 6);
-            }
-        }
-
-        if (true) {
-            // Rotating 90 clock degrees
-            finalMat = finalMat.t();
-            Core.flip(finalMat, finalMat, 2);
-        }
-        Bitmap bm = Bitmap.createBitmap(finalMat.cols(), finalMat.rows(), Bitmap.Config.ARGB_8888);
-        Utils.matToBitmap(finalMat, bm);
-
-        ImageView ll = (ImageView)findViewById(R.id.image1);
-        ll.setImageBitmap(bm);
-    }
-
-    private void drawContornsToMatInBitmap(Mat m, MatOfPoint cs) {
-        List<MatOfPoint> l = new ArrayList<MatOfPoint>();
-        if (cs != null)
-            l.add(cs);
-        drawContornsToMatInBitmap(m, l, null);
     }
 
     public class ImageAdapter extends BaseAdapter {

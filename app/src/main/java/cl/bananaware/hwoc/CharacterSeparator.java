@@ -61,12 +61,12 @@ public class CharacterSeparator {
         Imgproc.findContours(CurrentImage.clone(),contourns,hierarchy,Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);
 
 
-
-        Imgproc.cvtColor(CurrentImage, ImageWithContourns, Imgproc.COLOR_GRAY2RGB);
-        for (int cId = 0; cId < contourns.size(); cId++) {
-            Imgproc.drawContours(ImageWithContourns, contourns, cId, new Scalar(0, 255, 0), 1);
+        if (ImageViewer.SHOW_PROCESS_DEBUG) {
+            Imgproc.cvtColor(CurrentImage, ImageWithContourns, Imgproc.COLOR_GRAY2RGB);
+            for (int cId = 0; cId < contourns.size(); cId++) {
+                Imgproc.drawContours(ImageWithContourns, contourns, cId, new Scalar(0, 255, 0), 1);
+            }
         }
-
     }
 
     public boolean FilterCountourns() {
@@ -103,8 +103,6 @@ public class CharacterSeparator {
             }
 
         }
-        Rect finalsContournsBoundingBox = new Rect(min_x, min_y, max_x-min_x, max_y-min_y);
-
         // REMOVER LO QUE ESTÁ SOBRE LAS ROJAS Y BAJO ELLAS
         // ADEMAS REMOVER LO QUE ES MUY  PEQUEÑO (CIRCULOS INTERIORES PARA EVITAR ERRORES)
         if (REMOVE_OUTSIDE) {
@@ -152,10 +150,12 @@ public class CharacterSeparator {
             CurrentImage = maskedImage;
             // Now regions outside the contour in maskedImage is set to (180, 180, 180) and region
             // within it is set to the value of the pixels in the contour.
-            CleanedImage = maskedImage.clone();
+            CleanedImage = maskedImage;
         }
-        for (int cId = 0; cId < finalsContourns.size(); cId++) {
-            Imgproc.drawContours(ImageWithContourns, finalsContourns, cId, new Scalar(255, 0, 0), 1);
+        if (ImageViewer.SHOW_PROCESS_DEBUG) {
+            for (int cId = 0; cId < finalsContourns.size(); cId++) {
+                Imgproc.drawContours(ImageWithContourns, finalsContourns, cId, new Scalar(255, 0, 0), 1);
+            }
         }
         return finalsContourns.size() != 0;
 
@@ -290,7 +290,7 @@ public class CharacterSeparator {
             int xWidth = Math.min(positions.get(i).End - positions.get(i).Start+2*extra_x,CurrentImage.width()-xStart);
             int yWidth = Math.min(HeightChars+2*extra_y, CurrentImage.height() - yStart);
             Rect roi = new Rect(xStart, yStart, xWidth, yWidth);
-            CroppedChars.add(new Mat(CurrentImage.clone(), roi)); //black and white image
+            CroppedChars.add(new Mat(CurrentImage, roi)); //black and white image
             //CroppedChars.add(new Mat(OriginalImage.clone(), roi));  // gray scale image
         }
     }

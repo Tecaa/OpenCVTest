@@ -82,23 +82,13 @@ public class CandidateSelector {
 
         if (realSize) {
             RotatedRect rr = CandidateRect.clone();
-            /*rr.size.width *= EXTRA;
-            rr.size.height *= EXTRA;
-            */
             rr.size.width = newWidth * EXTRA*scale;
             rr.size.height = newHeight * EXTRA*scale;
-            /*
-            rr.size.width *= EXTRA*scale;
-            rr.size.height *= EXTRA*scale;*/
             rr.center.x = (rr.center.x - dx) *scale;
             rr.center.y = (rr.center.y - dy) *scale;
 
             if (rr.angle < -45.) {
                 rr.angle += 90.0;
-/*
-                double widthTemp = rr.size.width;
-                rr.size.width = rr.size.height;
-                rr.size.height = widthTemp;*/
             }
             OriginalAngle = rr.angle;
             Mat matrix = Imgproc.getRotationMatrix2D(rr.center, /*MinAreaRectAngle + */rr.angle, 1.0);
@@ -107,9 +97,7 @@ public class CandidateSelector {
             CurrentImage = new Mat();
             Mat precrop = new Mat();
 
-            Imgproc.cvtColor(OriginalImageRealSize, precrop, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
-
-            Imgproc.warpAffine(precrop, rotated, matrix, precrop.size(), Imgproc.INTER_CUBIC); // SLOW OPERATION
+            Imgproc.warpAffine(OriginalImageRealSize, rotated, matrix, precrop.size(), Imgproc.INTER_CUBIC); // SLOW OPERATION
             // crop the resulting image
             Imgproc.getRectSubPix(rotated, rr.size, rr.center, CurrentImage);
 

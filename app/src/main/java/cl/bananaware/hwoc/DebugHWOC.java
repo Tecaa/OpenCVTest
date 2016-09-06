@@ -25,16 +25,7 @@ import java.util.Map;
 public class DebugHWOC {
    // Map<Integer, Mat> images = new HashMap<Integer, Mat>();
     private Resources resources;
-    public DebugHWOC(Bitmap q, Bitmap i, Bitmap n)
-    {/*
-        Mat m = new Mat();
-        Utils.bitmapToMat(q, m);
-        images.put(R.drawable.qpp, m.clone());
-        Utils.bitmapToMat(i, m);
-        images.put(R.drawable.ipp, m.clone());
-        Utils.bitmapToMat(n, m);
-        images.put(R.drawable.npp, m.clone());*/
-    }
+
 
     public DebugHWOC(Resources res) {
         resources = res;
@@ -54,10 +45,10 @@ public class DebugHWOC {
         if (!ImageViewer.SHOW_PROCESS_DEBUG || ImageViewer.I_LEVEL < level)
             return;
 
-        Mat temp = originalEqualizedImage;
+        Mat temp = originalEqualizedImage.clone();
         Imgproc.cvtColor(temp, temp, Imgproc.COLOR_GRAY2RGB);
 
-        DebugHWOC.drawRotatedRectInMat(candidateRect, temp);
+        DebugHWOC.drawRotatedRectInMat(candidateRect.clone(), temp);
         process.add(temp);
     }
 

@@ -36,9 +36,17 @@ public class CandidatesFinder {
         OriginalEqualizedImage = new Mat();
         PreMultiDilationImage = new Mat();
         Utils.bitmapToMat(bm, OriginalImage);
-        OriginalImageRealSize = OriginalImage.clone();
+        OriginalImageRealSize = new Mat();
 
-        OriginalImage = Resize(OriginalImage);
+        Imgproc.cvtColor(OriginalImage, OriginalImageRealSize, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
+
+        final int MAX_PIXELS;
+        if (ImageViewer.GOOD_SIZE)
+            MAX_PIXELS = 1000; //NOTA: PROBAR USANDO 400 Y ADAPTANDO TODO A ESTO (ANTES ESTABA EN 1000)
+        else
+            MAX_PIXELS = 400; //NOTA: PROBAR USANDO 400 Y ADAPTANDO TODO A ESTO (ANTES ESTABA EN 1000)
+
+        OriginalImage = Resize(OriginalImage, MAX_PIXELS);
         //OriginalImageRealSize = OriginalImage.clone(); //test
         scale = OriginalImageRealSize.size().width/OriginalImage.size().width;
         CurrentImage = OriginalImage.clone();
@@ -49,25 +57,21 @@ public class CandidatesFinder {
         LastBlueCandidates = new ArrayList<MatOfPoint>();
     }
 
-    private Mat Resize(Mat originalImage) {
-        final int MAX_PIXELS;
-        if (ImageViewer.GOOD_SIZE)
-            MAX_PIXELS = 1000; //NOTA: PROBAR USANDO 400 Y ADAPTANDO TODO A ESTO (ANTES ESTABA EN 1000)
-        else
-            MAX_PIXELS = 400; //NOTA: PROBAR USANDO 400 Y ADAPTANDO TODO A ESTO (ANTES ESTABA EN 1000)
+    private Mat Resize(Mat originalImage, int maxPixels) {
+
         Size s = originalImage.size();
         Size newSize = new Size();
         double ratio = s.width/s.height;
-        if (s.width>s.height &&  s.width > MAX_PIXELS)
+        if (s.width>s.height &&  s.width > maxPixels)
         {
 
-            newSize.width = MAX_PIXELS;
+            newSize.width = maxPixels;
             newSize.height = newSize.width / ratio;
             Imgproc.resize(originalImage, originalImage, newSize);
         }
-        if (s.height>s.width && s.height > MAX_PIXELS)
+        if (s.height>s.width && s.height > maxPixels)
         {
-            newSize.height = MAX_PIXELS;
+            newSize.height = maxPixels;
             newSize.width = newSize.height * ratio;
             Imgproc.resize(originalImage, originalImage, newSize);
         }
@@ -79,8 +83,10 @@ public class CandidatesFinder {
     }
 
     public void EqualizeHistOriginalImage(boolean doit) {
-        if (doit)
-            Imgproc.equalizeHist( CurrentImage, CurrentImage);/// Apply Histogram Equalization
+        if (doit) {
+            Imgproc.equalizeHist(CurrentImage, CurrentImage);/// Apply Histogram Equalization
+        }
+
         OriginalEqualizedImage = CurrentImage.clone();
     }
 
@@ -97,9 +103,9 @@ public class CandidatesFinder {
     }
 
     public void Substraction() {
-        Mat temp = OriginalImage.clone();
-        Imgproc.cvtColor(temp, temp, Imgproc.COLOR_RGB2GRAY);
-        Core.absdiff(temp, CurrentImage, CurrentImage); // This function should replace this section. But it doesn't work!
+        //Mat temp = //OriginalImage.clone();
+        Imgproc.cvtColor(OriginalImage, OriginalImage, Imgproc.COLOR_RGB2GRAY);
+        Core.absdiff(OriginalImage, CurrentImage, CurrentImage); // This function should replace this section. But it doesn't work!
         // NOW IT WORKS!!!
         /*
         Mat dest = OriginalImage.clone();
@@ -171,9 +177,8 @@ public class CandidatesFinder {
 
     public void FindOutlines() {
         Mat hierarchy = new Mat();
-        Mat temp = CurrentImage.clone();
         LastGreenCandidates = new ArrayList<MatOfPoint>();
-        Imgproc.findContours(temp, LastGreenCandidates, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE );
+        Imgproc.findContours(CurrentImage, LastGreenCandidates, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE );
         GreenCandidates.addAll(LastGreenCandidates);
     }
 
@@ -201,8 +206,6 @@ public class CandidatesFinder {
                 LastBlueCandidatesMAR.add(mr);
                 LastBlueCandidates.add(contours.get(i));
 
-                if (ImageViewer.TRAMPA && LastBlueCandidates.size()>4)
-                    break;
             }
         }
 
