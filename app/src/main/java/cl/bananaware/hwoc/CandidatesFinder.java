@@ -46,7 +46,7 @@ public class CandidatesFinder {
         else
             MAX_PIXELS = 400; //NOTA: PROBAR USANDO 400 Y ADAPTANDO TODO A ESTO (ANTES ESTABA EN 1000)
 
-        OriginalImage = Resize(OriginalImage, MAX_PIXELS);
+        Resize(OriginalImage, MAX_PIXELS);
         //OriginalImageRealSize = OriginalImage.clone(); //test
         scale = OriginalImageRealSize.size().width/OriginalImage.size().width;
         CurrentImage = OriginalImage.clone();
@@ -57,7 +57,7 @@ public class CandidatesFinder {
         LastBlueCandidates = new ArrayList<MatOfPoint>();
     }
 
-    private Mat Resize(Mat originalImage, int maxPixels) {
+    public static double Resize(Mat originalImage, int maxPixels) {
 
         Size s = originalImage.size();
         Size newSize = new Size();
@@ -75,7 +75,7 @@ public class CandidatesFinder {
             newSize.width = newSize.height * ratio;
             Imgproc.resize(originalImage, originalImage, newSize);
         }
-        return originalImage;
+        return newSize.width/s.width;
     }
 
     public void ToGrayScale() {
