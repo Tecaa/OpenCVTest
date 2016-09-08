@@ -142,7 +142,7 @@ public class CandidatesFinder {
         int sigma;
         //if (ImageViewer.GOOD_SIZE) {
             size = new Size(5, 5);
-            sigma = 2;
+            sigma = 2; //4?
         /*}
         else {
             size = new Size(3, 3);

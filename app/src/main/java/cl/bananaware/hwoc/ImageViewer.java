@@ -55,7 +55,7 @@ import java.util.List;
  * Created by Marco on 21-04-2016.
  */
 public class ImageViewer extends Activity {
-    public final static boolean SHOW_PROCESS_DEBUG = false;
+    public final static boolean SHOW_PROCESS_DEBUG = true;
     public final static boolean GOOD_SIZE = false;
     public final static int I_LEVEL = 90;
     final boolean CHARS = false;
@@ -63,6 +63,11 @@ public class ImageViewer extends Activity {
     List<Mat> finalCandidates;
     List<Mat> firstProcessSteps;
     List<Mat> secondProcessSteps;
+
+
+    private final String GROUP1 = "ABCDEFGHIJKLNPRSTUVXYZW";
+    private final String GROUP2 = "BCDFGHJKLPRSTVXYZW0123456789";
+    private final String GROUP3 = "0123456789";
 
 
     final int REQUEST_CODE_WRITE_EXTERNAL_PERMISSIONS= 1;
@@ -99,7 +104,7 @@ public class ImageViewer extends Activity {
         DebugHWOC debugHWOC = new DebugHWOC(getResources());
         TimeProfiler.ResetCheckPoints();
         TimeProfiler.CheckPoint(0);
-        CandidatesFinder candidatesFinder;
+
 
 
         Bitmap b;
@@ -107,7 +112,7 @@ public class ImageViewer extends Activity {
         Intent intent = getIntent();
         String abs = intent.getExtras().getString("uri");
         Boolean captured = intent.getExtras().getBoolean("captured");
-
+        boolean correctPlate = false;
 
         try {
             if (captured) {
@@ -128,6 +133,7 @@ public class ImageViewer extends Activity {
 
 
         TimeProfiler.CheckPoint(1);
+        CandidatesFinder candidatesFinder;
         candidatesFinder = new CandidatesFinder(b);
 
 
@@ -171,12 +177,14 @@ public class ImageViewer extends Activity {
 
 
         candidatesFinder.GaussianBlur();
-        debugHWOC.AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 6);
+        debugHWOC.AddStep(firstProcessSteps, candidatesFinder.PreMultiDilationImage, 6);
 
         List<RotatedRect> outlines = new ArrayList<RotatedRect>();
         TimeProfiler.CheckPoint(3);
-        for (ImageSize is : ImageSize.values())
-        {
+        String plate = "";
+        String finalPlate = "";
+
+        for (ImageSize is : ImageSize.values()) {
             if (!ImageViewer.GOOD_SIZE) {/*
                 if (is == ImageSize.PEQUEÑA)
                     continue;
@@ -200,254 +208,243 @@ public class ImageViewer extends Activity {
             candidatesFinder.OutlinesFilter();
 
             debugHWOC.AddStepWithContourns(firstProcessSteps, candidatesFinder.CurrentImage,
-                   candidatesFinder.LastGreenCandidates, candidatesFinder.LastBlueCandidates, 7);
+                    candidatesFinder.LastGreenCandidates, candidatesFinder.LastBlueCandidates, 7);
 
-            outlines.addAll(candidatesFinder.LastBlueCandidatesMAR);
-        }
+            //    outlines.addAll(candidatesFinder.LastBlueCandidatesMAR);
+
+            outlines = candidatesFinder.LastBlueCandidatesMAR;
+
+            TimeProfiler.CheckPoint(4);
+            //STEP 3: loop
+            for (int i = 0; i < outlines.size(); ++i) {
+                CandidateSelector candidateSelector =
+                        new CandidateSelector(candidatesFinder.OriginalEqualizedImage, candidatesFinder.OriginalImageRealSize, outlines.get(i));
+                //STEP 4:
+
+                candidateSelector.CalculateBounds();
+                candidateSelector.TruncateBounds();
+
+                debugHWOC.AddImage(firstProcessSteps, R.drawable.ipp, 8);
+                debugHWOC.AddCountournedImage(firstProcessSteps,
+                        candidateSelector.OriginalEqualizedImage, candidateSelector.CandidateRect, 9);
 
 
-        TimeProfiler.CheckPoint(4);
-        //STEP 3: loop
-        for (int i=0; i<outlines.size(); ++i)
-        {
-            CandidateSelector candidateSelector =
-                    new CandidateSelector(candidatesFinder.OriginalEqualizedImage, candidatesFinder.OriginalImageRealSize, outlines.get(i));
-            //STEP 4:
+                if (!candidateSelector.PercentajeAreaCandidateCheck()) {
+                    debugHWOC.AddImage(firstProcessSteps, R.drawable.percentaje_area_candidate_check, 10);
+                    Log.d("filter", "i=" + i + "!PercentajeAreaCandidateCheck");
+                    continue;
+                }
 
-            candidateSelector.CalculateBounds();
-            candidateSelector.TruncateBounds();
-
-            debugHWOC.AddImage(firstProcessSteps, R.drawable.ipp, 8);
-            debugHWOC.AddCountournedImage(firstProcessSteps,
-                    candidateSelector.OriginalEqualizedImage, candidateSelector.CandidateRect, 9);
-
-
-            if (!candidateSelector.PercentajeAreaCandidateCheck()) {
-                debugHWOC.AddImage(firstProcessSteps, R.drawable.percentaje_area_candidate_check, 10);
-                Log.d("filter","i=" + i + "!PercentajeAreaCandidateCheck");
-                continue;
-            }
-
-            candidateSelector.CropExtraRotatedRect(false);   //STEP 5:
+                candidateSelector.CropExtraRotatedRect(false);   //STEP 5:
 //            candidateSelector.CropExtraBoundget(i).angle);
-            debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage, 9);
-            candidateSelector.Equalize();
+                debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage, 9);
+                candidateSelector.Equalize();
 
 
-            ////////////////////////////// START INVENCION MIA //////////////////////////////
+                ////////////////////////////// START INVENCION MIA //////////////////////////////
 
-            debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage, 10);
-            candidateSelector.Sobel();
-            debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage, 11);
-            candidateSelector.GaussianBlur();
-            debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage, 12);
-            candidateSelector.Dilate();
-            debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage, 13);
-
-
-            candidateSelector.Erode();
-            debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage, 14);
-            ////////////////////////////// END INVENCION MIA //////////////////////////////
+                debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage, 10);
+                candidateSelector.Sobel();
+                debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage, 11);
+                candidateSelector.GaussianBlur();
+                debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage, 12);
+                candidateSelector.Dilate();
+                debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage, 13);
 
 
-            //STEP 6:
-            candidateSelector.OtsusThreshold();
-
-            debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage, 15);
-
-            //STEP 7:
-            candidateSelector.FindOutlines();
+                candidateSelector.Erode();
+                debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage, 14);
+                ////////////////////////////// END INVENCION MIA //////////////////////////////
 
 
+                //STEP 6:
+                candidateSelector.OtsusThreshold();
 
-            //STEP 8:
-            candidateSelector.FindMaxAreaCandidatePro();
+                debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage, 15);
 
-
-            //STEP 9:
-            if(!candidateSelector.FindMinAreaRectInMaxArea()) {
-                debugHWOC.AddImage(firstProcessSteps, R.drawable.find_min_area_rect_in_max_area, 16);
-                Log.d("filter","i=" + i + " !FindMinAreaRectInMaxArea");
-                continue;
-            }
+                //STEP 7:
+                candidateSelector.FindOutlines();
 
 
-
-            debugHWOC.AddCountournedImage(firstProcessSteps, candidateSelector.CurrentImage,
-                    candidateSelector.MinAreaRect, 17);
-
-
-            //STEP 10 and 11
-
-            CandidateSelector.CheckError checkError = candidateSelector.DoChecks();
-            if (checkError != null) {
-
-                debugHWOC.AddImage(firstProcessSteps, checkError.getValue(), 18);
-                Log.d("filter","i=" + i + "!DoChecks");
-                continue;
-            }
+                //STEP 8:
+                candidateSelector.FindMaxAreaCandidatePro();
 
 
-
-            // Paso 11 sin rotación.
-            //Mat sinCortar = candidatesFinder.OriginalImage.clone();
-            //Rect roi2 = new Rect(rects.get(i).boundingRect().x + mr2.boundingRect().x,
-            //        rects.get(i).boundingRect().y + mr2.boundingRect().y, (int)mr2.boundingRect().width, (int)mr2.boundingRect().height);
-            //Mat cropped2 = new Mat(sinCortar, roi2);
-
-
+                //STEP 9:
+                if (!candidateSelector.FindMinAreaRectInMaxArea()) {
+                    debugHWOC.AddImage(firstProcessSteps, R.drawable.find_min_area_rect_in_max_area, 16);
+                    Log.d("filter", "i=" + i + " !FindMinAreaRectInMaxArea");
+                    continue;
+                }
 
 
-            // Apply Gray Scale, Skew Correction, Fixed Size.
-            // hacer reequalizacion????
-            //Mat resizeimage = new Mat();
-            //Size sz = new Size(100,100);
-            //Imgproc.resize( croppedimage, resizeimage, sz );
-            //
-            //
+                debugHWOC.AddCountournedImage(firstProcessSteps, candidateSelector.CurrentImage,
+                        candidateSelector.MinAreaRect, 17);
 
-            //debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage.clone());
-    //        debugHWOC.AddStep(firstProcessSteps, candidateSelector.OriginalEqualizedImage.clone());
-            //debugHWOC.AddStep(firstProcessSteps, candidateSelector.GetFinalImage(true).clone());
 
-            //InitializeGallery(R.id.gallery1, firstProcessSteps);
-            //if(i==i)
+                //STEP 10 and 11
+
+                CandidateSelector.CheckError checkError = candidateSelector.DoChecks();
+                if (checkError != null) {
+
+                    debugHWOC.AddImage(firstProcessSteps, checkError.getValue(), 18);
+                    Log.d("filter", "i=" + i + "!DoChecks");
+                    continue;
+                }
+
+
+                // Paso 11 sin rotación.
+                //Mat sinCortar = candidatesFinder.OriginalImage.clone();
+                //Rect roi2 = new Rect(rects.get(i).boundingRect().x + mr2.boundingRect().x,
+                //        rects.get(i).boundingRect().y + mr2.boundingRect().y, (int)mr2.boundingRect().width, (int)mr2.boundingRect().height);
+                //Mat cropped2 = new Mat(sinCortar, roi2);
+
+
+                // Apply Gray Scale, Skew Correction, Fixed Size.
+                // hacer reequalizacion????
+                //Mat resizeimage = new Mat();
+                //Size sz = new Size(100,100);
+                //Imgproc.resize( croppedimage, resizeimage, sz );
+                //
+                //
+
+                //debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage.clone());
+                //        debugHWOC.AddStep(firstProcessSteps, candidateSelector.OriginalEqualizedImage.clone());
+                //debugHWOC.AddStep(firstProcessSteps, candidateSelector.GetFinalImage(true).clone());
+
+                //InitializeGallery(R.id.gallery1, firstProcessSteps);
+                //if(i==i)
 //                return;
 
 
-            finalCandidates.add(candidateSelector.GetFinalImage(true));
-            debugHWOC.AddStep(firstProcessSteps, finalCandidates.get(finalCandidates.size()-1), 19);
+                //finalCandidates.add(candidateSelector.GetFinalImage(true));
+                Mat img = candidateSelector.GetFinalImage(true);
+                //debugHWOC.AddStep(firstProcessSteps, finalCandidates.get(finalCandidates.size() - 1), 19);
+                debugHWOC.AddStep(firstProcessSteps, img, 19);
 
 
-        }
-/*
-        if (1==1) {
-            InitializeGallery(R.id.gallery1, firstProcessSteps);
-            return;
-        }
-*/
-        TimeProfiler.CheckPoint(5);
-        //DrawImages();
-
-        String plate = "";
-        String finalPlate = "";
-
-        for (int q=0; q< finalCandidates.size(); ++q) {
-            //NOTA: ACA RECIEN OBTENER IMAGEN TAMAÑO REAL.
-            debugHWOC.AddImage(secondProcessSteps, R.drawable.qpp, 19);
-
-            Mat img = finalCandidates.get(q);
-
-            if (SHOW_PROCESS_DEBUG)
-                img = img.clone();
-
-            CharacterSeparator characterSeparator = new CharacterSeparator(img);
-            debugHWOC.AddStep(secondProcessSteps, characterSeparator.CurrentImage, 20);
-
-            characterSeparator.AdaptiveThreshold();
-
-            characterSeparator.FindCountourns();
+            TimeProfiler.CheckPoint(5);
 
 
-
-            if(!characterSeparator.FilterCountourns()) {
-
-                debugHWOC.AddStep(secondProcessSteps, characterSeparator.ImageWithContourns, 21);
-                debugHWOC.AddImage(secondProcessSteps, R.drawable.filter_countourns, 22);
-
-                Log.d("filter","q=" + q + " !FilterCountourns");
-                continue;
-            }
+                //NOTA: ACA RECIEN OBTENER IMAGEN TAMAÑO REAL.
+                debugHWOC.AddImage(secondProcessSteps, R.drawable.qpp, 19);
+                //Mat img = finalCandidates.get(q);
 
 
+                if (SHOW_PROCESS_DEBUG)
+                    img = img.clone();
 
-            debugHWOC.AddStep(secondProcessSteps, characterSeparator.ImageWithContourns, 23);
-            debugHWOC.AddStep(secondProcessSteps, characterSeparator.CleanedImage, 24);
+                CharacterSeparator characterSeparator = new CharacterSeparator(img);
+                debugHWOC.AddStep(secondProcessSteps, characterSeparator.CurrentImage, 20);
 
-            characterSeparator.CalculatePlateLength();
+                characterSeparator.AdaptiveThreshold();
 
-            characterSeparator.CalculateCharsPositions();
-
-            //characterSeparator.CalculateHistrograms();
-            if (CHARS)
-                characterSeparator.CropChars();
-            else
-                characterSeparator.CropAll();
+                characterSeparator.FindCountourns();
 
 
+                if (!characterSeparator.FilterCountourns()) {
 
-            String whiteList = "";
-            if (CHARS) {
-                for (int n = 0; n < characterSeparator.CroppedChars.size(); ++n) {
+                    debugHWOC.AddStep(secondProcessSteps, characterSeparator.ImageWithContourns, 21);
+                    debugHWOC.AddImage(secondProcessSteps, R.drawable.filter_countourns, 22);
 
+                    Log.d("filter", "q=" /*+ q*/ + " !FilterCountourns");
+                    continue;
+                }
+
+
+                debugHWOC.AddStep(secondProcessSteps, characterSeparator.ImageWithContourns, 23);
+                debugHWOC.AddStep(secondProcessSteps, characterSeparator.CleanedImage, 24);
+
+                characterSeparator.CalculatePlateLength();
+
+                characterSeparator.CalculateCharsPositions();
+
+                //characterSeparator.CalculateHistrograms();
+                if (CHARS)
+                    characterSeparator.CropChars();
+                else
+                    characterSeparator.CropAll();
+
+
+                String whiteList = "";
+                String lastPlate = "";
+                if (CHARS) {
+                    for (int n = 0; n < characterSeparator.CroppedChars.size(); ++n) {
+
+                        debugHWOC.AddImage(secondProcessSteps, R.drawable.npp, 25);
+                        debugHWOC.AddStep(secondProcessSteps, characterSeparator.CroppedChars.get(n), 26);
+
+                        switch (n) {
+                            case 0://1
+                                whiteList = GROUP1;
+                                break;
+                            case 2://3
+                                plate += "-";
+                                whiteList = GROUP2;
+                                break;
+                            case 4://5
+                                plate += "-";
+                                whiteList = GROUP3;
+                                break;
+                        }
+                        MainActivity.baseApi.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, whiteList);
+
+
+                        Mat m = characterSeparator.CroppedChars.get(n);
+                        Bitmap bmp = Bitmap.createBitmap(m.cols(), m.rows(), Bitmap.Config.ARGB_8888);
+
+
+                        Utils.matToBitmap(m, bmp);
+                        MainActivity.baseApi.setImage(bmp);
+                        String recognizedText = MainActivity.baseApi.getUTF8Text();
+                        Log.d("output", "n=" + n + " text:" + recognizedText);
+                        plate += recognizedText;
+
+                    }
+                } else {
                     debugHWOC.AddImage(secondProcessSteps, R.drawable.npp, 25);
-                    debugHWOC.AddStep(secondProcessSteps, characterSeparator.CroppedChars.get(n), 26);
+                    for (int n = 0; n < 3; ++n) {
 
-                    switch (n) {
-                        case 0://1
-                            whiteList = "ABCDEFGHIJKLNPRSTUVXYZW";
-                            break;
-                        case 2://3
-                            plate += "-";
-                            whiteList = "BCDFGHJKLPRSTVXYZW0123456789";
-                            break;
-                        case 4://5
-                            plate += "-";
-                            whiteList = "0123456789";
-                            break;
+
+                        switch (n) {
+                            case 0://1
+                                whiteList = "ABCDEFGHIJKLNPRSTUVXYZW";
+                                break;
+                            case 1://3
+                                plate += "-";
+                                whiteList = "BCDFGHJKLPRSTVXYZW0123456789";
+                                break;
+                            case 2://5
+                                plate += "-";
+                                whiteList = "0123456789";
+                                break;
+                        }
+                        MainActivity.baseApi.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, whiteList);
+
+
+                        Mat m = characterSeparator.CroppedChars.get(0);
+                        Bitmap bmp = Bitmap.createBitmap(m.cols(), m.rows(), Bitmap.Config.ARGB_8888);
+
+
+                        Utils.matToBitmap(m, bmp);
+                        MainActivity.baseApi.setImage(bmp);
+                        String recognizedText = MainActivity.baseApi.getUTF8Text();
+                        Log.d("output", "n=" + n + " text:" + recognizedText);
+                        //recognizedText = recognizedText.trim();
+                        plate += recognizedText;
+                        lastPlate += process(recognizedText, n);//.substring(n*2, n*2+2);
+
                     }
-                    MainActivity.baseApi.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, whiteList);
-
-
-                    Mat m = characterSeparator.CroppedChars.get(n);
-                    Bitmap bmp = Bitmap.createBitmap(m.cols(), m.rows(), Bitmap.Config.ARGB_8888);
-
-
-                    Utils.matToBitmap(m, bmp);
-                    MainActivity.baseApi.setImage(bmp);
-                    String recognizedText = MainActivity.baseApi.getUTF8Text();
-                    Log.d("output", "n=" + n + " text:" + recognizedText);
-                    plate += recognizedText;
-
+                    finalPlate += lastPlate;
                 }
+                correctPlate = correctPlate(lastPlate);
+                if (correctPlate)
+                    break;
+                plate += " || ";
+                finalPlate += " || ";
             }
-            else
-            {
-                debugHWOC.AddImage(secondProcessSteps, R.drawable.npp, 25);
-                for (int n = 0; n < 3; ++n) {
-
-
-                    switch (n) {
-                        case 0://1
-                            whiteList = "ABCDEFGHIJKLNPRSTUVXYZW";
-                            break;
-                        case 1://3
-                            plate += "-";
-                            whiteList = "BCDFGHJKLPRSTVXYZW0123456789";
-                            break;
-                        case 2://5
-                            plate += "-";
-                            whiteList = "0123456789";
-                            break;
-                    }
-                    MainActivity.baseApi.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, whiteList);
-
-
-                    Mat m = characterSeparator.CroppedChars.get(0);
-                    Bitmap bmp = Bitmap.createBitmap(m.cols(), m.rows(), Bitmap.Config.ARGB_8888);
-
-
-                    Utils.matToBitmap(m, bmp);
-                    MainActivity.baseApi.setImage(bmp);
-                    String recognizedText = MainActivity.baseApi.getUTF8Text();
-                    Log.d("output", "n=" + n + " text:" + recognizedText);
-                    //recognizedText = recognizedText.trim();
-                    plate += recognizedText;
-                    finalPlate += process(recognizedText, n);//.substring(n*2, n*2+2);
-                }
-            }
-            plate += " || ";
-            finalPlate += " || ";
+            if (correctPlate)
+                break;
         }
 //        MainActivity.baseApi.end();
         plate = plate.replace("\n", "").replace("\r", "");
@@ -464,6 +461,20 @@ public class ImageViewer extends Activity {
         SetTime(TimeProfiler.GetTotalTime());
         Log.d("times", TimeProfiler.GetTimes(true, 10));
         Log.d("times", TimeProfiler.GetTimes(false));
+    }
+
+    private boolean correctPlate(String lastPlate) {
+        if (lastPlate.length() == 6
+                && GROUP1.contains(String.valueOf(lastPlate.charAt(0)))
+                && GROUP1.contains(String.valueOf(lastPlate.charAt(1)))
+                && GROUP2.contains(String.valueOf(lastPlate.charAt(2)))
+                && GROUP2.contains(String.valueOf(lastPlate.charAt(3)))
+                && GROUP3.contains(String.valueOf(lastPlate.charAt(4)))
+                && GROUP3.contains(String.valueOf(lastPlate.charAt(5)))
+                )
+            return true;
+        else
+            return false;
     }
 
     private void SetFinalPlate(String finalPlate) {
