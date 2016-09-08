@@ -34,6 +34,14 @@
         android:id="@+id/plateText"
         android:textAlignment="center"
         />
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="50px"
+        android:text="no recognition"
+        android:background="#cccbbb"
+        android:id="@+id/finalPlateText"
+        android:textAlignment="center"
+        />
     <ImageView
         android:id="@+id/image1"
         android:layout_width="fill_parent"

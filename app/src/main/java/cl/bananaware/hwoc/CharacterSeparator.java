@@ -302,6 +302,10 @@ public class CharacterSeparator {
         int yWidth = Math.min(HeightChars+2*extra, CurrentImage.height() - yStart);
         Rect roi = new Rect(xStart, yStart, xWidth, yWidth);
         //CroppedChars.add(new Mat(CurrentImage.clone(), roi)); //black and white image
-        CroppedChars.add(new Mat(OriginalImage.clone(), roi));  // gray scale image
+        Core.copyMakeBorder(new Mat(CurrentImage, roi), CurrentImage, 10, 10, 10, 10, 0);
+        CroppedChars.add(CurrentImage);  // gray scale image
+        /*CroppedChars.add(CurrentImage);  // gray scale image
+        CroppedChars.add(CurrentImage);  // gray scale image*/
+
     }
 }

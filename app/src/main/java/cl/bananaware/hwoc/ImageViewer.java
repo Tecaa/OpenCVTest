@@ -55,10 +55,10 @@ import java.util.List;
  * Created by Marco on 21-04-2016.
  */
 public class ImageViewer extends Activity {
-    public final static boolean SHOW_PROCESS_DEBUG = true;
+    public final static boolean SHOW_PROCESS_DEBUG = false;
     public final static boolean GOOD_SIZE = false;
     public final static int I_LEVEL = 90;
-    public final static boolean SMALLER_CHARACTERS = false;
+    final boolean CHARS = false;
     public final static boolean EXPERIMENTAL_EQUALITATION = false;
     List<Mat> finalCandidates;
     List<Mat> firstProcessSteps;
@@ -330,7 +330,8 @@ public class ImageViewer extends Activity {
         //DrawImages();
 
         String plate = "";
-        final boolean CHARS = true;
+        String finalPlate = "";
+
         for (int q=0; q< finalCandidates.size(); ++q) {
             //NOTA: ACA RECIEN OBTENER IMAGEN TAMAÑO REAL.
             debugHWOC.AddImage(secondProcessSteps, R.drawable.qpp, 19);
@@ -376,40 +377,77 @@ public class ImageViewer extends Activity {
 
 
             String whiteList = "";
-            for (int n=0; n<characterSeparator.CroppedChars.size(); ++n) {
+            if (CHARS) {
+                for (int n = 0; n < characterSeparator.CroppedChars.size(); ++n) {
 
-                debugHWOC.AddImage(secondProcessSteps, R.drawable.npp, 25);
-                debugHWOC.AddStep(secondProcessSteps, characterSeparator.CroppedChars.get(n), 26);
-                switch (n)
-                {
-                    case 0://1
-                        whiteList = "ABCDEFGHIJKLNPRSTUVXYZW";
-                        break;
-                    case 2://3
-                        plate +="-";
-                        whiteList = "BCDFGHJKLPRSTVXYZW0123456789";
-                        break;
-                    case 4://5
-                        plate +="-";
-                        whiteList = "0123456789";
-                        break;
+                    debugHWOC.AddImage(secondProcessSteps, R.drawable.npp, 25);
+                    debugHWOC.AddStep(secondProcessSteps, characterSeparator.CroppedChars.get(n), 26);
+
+                    switch (n) {
+                        case 0://1
+                            whiteList = "ABCDEFGHIJKLNPRSTUVXYZW";
+                            break;
+                        case 2://3
+                            plate += "-";
+                            whiteList = "BCDFGHJKLPRSTVXYZW0123456789";
+                            break;
+                        case 4://5
+                            plate += "-";
+                            whiteList = "0123456789";
+                            break;
+                    }
+                    MainActivity.baseApi.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, whiteList);
+
+
+                    Mat m = characterSeparator.CroppedChars.get(n);
+                    Bitmap bmp = Bitmap.createBitmap(m.cols(), m.rows(), Bitmap.Config.ARGB_8888);
+
+
+                    Utils.matToBitmap(m, bmp);
+                    MainActivity.baseApi.setImage(bmp);
+                    String recognizedText = MainActivity.baseApi.getUTF8Text();
+                    Log.d("output", "n=" + n + " text:" + recognizedText);
+                    plate += recognizedText;
+
                 }
+            }
+            else
+            {
+                debugHWOC.AddImage(secondProcessSteps, R.drawable.npp, 25);
+                for (int n = 0; n < 3; ++n) {
 
-                MainActivity.baseApi.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST,whiteList);
+
+                    switch (n) {
+                        case 0://1
+                            whiteList = "ABCDEFGHIJKLNPRSTUVXYZW";
+                            break;
+                        case 1://3
+                            plate += "-";
+                            whiteList = "BCDFGHJKLPRSTVXYZW0123456789";
+                            break;
+                        case 2://5
+                            plate += "-";
+                            whiteList = "0123456789";
+                            break;
+                    }
+                    MainActivity.baseApi.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, whiteList);
 
 
-                Mat m = characterSeparator.CroppedChars.get(n);
-                //Imgproc.cvtColor(m, m, Imgproc.COLOR_GRAY2RGB);
-                //Imgproc.threshold(m, m, 0, 255, Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);
-                Bitmap bmp = Bitmap.createBitmap(m.cols(), m.rows(), Bitmap.Config.ARGB_8888);
+                    Mat m = characterSeparator.CroppedChars.get(0);
+                    Bitmap bmp = Bitmap.createBitmap(m.cols(), m.rows(), Bitmap.Config.ARGB_8888);
 
-                Utils.matToBitmap(m, bmp);
-                MainActivity.baseApi.setImage(bmp);
-                String recognizedText = MainActivity.baseApi.getUTF8Text();
-                Log.d("output", "n=" +n+" text:" +recognizedText);
-                plate += recognizedText;
+
+                    Utils.matToBitmap(m, bmp);
+                    MainActivity.baseApi.setImage(bmp);
+                    String recognizedText = MainActivity.baseApi.getUTF8Text();
+                    Log.d("output", "n=" + n + " text:" + recognizedText);
+                    //recognizedText = recognizedText.trim();
+                    plate += recognizedText;
+                    finalPlate += process(recognizedText, n);//.substring(n*2, n*2+2);
+                }
             }
             plate += " || ";
+            finalPlate += " || ";
         }
 //        MainActivity.baseApi.end();
         plate = plate.replace("\n", "").replace("\r", "");
@@ -421,11 +459,96 @@ public class ImageViewer extends Activity {
             InitializeGallery(R.id.gallery3, finalCandidates);
         }
         SetPlate(plate);
-        Log.d("output", "plate="+plate);
+        SetFinalPlate(finalPlate);
         //Log.d("times", TimeProfiler.GetTotalTime());
         SetTime(TimeProfiler.GetTotalTime());
         Log.d("times", TimeProfiler.GetTimes(true, 10));
         Log.d("times", TimeProfiler.GetTimes(false));
+    }
+
+    private void SetFinalPlate(String finalPlate) {
+        TextView p = (TextView) findViewById(R.id.finalPlateText);
+        p.setText(finalPlate);
+    }
+
+    private String process(String recognizedText, int n) {
+        if (hasSixChars(recognizedText)) {
+            return recognizedText.replace(" ", "").substring(n*2, n*2+2);
+        }
+        else if (hasThreeGroups(recognizedText))
+        {
+            int index;
+            switch (n)
+            {
+                case 0:
+                    return recognizedText.substring(0,2);
+                case 1:
+                    index = recognizedText.indexOf(" ")+1;
+                    return recognizedText.substring(index,Math.min(index+2, recognizedText.length()));
+                case 2:
+                default:
+                    index = recognizedText.length();
+                    return recognizedText.substring(Math.max(index-2,0),index);
+            }
+
+        }
+        else if (hasTwoGroups(recognizedText))
+        {
+
+
+            int index;
+            switch (n)
+            {
+                case 0:
+                    return recognizedText.substring(0,Math.min(2, recognizedText.length()));
+                case 1:
+                    String[] groups = recognizedText.replace("  ", " ").replace("   ", " ").split(" ");
+                    if (groups[0].length() > groups[1].length()) {
+                        index = recognizedText.indexOf(" ");
+                        return recognizedText.substring(Math.max(index-2,0),index);
+                    }
+                    else{
+                        index = recognizedText.indexOf(" ")+1;
+                        return recognizedText.substring(index,Math.min(index+2, recognizedText.length()));
+                    }
+
+                case 2:
+                default:
+                    index = recognizedText.length();
+                    return recognizedText.substring(Math.max(index-2,0),index);
+            }
+
+        }
+        else
+        {
+            int index;
+            switch (n)
+            {
+                case 0:
+                    return recognizedText.substring(0,Math.min(2, recognizedText.length()));
+                case 1:
+
+                    index = recognizedText.length() /2-1;
+                    return recognizedText.substring(Math.max(index, 0),Math.min(index+2, recognizedText.length()));
+
+                case 2:
+                default:
+                    index = recognizedText.length();
+                    return recognizedText.substring(Math.max(index-2,0),index);
+            }
+        }
+
+    }
+
+    private boolean hasTwoGroups(String recognizedText) {
+        return recognizedText.replace("   ", " ").replace("  ", " ").split(" ").length == 2;
+    }
+    private boolean hasThreeGroups(String recognizedText) {
+        return recognizedText.replace("   ", " ").replace("  ", " ").split(" ").length == 3;
+    }
+
+    private boolean hasSixChars(String recognizedText) {
+        return recognizedText.replace(" ", "").length() == 6;
     }
 
     private void SetTime(String s) {
