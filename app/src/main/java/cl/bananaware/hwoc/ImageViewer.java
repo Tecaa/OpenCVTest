@@ -58,8 +58,8 @@ public class ImageViewer extends Activity {
     public final static boolean SHOW_PROCESS_DEBUG = true;
     public final static boolean GOOD_SIZE = false;
     public final static int I_LEVEL = 90;
-    final boolean CHARS = false;
     public final static boolean EXPERIMENTAL_EQUALITATION = false;
+    public final static boolean CHARS = false;
     List<Mat> finalCandidates;
     List<Mat> firstProcessSteps;
     List<Mat> secondProcessSteps;
@@ -112,7 +112,7 @@ public class ImageViewer extends Activity {
         Intent intent = getIntent();
         String abs = intent.getExtras().getString("uri");
         Boolean captured = intent.getExtras().getBoolean("captured");
-        boolean correctPlate = false;
+
 
         try {
             if (captured) {
@@ -133,6 +133,7 @@ public class ImageViewer extends Activity {
 
 
         TimeProfiler.CheckPoint(1);
+        boolean correctPlate = false;
         CandidatesFinder candidatesFinder;
         candidatesFinder = new CandidatesFinder(b);
 

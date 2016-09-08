@@ -3,6 +3,7 @@ package cl.bananaware.hwoc;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -27,13 +28,22 @@ public class PlateRecognizer {
     List<Mat> finalCandidates;
     List<Mat> firstProcessSteps;
     List<Mat> secondProcessSteps;
+
+
+    private final String GROUP1 = "ABCDEFGHIJKLNPRSTUVXYZW";
+    private final String GROUP2 = "BCDFGHJKLPRSTVXYZW0123456789";
+    private final String GROUP3 = "0123456789";
+
     public void InitDebug(DebugHWOC d)
     {
         debugHWOC = d;
     }
     public String Recognize(Bitmap bmp)
     {
+        CleanAll();
         TimeProfiler.CheckPoint(1);
+        String lastPlate = "";
+        boolean correctPlate = false;
         CandidatesFinder candidatesFinder;
         candidatesFinder = new CandidatesFinder(bmp);
 
@@ -46,7 +56,7 @@ public class PlateRecognizer {
         debugHWOC.AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 1);
 
 
-        if (EXPERIMENTAL_EQUALITATION) {
+        if (ImageViewer.EXPERIMENTAL_EQUALITATION) {
             Imgproc.GaussianBlur(candidatesFinder.OriginalEqualizedImage, candidatesFinder.CurrentImage, new Size(25, 25), 25);
             fueGaussianBlureada = true;
 
@@ -232,7 +242,7 @@ public class PlateRecognizer {
                 //Mat img = finalCandidates.get(q);
 
 
-                if (SHOW_PROCESS_DEBUG)
+                if (ImageViewer.SHOW_PROCESS_DEBUG)
                     img = img.clone();
 
                 CharacterSeparator characterSeparator = new CharacterSeparator(img);
@@ -261,15 +271,15 @@ public class PlateRecognizer {
                 characterSeparator.CalculateCharsPositions();
 
                 //characterSeparator.CalculateHistrograms();
-                if (CHARS)
+                if (ImageViewer.CHARS)
                     characterSeparator.CropChars();
                 else
                     characterSeparator.CropAll();
 
 
                 String whiteList = "";
-                String lastPlate = "";
-                if (CHARS) {
+
+                if (ImageViewer.CHARS) {
                     for (int n = 0; n < characterSeparator.CroppedChars.size(); ++n) {
 
                         debugHWOC.AddImage(secondProcessSteps, R.drawable.npp, 25);
@@ -292,11 +302,11 @@ public class PlateRecognizer {
 
 
                         Mat m = characterSeparator.CroppedChars.get(n);
-                        Bitmap bmp = Bitmap.createBitmap(m.cols(), m.rows(), Bitmap.Config.ARGB_8888);
+                        Bitmap temp = Bitmap.createBitmap(m.cols(), m.rows(), Bitmap.Config.ARGB_8888);
 
 
-                        Utils.matToBitmap(m, bmp);
-                        MainActivity.baseApi.setImage(bmp);
+                        Utils.matToBitmap(m, temp);
+                        MainActivity.baseApi.setImage(temp);
                         String recognizedText = MainActivity.baseApi.getUTF8Text();
                         Log.d("output", "n=" + n + " text:" + recognizedText);
                         plate += recognizedText;
@@ -324,11 +334,11 @@ public class PlateRecognizer {
 
 
                         Mat m = characterSeparator.CroppedChars.get(0);
-                        Bitmap bmp = Bitmap.createBitmap(m.cols(), m.rows(), Bitmap.Config.ARGB_8888);
+                        Bitmap temp = Bitmap.createBitmap(m.cols(), m.rows(), Bitmap.Config.ARGB_8888);
 
 
-                        Utils.matToBitmap(m, bmp);
-                        MainActivity.baseApi.setImage(bmp);
+                        Utils.matToBitmap(m, temp);
+                        MainActivity.baseApi.setImage(temp);
                         String recognizedText = MainActivity.baseApi.getUTF8Text();
                         Log.d("output", "n=" + n + " text:" + recognizedText);
                         //recognizedText = recognizedText.trim();
@@ -338,7 +348,7 @@ public class PlateRecognizer {
                     }
                     finalPlate += lastPlate;
                 }
-                correctPlate = correctPlate(lastPlate);
+                correctPlate = isCorrectPlate(lastPlate);
                 if (correctPlate)
                     break;
                 plate += " || ";
@@ -347,7 +357,103 @@ public class PlateRecognizer {
             if (correctPlate)
                 break;
         }
+        return lastPlate;
     }
+
+    private boolean isCorrectPlate(String lastPlate) {
+        if (lastPlate.length() == 6
+                && GROUP1.contains(String.valueOf(lastPlate.charAt(0)))
+                && GROUP1.contains(String.valueOf(lastPlate.charAt(1)))
+                && GROUP2.contains(String.valueOf(lastPlate.charAt(2)))
+                && GROUP2.contains(String.valueOf(lastPlate.charAt(3)))
+                && GROUP3.contains(String.valueOf(lastPlate.charAt(4)))
+                && GROUP3.contains(String.valueOf(lastPlate.charAt(5)))
+                )
+            return true;
+        else
+            return false;
+    }
+
+    private String process(String recognizedText, int n) {
+        if (hasSixChars(recognizedText)) {
+            return recognizedText.replace(" ", "").substring(n*2, n*2+2);
+        }
+        else if (hasThreeGroups(recognizedText))
+        {
+            int index;
+            switch (n)
+            {
+                case 0:
+                    return recognizedText.substring(0,2);
+                case 1:
+                    index = recognizedText.indexOf(" ")+1;
+                    return recognizedText.substring(index,Math.min(index+2, recognizedText.length()));
+                case 2:
+                default:
+                    index = recognizedText.length();
+                    return recognizedText.substring(Math.max(index-2,0),index);
+            }
+
+        }
+        else if (hasTwoGroups(recognizedText))
+        {
+
+
+            int index;
+            switch (n)
+            {
+                case 0:
+                    return recognizedText.substring(0,Math.min(2, recognizedText.length()));
+                case 1:
+                    String[] groups = recognizedText.replace("  ", " ").replace("   ", " ").split(" ");
+                    if (groups[0].length() > groups[1].length()) {
+                        index = recognizedText.indexOf(" ");
+                        return recognizedText.substring(Math.max(index-2,0),index);
+                    }
+                    else{
+                        index = recognizedText.indexOf(" ")+1;
+                        return recognizedText.substring(index,Math.min(index+2, recognizedText.length()));
+                    }
+
+                case 2:
+                default:
+                    index = recognizedText.length();
+                    return recognizedText.substring(Math.max(index-2,0),index);
+            }
+
+        }
+        else
+        {
+            int index;
+            switch (n)
+            {
+                case 0:
+                    return recognizedText.substring(0,Math.min(2, recognizedText.length()));
+                case 1:
+
+                    index = recognizedText.length() /2-1;
+                    return recognizedText.substring(Math.max(index, 0),Math.min(index+2, recognizedText.length()));
+
+                case 2:
+                default:
+                    index = recognizedText.length();
+                    return recognizedText.substring(Math.max(index-2,0),index);
+            }
+        }
+
+    }
+
+    private boolean hasTwoGroups(String recognizedText) {
+        return recognizedText.replace("   ", " ").replace("  ", " ").split(" ").length == 2;
+    }
+    private boolean hasThreeGroups(String recognizedText) {
+        return recognizedText.replace("   ", " ").replace("  ", " ").split(" ").length == 3;
+    }
+
+    private boolean hasSixChars(String recognizedText) {
+        return recognizedText.replace(" ", "").length() == 6;
+    }
+
     private void CleanAll() {
         finalCandidates = new ArrayList<Mat>();
         firstProcessSteps = new ArrayList<Mat>();
