@@ -122,6 +122,9 @@ public final class TimeProfiler {
         return output;
     }
 
+    public static void clean() {
+        times.clear();
+    }
 
 
     static class TimeProfilerElement {

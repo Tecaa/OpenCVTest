@@ -22,6 +22,7 @@ import java.util.List;
  * Created by fergu on 06-08-2016.
  */
 public class CandidatesFinder {
+    private static final boolean PROBANDO = false;
     public Mat OriginalEqualizedImage, OriginalImage, OriginalImageRealSize;
     public Mat CurrentImage;
     public Mat PreMultiDilationImage;
@@ -30,15 +31,16 @@ public class CandidatesFinder {
     public List<MatOfPoint> GreenCandidates, LastGreenCandidates;
     private double scale;
 
-    public CandidatesFinder(Bitmap bm)
+    public CandidatesFinder(Mat m_)
     {
-        OriginalImage = new Mat();
+        OriginalImage = m_;
         OriginalEqualizedImage = new Mat();
         PreMultiDilationImage = new Mat();
-        Utils.bitmapToMat(bm, OriginalImage);
+        //Utils.bitmapToMat(bm, OriginalImage);
         OriginalImageRealSize = new Mat();
 
-        Imgproc.cvtColor(OriginalImage, OriginalImageRealSize, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
+        if (!PROBANDO)
+            Imgproc.cvtColor(OriginalImage, OriginalImageRealSize, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
 
         final int MAX_PIXELS;
         if (ImageViewer.GOOD_SIZE)
@@ -79,7 +81,8 @@ public class CandidatesFinder {
     }
 
     public void ToGrayScale() {
-        Imgproc.cvtColor(CurrentImage, CurrentImage, Imgproc.COLOR_RGB2GRAY);
+        if (!PROBANDO)
+            Imgproc.cvtColor(CurrentImage, CurrentImage, Imgproc.COLOR_RGB2GRAY);
     }
 
     public void EqualizeHistOriginalImage(boolean doit) {
@@ -104,7 +107,8 @@ public class CandidatesFinder {
 
     public void Substraction() {
         //Mat temp = //OriginalImage.clone();
-        Imgproc.cvtColor(OriginalImage, OriginalImage, Imgproc.COLOR_RGB2GRAY);
+        if (!PROBANDO)
+            Imgproc.cvtColor(OriginalImage, OriginalImage, Imgproc.COLOR_RGB2GRAY);
         Core.absdiff(OriginalImage, CurrentImage, CurrentImage); // This function should replace this section. But it doesn't work!
         // NOW IT WORKS!!!
         /*

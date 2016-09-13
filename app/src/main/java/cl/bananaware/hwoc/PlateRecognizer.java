@@ -13,6 +13,7 @@ import com.googlecode.tesseract.android.TessBaseAPI;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
 import org.opencv.core.RotatedRect;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
@@ -34,18 +35,19 @@ public class PlateRecognizer {
     private final String GROUP2 = "BCDFGHJKLPRSTVXYZW0123456789";
     private final String GROUP3 = "0123456789";
 
+    public String CandidatesPlates;
     public void InitDebug(DebugHWOC d)
     {
         debugHWOC = d;
     }
-    public String Recognize(Bitmap bmp)
+    public String Recognize(Mat m_)
     {
         CleanAll();
         TimeProfiler.CheckPoint(1);
         String lastPlate = "";
         boolean correctPlate = false;
         CandidatesFinder candidatesFinder;
-        candidatesFinder = new CandidatesFinder(bmp);
+        candidatesFinder = new CandidatesFinder(m_);
 
 
         candidatesFinder.ToGrayScale();
@@ -53,7 +55,7 @@ public class PlateRecognizer {
         boolean fueGaussianBlureada = false;
         candidatesFinder.EqualizeHistOriginalImage(false);
 
-        debugHWOC.AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 1);
+        AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 1);
 
 
         if (ImageViewer.EXPERIMENTAL_EQUALITATION) {
@@ -65,30 +67,30 @@ public class PlateRecognizer {
 
         candidatesFinder.Dilate();
 
-        debugHWOC.AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 2);
+        AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 2);
 
         candidatesFinder.Erode();
 
-        debugHWOC.AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 3);
+        AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 3);
 
         TimeProfiler.CheckPoint(2);
 
 
         candidatesFinder.Substraction();
 
-        debugHWOC.AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 4);
+        AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 4);
 
 
 
 
         candidatesFinder.Sobel();
-        debugHWOC.AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 5);
+        AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 5);
 
 
 
 
         candidatesFinder.GaussianBlur();
-        debugHWOC.AddStep(firstProcessSteps, candidatesFinder.PreMultiDilationImage, 6);
+        AddStep(firstProcessSteps, candidatesFinder.PreMultiDilationImage, 6);
 
         List<RotatedRect> outlines = new ArrayList<RotatedRect>();
         TimeProfiler.CheckPoint(3);
@@ -114,11 +116,11 @@ public class PlateRecognizer {
 
             //STEP 2: start selecting outlines
             candidatesFinder.OutlinesSelection();
-            debugHWOC.AddStepWithContourns(firstProcessSteps, candidatesFinder.CurrentImage,
+            AddStepWithContourns(firstProcessSteps, candidatesFinder.CurrentImage,
                     candidatesFinder.LastGreenCandidates, candidatesFinder.LastBlueCandidates, 7);
             candidatesFinder.OutlinesFilter();
 
-            debugHWOC.AddStepWithContourns(firstProcessSteps, candidatesFinder.CurrentImage,
+            AddStepWithContourns(firstProcessSteps, candidatesFinder.CurrentImage,
                     candidatesFinder.LastGreenCandidates, candidatesFinder.LastBlueCandidates, 7);
 
             //    outlines.addAll(candidatesFinder.LastBlueCandidatesMAR);
@@ -135,43 +137,43 @@ public class PlateRecognizer {
                 candidateSelector.CalculateBounds();
                 candidateSelector.TruncateBounds();
 
-                debugHWOC.AddImage(firstProcessSteps, R.drawable.ipp, 8);
-                debugHWOC.AddCountournedImage(firstProcessSteps,
+                AddImage(firstProcessSteps, R.drawable.ipp, 8);
+                AddCountournedImage(firstProcessSteps,
                         candidateSelector.OriginalEqualizedImage, candidateSelector.CandidateRect, 9);
 
 
                 if (!candidateSelector.PercentajeAreaCandidateCheck()) {
-                    debugHWOC.AddImage(firstProcessSteps, R.drawable.percentaje_area_candidate_check, 10);
+                    AddImage(firstProcessSteps, R.drawable.percentaje_area_candidate_check, 10);
                     Log.d("filter", "i=" + i + "!PercentajeAreaCandidateCheck");
                     continue;
                 }
 
                 candidateSelector.CropExtraRotatedRect(false);   //STEP 5:
 //            candidateSelector.CropExtraBoundget(i).angle);
-                debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage, 9);
+                AddStep(firstProcessSteps, candidateSelector.CurrentImage, 9);
                 candidateSelector.Equalize();
 
 
                 ////////////////////////////// START INVENCION MIA //////////////////////////////
 
-                debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage, 10);
+                AddStep(firstProcessSteps, candidateSelector.CurrentImage, 10);
                 candidateSelector.Sobel();
-                debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage, 11);
+                AddStep(firstProcessSteps, candidateSelector.CurrentImage, 11);
                 candidateSelector.GaussianBlur();
-                debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage, 12);
+                AddStep(firstProcessSteps, candidateSelector.CurrentImage, 12);
                 candidateSelector.Dilate();
-                debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage, 13);
+                AddStep(firstProcessSteps, candidateSelector.CurrentImage, 13);
 
 
                 candidateSelector.Erode();
-                debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage, 14);
+                AddStep(firstProcessSteps, candidateSelector.CurrentImage, 14);
                 ////////////////////////////// END INVENCION MIA //////////////////////////////
 
 
                 //STEP 6:
                 candidateSelector.OtsusThreshold();
 
-                debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage, 15);
+                AddStep(firstProcessSteps, candidateSelector.CurrentImage, 15);
 
                 //STEP 7:
                 candidateSelector.FindOutlines();
@@ -183,13 +185,13 @@ public class PlateRecognizer {
 
                 //STEP 9:
                 if (!candidateSelector.FindMinAreaRectInMaxArea()) {
-                    debugHWOC.AddImage(firstProcessSteps, R.drawable.find_min_area_rect_in_max_area, 16);
+                    AddImage(firstProcessSteps, R.drawable.find_min_area_rect_in_max_area, 16);
                     Log.d("filter", "i=" + i + " !FindMinAreaRectInMaxArea");
                     continue;
                 }
 
 
-                debugHWOC.AddCountournedImage(firstProcessSteps, candidateSelector.CurrentImage,
+                AddCountournedImage(firstProcessSteps, candidateSelector.CurrentImage,
                         candidateSelector.MinAreaRect, 17);
 
 
@@ -198,7 +200,7 @@ public class PlateRecognizer {
                 CandidateSelector.CheckError checkError = candidateSelector.DoChecks();
                 if (checkError != null) {
 
-                    debugHWOC.AddImage(firstProcessSteps, checkError.getValue(), 18);
+                    AddImage(firstProcessSteps, checkError.getValue(), 18);
                     Log.d("filter", "i=" + i + "!DoChecks");
                     continue;
                 }
@@ -231,14 +233,14 @@ public class PlateRecognizer {
                 //finalCandidates.add(candidateSelector.GetFinalImage(true));
                 Mat img = candidateSelector.GetFinalImage(true);
                 //debugHWOC.AddStep(firstProcessSteps, finalCandidates.get(finalCandidates.size() - 1), 19);
-                debugHWOC.AddStep(firstProcessSteps, img, 19);
+                AddStep(firstProcessSteps, img, 19);
 
 
                 TimeProfiler.CheckPoint(5);
 
 
                 //NOTA: ACA RECIEN OBTENER IMAGEN TAMAÑO REAL.
-                debugHWOC.AddImage(secondProcessSteps, R.drawable.qpp, 19);
+                AddImage(secondProcessSteps, R.drawable.qpp, 19);
                 //Mat img = finalCandidates.get(q);
 
 
@@ -246,7 +248,7 @@ public class PlateRecognizer {
                     img = img.clone();
 
                 CharacterSeparator characterSeparator = new CharacterSeparator(img);
-                debugHWOC.AddStep(secondProcessSteps, characterSeparator.CurrentImage, 20);
+                AddStep(secondProcessSteps, characterSeparator.CurrentImage, 20);
 
                 characterSeparator.AdaptiveThreshold();
 
@@ -255,16 +257,16 @@ public class PlateRecognizer {
 
                 if (!characterSeparator.FilterCountourns()) {
 
-                    debugHWOC.AddStep(secondProcessSteps, characterSeparator.ImageWithContourns, 21);
-                    debugHWOC.AddImage(secondProcessSteps, R.drawable.filter_countourns, 22);
+                    AddStep(secondProcessSteps, characterSeparator.ImageWithContourns, 21);
+                    AddImage(secondProcessSteps, R.drawable.filter_countourns, 22);
 
                     Log.d("filter", "q=" /*+ q*/ + " !FilterCountourns");
                     continue;
                 }
 
 
-                debugHWOC.AddStep(secondProcessSteps, characterSeparator.ImageWithContourns, 23);
-                debugHWOC.AddStep(secondProcessSteps, characterSeparator.CleanedImage, 24);
+                AddStep(secondProcessSteps, characterSeparator.ImageWithContourns, 23);
+                AddStep(secondProcessSteps, characterSeparator.CleanedImage, 24);
 
                 characterSeparator.CalculatePlateLength();
 
@@ -282,8 +284,8 @@ public class PlateRecognizer {
                 if (ImageViewer.CHARS) {
                     for (int n = 0; n < characterSeparator.CroppedChars.size(); ++n) {
 
-                        debugHWOC.AddImage(secondProcessSteps, R.drawable.npp, 25);
-                        debugHWOC.AddStep(secondProcessSteps, characterSeparator.CroppedChars.get(n), 26);
+                        AddImage(secondProcessSteps, R.drawable.npp, 25);
+                        AddStep(secondProcessSteps, characterSeparator.CroppedChars.get(n), 26);
 
                         switch (n) {
                             case 0://1
@@ -313,7 +315,7 @@ public class PlateRecognizer {
 
                     }
                 } else {
-                    debugHWOC.AddImage(secondProcessSteps, R.drawable.npp, 25);
+                    AddImage(secondProcessSteps, R.drawable.npp, 25);
                     for (int n = 0; n < 3; ++n) {
 
 
@@ -357,7 +359,32 @@ public class PlateRecognizer {
             if (correctPlate)
                 break;
         }
+        CandidatesPlates = plate;
         return lastPlate;
+    }
+
+    private void AddCountournedImage(List<Mat> firstProcessSteps, Mat originalEqualizedImage, RotatedRect candidateRect, int i) {
+        if (debugHWOC != null)
+            debugHWOC.AddCountournedImage(firstProcessSteps,
+                    originalEqualizedImage, candidateRect, i);
+    }
+
+    private void AddImage(List<Mat> firstProcessSteps, int j, int i) {
+        if (debugHWOC != null)
+            debugHWOC.AddImage(firstProcessSteps, j , i);
+    }
+
+    private void AddStepWithContourns(List<Mat> firstProcessSteps, Mat currentImage,
+                                      List<MatOfPoint> lastGreenCandidates,
+                                      List<MatOfPoint> lastBlueCandidates, int i) {
+        if (debugHWOC != null)
+            debugHWOC.AddStepWithContourns(firstProcessSteps, currentImage,
+                    lastGreenCandidates, lastBlueCandidates, i);
+    }
+
+    private void AddStep(List<Mat> firstProcessSteps, Mat currentImage, int i) {
+        if (debugHWOC != null)
+            debugHWOC.AddStep(firstProcessSteps, currentImage, i);
     }
 
     private boolean isCorrectPlate(String lastPlate) {
@@ -458,6 +485,7 @@ public class PlateRecognizer {
         finalCandidates = new ArrayList<Mat>();
         firstProcessSteps = new ArrayList<Mat>();
         secondProcessSteps = new ArrayList<Mat>();
+        TimeProfiler.clean();
     }
 
 }
