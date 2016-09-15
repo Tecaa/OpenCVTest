@@ -40,6 +40,9 @@ import android.widget.Toast;
 import org.opencv.android.Utils;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -199,16 +202,27 @@ public class CameraContinously extends AppCompatActivity {
                         @Override
                         public void run() {
 
+
                             TimeProfiler.clean();
                             TimeProfiler.CheckPoint(0);
                             Bitmap qq = funcionrara(reader);
                             TimeProfiler.CheckPoint(1);
-                            //Bitmap bbb2 = BitmapFactory.decodeResource(getResources(), R.drawable.ipp);
+
+
+                            mat = new Mat();
+                            Utils.bitmapToMat(qq, mat);
+
+/*
+                            TimeProfiler.clean();
+                            TimeProfiler.CheckPoint(0);
+                            mat = funcionrara(reader);
+                            TimeProfiler.CheckPoint(1);*/
+
+
 
 
                             PlateRecognizer plateRecognizer = new PlateRecognizer();
-                            mat = new Mat();
-                            Utils.bitmapToMat(qq, mat);
+
                             TimeProfiler.CheckPoint(2);
                             String t = TimeProfiler.GetTotalTime();
                             String plate = plateRecognizer.Recognize(mat);
@@ -279,6 +293,21 @@ public class CameraContinously extends AppCompatActivity {
         Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
         return bitmap;
     }
+
+    private Mat funcionrara2(ImageReader reader) {
+        Image image = null;
+        image = reader.acquireLatestImage();
+        Mat buf = new Mat(image.getHeight(), image.getWidth(), CvType.CV_8UC1);
+
+        ByteBuffer buffer = image.getPlanes()[0].getBuffer();
+        byte[] bytes = new byte[buffer.remaining()];
+        buffer.get(bytes);
+        buf.put(0, 0, bytes);
+
+// Do note that Highgui has been replaced by Imgcodecs for OpenCV 3.0 and above
+        return Imgcodecs.imdecode(buf, Imgcodecs.IMREAD_COLOR);
+    }
+
 
     protected void createCameraPreview() {
         try {

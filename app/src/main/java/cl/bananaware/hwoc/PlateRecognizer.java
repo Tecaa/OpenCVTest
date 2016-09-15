@@ -352,15 +352,13 @@ public class PlateRecognizer {
                 }
                 correctPlate = isCorrectPlate(lastPlate);
                 if (correctPlate)
-                    break;
+                    return lastPlate;
                 plate += " || ";
                 finalPlate += " || ";
             }
-            if (correctPlate)
-                break;
         }
         CandidatesPlates = plate;
-        return lastPlate;
+        return "";
     }
 
     private void AddCountournedImage(List<Mat> firstProcessSteps, Mat originalEqualizedImage, RotatedRect candidateRect, int i) {
