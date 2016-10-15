@@ -22,7 +22,7 @@ import java.util.List;
  * Created by fergu on 06-08-2016.
  */
 public class CandidatesFinder {
-    private static final boolean PROBANDO = false;
+    public static boolean PROBANDO = false;
     public Mat OriginalEqualizedImage, OriginalImage, OriginalImageRealSize;
     public Mat CurrentImage;
     public Mat PreMultiDilationImage;
@@ -44,19 +44,22 @@ public class CandidatesFinder {
 
         final int MAX_PIXELS;
         if (ImageViewer.GOOD_SIZE)
-            MAX_PIXELS = 1000; //NOTA: PROBAR USANDO 400 Y ADAPTANDO TODO A ESTO (ANTES ESTABA EN 1000)
+            MAX_PIXELS = 1000;
         else
-            MAX_PIXELS = 400; //NOTA: PROBAR USANDO 400 Y ADAPTANDO TODO A ESTO (ANTES ESTABA EN 1000)
+            MAX_PIXELS = 400;
 
         Resize(OriginalImage, MAX_PIXELS);
+        TimeProfiler.CheckPoint(1.3);
         //OriginalImageRealSize = OriginalImage.clone(); //test
         scale = OriginalImageRealSize.size().width/OriginalImage.size().width;
         CurrentImage = OriginalImage.clone();
+
         BlueCandidates = new ArrayList<MatOfPoint>();
         //BlueCandidatesRR = new ArrayList<RotatedRect>();
         GreenCandidates = new ArrayList<MatOfPoint>();
         LastGreenCandidates = new ArrayList<MatOfPoint>();
         LastBlueCandidates = new ArrayList<MatOfPoint>();
+        TimeProfiler.CheckPoint(1.6);
     }
 
     public static double Resize(Mat originalImage, int maxPixels) {

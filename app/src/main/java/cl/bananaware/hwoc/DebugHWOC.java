@@ -52,6 +52,18 @@ public class DebugHWOC {
         process.add(temp);
     }
 
+    public void AddCountournedImage(List<Mat> process, Mat originalEqualizedImage,
+                                    Rect boundingCandidateRect, int level) {
+        if (!ImageViewer.SHOW_PROCESS_DEBUG || ImageViewer.I_LEVEL < level)
+            return;
+
+        Mat temp = originalEqualizedImage.clone();
+        Imgproc.cvtColor(temp, temp, Imgproc.COLOR_GRAY2RGB);
+
+        DebugHWOC.drawRectInMat(boundingCandidateRect.clone(), temp);
+        process.add(temp);
+    }
+
     public void AddStepWithContourns(List<Mat> list, Mat img, List<MatOfPoint> green,
                                      List<MatOfPoint> blue, int level) {
         if (!ImageViewer.SHOW_PROCESS_DEBUG || ImageViewer.I_LEVEL < level)
@@ -90,6 +102,20 @@ public class DebugHWOC {
         rRect.points(vertices);
         for (int j = 0; j < 4; j++){
             Imgproc.line(mat, vertices[j], vertices[(j+1)%4], new Scalar(255,0,0));
+        }
+        return mat;
+    }
+
+    public static Mat drawRectInMat(Rect rRect, Mat mat)
+    {
+        Point[] vertices = new Point[4];
+        vertices[0] = new Point(rRect.x, rRect.y);
+        vertices[1] = new Point(rRect.x, rRect.y + rRect.height);
+        vertices[2] = new Point(rRect.x+ rRect.width, rRect.y +rRect.height);
+        vertices[3] = new Point(rRect.x+ rRect.width, rRect.y);
+
+        for (int j = 0; j < 4; j++){
+            Imgproc.line(mat, vertices[j], vertices[(j+1)%4], new Scalar(255,0,0), 4);
         }
         return mat;
     }

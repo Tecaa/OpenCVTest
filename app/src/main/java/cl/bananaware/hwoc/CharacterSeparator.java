@@ -24,8 +24,8 @@ public class CharacterSeparator {
     public Mat ImageWithContourns;
     public Mat OriginalImage;
     //private Mat VerticalHistogram;
-    private List<MatOfPoint> contourns = new ArrayList<MatOfPoint>();
-    private List<MatOfPoint> finalsContourns = new ArrayList<MatOfPoint>();
+    public List<MatOfPoint> contourns = new ArrayList<MatOfPoint>();
+    public List<MatOfPoint> finalsContourns = new ArrayList<MatOfPoint>();
     private List<Double> correctLeftPositions = new ArrayList<Double>();
     private List<Double> correctRightPositions = new ArrayList<Double>();
     public CharacterSeparator(Mat mat) {

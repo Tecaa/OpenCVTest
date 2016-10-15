@@ -27,4 +27,12 @@
         android:id="@+id/camera2Button"
         android:layout_gravity="right|top"
         android:onClick="camera2Click"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="testcam"
+        android:id="@+id/testcam"
+        android:layout_gravity="right|center_vertical"
+        android:onClick="testcamClick"/>
 </FrameLayout>

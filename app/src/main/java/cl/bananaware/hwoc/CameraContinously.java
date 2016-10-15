@@ -203,7 +203,7 @@ public class CameraContinously extends AppCompatActivity {
                         public void run() {
 
 
-                            TimeProfiler.clean();
+                            TimeProfiler.ResetCheckPoints();
                             TimeProfiler.CheckPoint(0);
                             Bitmap qq = funcionrara(reader);
                             TimeProfiler.CheckPoint(1);
@@ -225,10 +225,11 @@ public class CameraContinously extends AppCompatActivity {
 
                             TimeProfiler.CheckPoint(2);
                             String t = TimeProfiler.GetTotalTime();
-                            String plate = plateRecognizer.Recognize(mat);
+                            PlateRecognizer.PlateResult plate = plateRecognizer.Recognize(mat);
 
                             String time = TimeProfiler.GetTotalTime();
-                            Toast.makeText(CameraContinously.this, "Plate:" + plate + " " + time + " " + t, Toast.LENGTH_LONG).show();
+                            Toast.makeText(CameraContinously.this, "Plate:" + plate.Plate + " " + plate.Confidence + "%"
+                                    + " " + time + " " + t, Toast.LENGTH_LONG).show();
 
                             /*
                             ImageView i = (ImageView) findViewById(R.id.image1);

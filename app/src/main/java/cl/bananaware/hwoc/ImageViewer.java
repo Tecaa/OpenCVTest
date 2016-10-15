@@ -10,6 +10,8 @@ import android.content.res.AssetManager;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -34,6 +36,7 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
@@ -55,15 +58,11 @@ import java.util.List;
  * Created by Marco on 21-04-2016.
  */
 public class ImageViewer extends Activity {
-    public final static boolean SHOW_PROCESS_DEBUG = true;
+    public final static boolean SHOW_PROCESS_DEBUG = false;
     public final static boolean GOOD_SIZE = false;
     public final static int I_LEVEL = 90;
     public final static boolean EXPERIMENTAL_EQUALITATION = false;
     public final static boolean CHARS = false;
-    List<Mat> finalCandidates;
-    List<Mat> firstProcessSteps;
-    List<Mat> secondProcessSteps;
-
 
     private final String GROUP1 = "ABCDEFGHIJKLNPRSTUVXYZW";
     private final String GROUP2 = "BCDFGHJKLPRSTVXYZW0123456789";
@@ -81,7 +80,6 @@ public class ImageViewer extends Activity {
     {
         super.onResume();
         MainActivity.CameraCapturerFixer = true;
-        CleanAll();
 
         if (!OpenCVLoader.initDebug()) {
             Log.d("OpenCV", "Internal OpenCV library not found. Using OpenCV Manager for initialization");
@@ -90,12 +88,6 @@ public class ImageViewer extends Activity {
             Log.d("OpenCV", "OpenCV library found inside package. Using it!");
             mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
         }
-    }
-
-    private void CleanAll() {
-        finalCandidates = new ArrayList<Mat>();
-        firstProcessSteps = new ArrayList<Mat>();
-        secondProcessSteps = new ArrayList<Mat>();
     }
 
 
@@ -116,6 +108,7 @@ public class ImageViewer extends Activity {
         try {
             if (captured) {
                 BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+
                 b = BitmapFactory.decodeFile(abs, bmOptions);
             }
             else {
@@ -130,126 +123,57 @@ public class ImageViewer extends Activity {
             return;
         }
 
+        //b = getGrayscale_custom_matrix(b);
+
+
         PlateRecognizer plateRecognizer = new PlateRecognizer();
         plateRecognizer.InitDebug(debugHWOC);
 
         Mat m_ = new Mat();
         Utils.bitmapToMat(b, m_);
-        String finalPlate = plateRecognizer.Recognize(m_);
+        PlateRecognizer.PlateResult finalPlate = plateRecognizer.Recognize(m_);
+        TimeProfiler.CheckPoint(36);
         String plate = plateRecognizer.CandidatesPlates;
 
-        TimeProfiler.CheckPoint(6);
         if (SHOW_PROCESS_DEBUG) {
-            InitializeGallery(R.id.gallery1, firstProcessSteps);
-            InitializeGallery(R.id.gallery2, secondProcessSteps);
-            InitializeGallery(R.id.gallery3, finalCandidates);
+            InitializeGallery(R.id.gallery1, plateRecognizer.firstProcessSteps);
+            InitializeGallery(R.id.gallery2, plateRecognizer.secondProcessSteps);
+            InitializeGallery(R.id.gallery3, plateRecognizer.finalCandidates);
         }
         SetPlate(plate);
         SetFinalPlate(finalPlate);
-        //Log.d("times", TimeProfiler.GetTotalTime());
         SetTime(TimeProfiler.GetTotalTime());
-        Log.d("times", TimeProfiler.GetTimes(true, 10));
+        Log.d("times", TimeProfiler.GetTimes(true));
         Log.d("times", TimeProfiler.GetTimes(false));
     }
 
-    private boolean correctPlate(String lastPlate) {
-        if (lastPlate.length() == 6
-                && GROUP1.contains(String.valueOf(lastPlate.charAt(0)))
-                && GROUP1.contains(String.valueOf(lastPlate.charAt(1)))
-                && GROUP2.contains(String.valueOf(lastPlate.charAt(2)))
-                && GROUP2.contains(String.valueOf(lastPlate.charAt(3)))
-                && GROUP3.contains(String.valueOf(lastPlate.charAt(4)))
-                && GROUP3.contains(String.valueOf(lastPlate.charAt(5)))
-                )
-            return true;
-        else
-            return false;
+
+    private Bitmap getGrayscale_custom_matrix(Bitmap src){
+        int width = src.getWidth();
+        int height = src.getHeight();
+
+        //Custom color matrix
+        float[] matrix = new float[]{
+                0.3f, 0.59f, 0.11f, 0, 0,
+                0.3f, 0.59f, 0.11f, 0, 0,
+                0.3f, 0.59f, 0.11f, 0, 0,
+                0, 0, 0, 1, 0,};
+
+        Bitmap dest = Bitmap.createBitmap(width, height,
+                Bitmap.Config.ALPHA_8);
+
+        Paint paint = new Paint();
+        ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
+        paint.setColorFilter(filter);
+
+        return dest;
     }
 
-    private void SetFinalPlate(String finalPlate) {
+    private void SetFinalPlate(PlateRecognizer.PlateResult finalPlate) {
         TextView p = (TextView) findViewById(R.id.finalPlateText);
-        p.setText(finalPlate);
+        p.setText(finalPlate.Plate + " " + finalPlate.Confidence + "%");
     }
 
-    private String process(String recognizedText, int n) {
-        if (hasSixChars(recognizedText)) {
-            return recognizedText.replace(" ", "").substring(n*2, n*2+2);
-        }
-        else if (hasThreeGroups(recognizedText))
-        {
-            int index;
-            switch (n)
-            {
-                case 0:
-                    return recognizedText.substring(0,2);
-                case 1:
-                    index = recognizedText.indexOf(" ")+1;
-                    return recognizedText.substring(index,Math.min(index+2, recognizedText.length()));
-                case 2:
-                default:
-                    index = recognizedText.length();
-                    return recognizedText.substring(Math.max(index-2,0),index);
-            }
-
-        }
-        else if (hasTwoGroups(recognizedText))
-        {
-
-
-            int index;
-            switch (n)
-            {
-                case 0:
-                    return recognizedText.substring(0,Math.min(2, recognizedText.length()));
-                case 1:
-                    String[] groups = recognizedText.replace("  ", " ").replace("   ", " ").split(" ");
-                    if (groups[0].length() > groups[1].length()) {
-                        index = recognizedText.indexOf(" ");
-                        return recognizedText.substring(Math.max(index-2,0),index);
-                    }
-                    else{
-                        index = recognizedText.indexOf(" ")+1;
-                        return recognizedText.substring(index,Math.min(index+2, recognizedText.length()));
-                    }
-
-                case 2:
-                default:
-                    index = recognizedText.length();
-                    return recognizedText.substring(Math.max(index-2,0),index);
-            }
-
-        }
-        else
-        {
-            int index;
-            switch (n)
-            {
-                case 0:
-                    return recognizedText.substring(0,Math.min(2, recognizedText.length()));
-                case 1:
-
-                    index = recognizedText.length() /2-1;
-                    return recognizedText.substring(Math.max(index, 0),Math.min(index+2, recognizedText.length()));
-
-                case 2:
-                default:
-                    index = recognizedText.length();
-                    return recognizedText.substring(Math.max(index-2,0),index);
-            }
-        }
-
-    }
-
-    private boolean hasTwoGroups(String recognizedText) {
-        return recognizedText.replace("   ", " ").replace("  ", " ").split(" ").length == 2;
-    }
-    private boolean hasThreeGroups(String recognizedText) {
-        return recognizedText.replace("   ", " ").replace("  ", " ").split(" ").length == 3;
-    }
-
-    private boolean hasSixChars(String recognizedText) {
-        return recognizedText.replace(" ", "").length() == 6;
-    }
 
     private void SetTime(String s) {
         TextView p = (TextView) findViewById(R.id.totalTime);
@@ -301,19 +225,6 @@ public class ImageViewer extends Activity {
         ii.setImageBitmap(bm);
     }
 
-    protected void DrawImages(){
-        LinearLayout ll = (LinearLayout)findViewById(R.id.linearLayout);
-        for(int i=0;i<finalCandidates.size();++i)
-        {
-            Bitmap bm = Bitmap.createBitmap(finalCandidates.get(i).cols(), finalCandidates.get(i).rows(), Bitmap.Config.ARGB_8888);
-            Utils.matToBitmap(finalCandidates.get(i), bm);
-            ImageView ii= new ImageView(this);
-            //ii.setBackgroundResource(R.drawable.ic_action_search);
-            ii.setImageBitmap(bm);
-            ll.addView(ii);
-        }
-    }
-
     public class ImageAdapter extends BaseAdapter {
         private Context context;
         private int itemBackground;
@@ -353,23 +264,6 @@ public class ImageViewer extends Activity {
         }
     }
 
-    private class DoAll extends AsyncTask<Void, Void, Void> {
-        // Do the long-running work in here
-        protected Void doInBackground(Void ... params) {
-            CodePostOpenCVLoaded();
-            return null;
-        }
-
-        // This is called each time you call publishProgress()
-        protected void onProgressUpdate() {
-
-        }
-
-        // This is called when doInBackground() is finished
-        protected void onPostExecute() {
-            Log.d("test","finished!!!");
-        }
-    }
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
 
         @Override

@@ -14,6 +14,7 @@ import com.googlecode.tesseract.android.TessBaseAPI;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.Rect;
 import org.opencv.core.RotatedRect;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
@@ -31,7 +32,7 @@ public class PlateRecognizer {
     List<Mat> secondProcessSteps;
 
 
-    private final String GROUP1 = "ABCDEFGHIJKLNPRSTUVXYZW";
+    private final String GROUP1 = "ABCDEFGHIJKLNPRSTUVXYZWM";
     private final String GROUP2 = "BCDFGHJKLPRSTVXYZW0123456789";
     private final String GROUP3 = "0123456789";
 
@@ -40,21 +41,22 @@ public class PlateRecognizer {
     {
         debugHWOC = d;
     }
-    public String Recognize(Mat m_)
+    public PlateResult Recognize(Mat m_)
     {
         CleanAll();
         TimeProfiler.CheckPoint(1);
+
+
         String lastPlate = "";
         boolean correctPlate = false;
         CandidatesFinder candidatesFinder;
         candidatesFinder = new CandidatesFinder(m_);
 
-
         candidatesFinder.ToGrayScale();
-
+        TimeProfiler.CheckPoint(2);
         boolean fueGaussianBlureada = false;
         candidatesFinder.EqualizeHistOriginalImage(false);
-
+        TimeProfiler.CheckPoint(3);
         AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 1);
 
 
@@ -68,35 +70,35 @@ public class PlateRecognizer {
         candidatesFinder.Dilate();
 
         AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 2);
+        TimeProfiler.CheckPoint(4);
 
         candidatesFinder.Erode();
 
         AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 3);
-
-        TimeProfiler.CheckPoint(2);
+        TimeProfiler.CheckPoint(5);
 
 
         candidatesFinder.Substraction();
 
         AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 4);
-
+        TimeProfiler.CheckPoint(6);
 
 
 
         candidatesFinder.Sobel();
         AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 5);
-
+        TimeProfiler.CheckPoint(7);
 
 
 
         candidatesFinder.GaussianBlur();
         AddStep(firstProcessSteps, candidatesFinder.PreMultiDilationImage, 6);
-
+        TimeProfiler.CheckPoint(8);
         List<RotatedRect> outlines = new ArrayList<RotatedRect>();
-        TimeProfiler.CheckPoint(3);
         String plate = "";
         String finalPlate = "";
 
+        int b=0;
         for (ImageSize is : ImageSize.values()) {
             if (!ImageViewer.GOOD_SIZE) {/*
                 if (is == ImageSize.PEQUEÑA)
@@ -105,39 +107,47 @@ public class PlateRecognizer {
                     continue;*/
             }
             candidatesFinder.Dilate2(is);
+            TimeProfiler.CheckPoint(9, b);
             candidatesFinder.Erode2();
-
+            AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 8);
+            TimeProfiler.CheckPoint(10, b);
             candidatesFinder.OtsusThreshold();
-
-
+            AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 9);
+            TimeProfiler.CheckPoint(11, b);
             //STEP 1: start Finding outlines in the binary image
             candidatesFinder.FindOutlines();
-
+            TimeProfiler.CheckPoint(12, b);
 
             //STEP 2: start selecting outlines
             candidatesFinder.OutlinesSelection();
+            TimeProfiler.CheckPoint(13, b);
             AddStepWithContourns(firstProcessSteps, candidatesFinder.CurrentImage,
-                    candidatesFinder.LastGreenCandidates, candidatesFinder.LastBlueCandidates, 7);
+                    candidatesFinder.LastGreenCandidates, null, 10);
+            AddStepWithContourns(firstProcessSteps, candidatesFinder.CurrentImage,
+                    candidatesFinder.LastGreenCandidates, candidatesFinder.LastBlueCandidates, 10);
             candidatesFinder.OutlinesFilter();
-
+            TimeProfiler.CheckPoint(14, b);
             AddStepWithContourns(firstProcessSteps, candidatesFinder.CurrentImage,
-                    candidatesFinder.LastGreenCandidates, candidatesFinder.LastBlueCandidates, 7);
+                    candidatesFinder.LastGreenCandidates, candidatesFinder.LastBlueCandidates, 11);
 
             //    outlines.addAll(candidatesFinder.LastBlueCandidatesMAR);
 
             outlines = candidatesFinder.LastBlueCandidatesMAR;
 
-            TimeProfiler.CheckPoint(4);
             //STEP 3: loop
             for (int i = 0; i < outlines.size(); ++i) {
+                TimeProfiler.CheckPoint(15, b, i);
                 CandidateSelector candidateSelector =
                         new CandidateSelector(candidatesFinder.OriginalEqualizedImage, candidatesFinder.OriginalImageRealSize, outlines.get(i));
                 //STEP 4:
 
                 candidateSelector.CalculateBounds();
                 candidateSelector.TruncateBounds();
+                TimeProfiler.CheckPoint(16, b, i);
 
                 AddImage(firstProcessSteps, R.drawable.ipp, 8);
+                AddCountournedImage(firstProcessSteps,
+                        candidateSelector.OriginalEqualizedImage, candidateSelector.CandidateRect.boundingRect(), 9);
                 AddCountournedImage(firstProcessSteps,
                         candidateSelector.OriginalEqualizedImage, candidateSelector.CandidateRect, 9);
 
@@ -145,51 +155,59 @@ public class PlateRecognizer {
                 if (!candidateSelector.PercentajeAreaCandidateCheck()) {
                     AddImage(firstProcessSteps, R.drawable.percentaje_area_candidate_check, 10);
                     Log.d("filter", "i=" + i + "!PercentajeAreaCandidateCheck");
+                    TimeProfiler.CheckPoint(17, b, i);
                     continue;
                 }
+                TimeProfiler.CheckPoint(17, b, i);
 
                 candidateSelector.CropExtraRotatedRect(false);   //STEP 5:
 //            candidateSelector.CropExtraBoundget(i).angle);
+                TimeProfiler.CheckPoint(18, b, i);
                 AddStep(firstProcessSteps, candidateSelector.CurrentImage, 9);
                 candidateSelector.Equalize();
-
+                TimeProfiler.CheckPoint(19, b, i);
 
                 ////////////////////////////// START INVENCION MIA //////////////////////////////
 
                 AddStep(firstProcessSteps, candidateSelector.CurrentImage, 10);
                 candidateSelector.Sobel();
+                TimeProfiler.CheckPoint(20, b, i);
                 AddStep(firstProcessSteps, candidateSelector.CurrentImage, 11);
                 candidateSelector.GaussianBlur();
+                TimeProfiler.CheckPoint(21, b, i);
                 AddStep(firstProcessSteps, candidateSelector.CurrentImage, 12);
                 candidateSelector.Dilate();
+                TimeProfiler.CheckPoint(22, b, i);
                 AddStep(firstProcessSteps, candidateSelector.CurrentImage, 13);
 
 
                 candidateSelector.Erode();
+                TimeProfiler.CheckPoint(23, b, i);
                 AddStep(firstProcessSteps, candidateSelector.CurrentImage, 14);
                 ////////////////////////////// END INVENCION MIA //////////////////////////////
 
 
                 //STEP 6:
                 candidateSelector.OtsusThreshold();
-
+                TimeProfiler.CheckPoint(24, b, i);
                 AddStep(firstProcessSteps, candidateSelector.CurrentImage, 15);
 
                 //STEP 7:
                 candidateSelector.FindOutlines();
-
+                TimeProfiler.CheckPoint(25, b, i);
 
                 //STEP 8:
                 candidateSelector.FindMaxAreaCandidatePro();
 
-
+                TimeProfiler.CheckPoint(26, b, i);
                 //STEP 9:
                 if (!candidateSelector.FindMinAreaRectInMaxArea()) {
                     AddImage(firstProcessSteps, R.drawable.find_min_area_rect_in_max_area, 16);
+                    TimeProfiler.CheckPoint(27, b, i);
                     Log.d("filter", "i=" + i + " !FindMinAreaRectInMaxArea");
                     continue;
                 }
-
+                TimeProfiler.CheckPoint(27, b, i);
 
                 AddCountournedImage(firstProcessSteps, candidateSelector.CurrentImage,
                         candidateSelector.MinAreaRect, 17);
@@ -198,6 +216,7 @@ public class PlateRecognizer {
                 //STEP 10 and 11
 
                 CandidateSelector.CheckError checkError = candidateSelector.DoChecks();
+                TimeProfiler.CheckPoint(28, b, i);
                 if (checkError != null) {
 
                     AddImage(firstProcessSteps, checkError.getValue(), 18);
@@ -205,38 +224,10 @@ public class PlateRecognizer {
                     continue;
                 }
 
-
-                // Paso 11 sin rotación.
-                //Mat sinCortar = candidatesFinder.OriginalImage.clone();
-                //Rect roi2 = new Rect(rects.get(i).boundingRect().x + mr2.boundingRect().x,
-                //        rects.get(i).boundingRect().y + mr2.boundingRect().y, (int)mr2.boundingRect().width, (int)mr2.boundingRect().height);
-                //Mat cropped2 = new Mat(sinCortar, roi2);
-
-
-                // Apply Gray Scale, Skew Correction, Fixed Size.
-                // hacer reequalizacion????
-                //Mat resizeimage = new Mat();
-                //Size sz = new Size(100,100);
-                //Imgproc.resize( croppedimage, resizeimage, sz );
-                //
-                //
-
-                //debugHWOC.AddStep(firstProcessSteps, candidateSelector.CurrentImage.clone());
-                //        debugHWOC.AddStep(firstProcessSteps, candidateSelector.OriginalEqualizedImage.clone());
-                //debugHWOC.AddStep(firstProcessSteps, candidateSelector.GetFinalImage(true).clone());
-
-                //InitializeGallery(R.id.gallery1, firstProcessSteps);
-                //if(i==i)
-//                return;
-
-
-                //finalCandidates.add(candidateSelector.GetFinalImage(true));
                 Mat img = candidateSelector.GetFinalImage(true);
-                //debugHWOC.AddStep(firstProcessSteps, finalCandidates.get(finalCandidates.size() - 1), 19);
                 AddStep(firstProcessSteps, img, 19);
+                TimeProfiler.CheckPoint(29, b, i);
 
-
-                TimeProfiler.CheckPoint(5);
 
 
                 //NOTA: ACA RECIEN OBTENER IMAGEN TAMAÑO REAL.
@@ -251,35 +242,40 @@ public class PlateRecognizer {
                 AddStep(secondProcessSteps, characterSeparator.CurrentImage, 20);
 
                 characterSeparator.AdaptiveThreshold();
-
+                TimeProfiler.CheckPoint(30, b, i);
+                AddStep(secondProcessSteps, characterSeparator.CurrentImage, 20);
                 characterSeparator.FindCountourns();
 
+                TimeProfiler.CheckPoint(31, b, i);
+                AddStepWithContourns(secondProcessSteps, characterSeparator.CurrentImage,
+                        characterSeparator.contourns, null, 20);
 
                 if (!characterSeparator.FilterCountourns()) {
-
+                    TimeProfiler.CheckPoint(32, b, i);
                     AddStep(secondProcessSteps, characterSeparator.ImageWithContourns, 21);
                     AddImage(secondProcessSteps, R.drawable.filter_countourns, 22);
 
                     Log.d("filter", "q=" /*+ q*/ + " !FilterCountourns");
                     continue;
                 }
-
+                TimeProfiler.CheckPoint(32, b, i);
 
                 AddStep(secondProcessSteps, characterSeparator.ImageWithContourns, 23);
                 AddStep(secondProcessSteps, characterSeparator.CleanedImage, 24);
 
                 characterSeparator.CalculatePlateLength();
-
                 characterSeparator.CalculateCharsPositions();
+                TimeProfiler.CheckPoint(33, b, i);
 
-                //characterSeparator.CalculateHistrograms();
+
                 if (ImageViewer.CHARS)
                     characterSeparator.CropChars();
                 else
                     characterSeparator.CropAll();
 
-
+                TimeProfiler.CheckPoint(34, b, i);
                 String whiteList = "";
+                int finalConfidence = 0;
 
                 if (ImageViewer.CHARS) {
                     for (int n = 0; n < characterSeparator.CroppedChars.size(); ++n) {
@@ -342,29 +338,41 @@ public class PlateRecognizer {
                         Utils.matToBitmap(m, temp);
                         MainActivity.baseApi.setImage(temp);
                         String recognizedText = MainActivity.baseApi.getUTF8Text();
-                        Log.d("output", "n=" + n + " text:" + recognizedText);
+                        int[] confidences = MainActivity.baseApi.wordConfidences();
+                        if (confidences.length != 0) {
+                            finalConfidence += confidences[Math.min(n, confidences.length - 1)];
+                            Log.d("output", "n=" + n + " text:" + recognizedText + "confidence: " + confidences[Math.min(n, confidences.length - 1)]);
+                        }
                         //recognizedText = recognizedText.trim();
                         plate += recognizedText;
                         lastPlate += process(recognizedText, n);//.substring(n*2, n*2+2);
+                        TimeProfiler.CheckPoint(35, b, i);
 
                     }
                     finalPlate += lastPlate;
                 }
                 correctPlate = isCorrectPlate(lastPlate);
                 if (correctPlate)
-                    return lastPlate;
+                    return new PlateResult(lastPlate, finalConfidence/3) ;
                 plate += " || ";
                 finalPlate += " || ";
             }
+            b++;
         }
         CandidatesPlates = plate;
-        return "";
+        return new PlateResult();
     }
 
     private void AddCountournedImage(List<Mat> firstProcessSteps, Mat originalEqualizedImage, RotatedRect candidateRect, int i) {
         if (debugHWOC != null)
             debugHWOC.AddCountournedImage(firstProcessSteps,
                     originalEqualizedImage, candidateRect, i);
+    }
+
+    private void AddCountournedImage(List<Mat> firstProcessSteps, Mat originalEqualizedImage, Rect boundingCandidateRect, int i) {
+        if (debugHWOC != null)
+            debugHWOC.AddCountournedImage(firstProcessSteps,
+                    originalEqualizedImage, boundingCandidateRect, i);
     }
 
     private void AddImage(List<Mat> firstProcessSteps, int j, int i) {
@@ -483,7 +491,18 @@ public class PlateRecognizer {
         finalCandidates = new ArrayList<Mat>();
         firstProcessSteps = new ArrayList<Mat>();
         secondProcessSteps = new ArrayList<Mat>();
-        TimeProfiler.clean();
     }
 
+    public class PlateResult {
+        public String Plate;
+        public int Confidence;
+        public PlateResult() {
+            Plate = "";
+            Confidence = 0;
+        }
+        public PlateResult(String plate, int confidence) {
+            Plate = plate;
+            Confidence = confidence;
+        }
+    }
 }

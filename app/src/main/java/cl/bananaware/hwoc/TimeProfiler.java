@@ -12,7 +12,6 @@ import java.util.Map;
  * Created by fergu on 22-08-2016.
  */
 public final class TimeProfiler {
-    //Map<TimeProfilerKey, Long> times = new HashMap<TimeProfilerKey, Long>();
     static List<TimeProfilerElement> times = new ArrayList<TimeProfilerElement>();
 
     private TimeProfiler(){
@@ -122,9 +121,6 @@ public final class TimeProfiler {
         return output;
     }
 
-    public static void clean() {
-        times.clear();
-    }
 
 
     static class TimeProfilerElement {
@@ -140,30 +136,6 @@ public final class TimeProfiler {
             IterationIndex2 = ii2;
             TimeMillis = t;
         }
-        /*
-        @Override
-        public int hashCode() {
-            // A big value that is supposed to be more than any value of
-            // IterationIndex and IterationIndex2
-            final int BIG_VALUE = 10000;
-            Integer value1 = IterationIndex;
-            if (IterationIndex == null)
-                value1 = BIG_VALUE*2-1;
-
-            Integer value2 = IterationIndex2;
-            if (IterationIndex2 == null)
-                value1 = BIG_VALUE-1;
-
-            return (int)(PrincipalIndex * BIG_VALUE*2 + IterationIndex * BIG_VALUE + IterationIndex2);
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            TimeProfilerElement oo = (TimeProfilerElement) o;
-            return this.PrincipalIndex == oo.PrincipalIndex
-                    && this.IterationIndex == oo.IterationIndex
-                    && this.TimeMillis == oo.TimeMillis;
-        }*/
     }
     static class TimeProfilerPair {
         TimeProfilerElement First;
