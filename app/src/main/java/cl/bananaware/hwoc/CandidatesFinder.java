@@ -30,6 +30,7 @@ public class CandidatesFinder {
     //public List<RotatedRect> BlueCandidatesRR;
     public List<MatOfPoint> GreenCandidates, LastGreenCandidates;
     private double scale;
+    private ImageSize imSize;
 
     public CandidatesFinder(Mat m_)
     {
@@ -62,6 +63,7 @@ public class CandidatesFinder {
         TimeProfiler.CheckPoint(1.6);
     }
 
+
     public static double Resize(Mat originalImage, int maxPixels) {
 
         Size s = originalImage.size();
@@ -83,6 +85,10 @@ public class CandidatesFinder {
         return newSize.width/s.width;
     }
 
+    public void SetSize(ImageSize size)
+    {
+        imSize = size;
+    }
     public void ToGrayScale() {
         if (!PROBANDO)
             Imgproc.cvtColor(CurrentImage, CurrentImage, Imgproc.COLOR_RGB2GRAY);
@@ -158,7 +164,7 @@ public class CandidatesFinder {
         Imgproc.GaussianBlur(CurrentImage, PreMultiDilationImage, size, sigma);
     }
 
-    public void Dilate2(ImageSize imSize) {
+    public void Dilate2() {
         //evaluar hacer una interpolacion lineal o algo similar con el amplifier ya que falla en ex10 y ex2 (unno bien o el otro mal)
         //Poniendolo en 2 se corrige
         //float DILATATION_AMPLIFIER = 2.9f;

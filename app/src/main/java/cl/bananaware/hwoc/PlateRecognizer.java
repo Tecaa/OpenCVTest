@@ -46,57 +46,14 @@ public class PlateRecognizer {
         CleanAll();
         TimeProfiler.CheckPoint(1);
 
+        CandidatesFinder candidatesFinder = new CandidatesFinder(m_);
+        GetPreMultiDilationImage(candidatesFinder);
 
         String lastPlate = "";
         boolean correctPlate = false;
-        CandidatesFinder candidatesFinder;
-        candidatesFinder = new CandidatesFinder(m_);
-
-        candidatesFinder.ToGrayScale();
-        TimeProfiler.CheckPoint(2);
-        boolean fueGaussianBlureada = false;
-        candidatesFinder.EqualizeHistOriginalImage(false);
-        TimeProfiler.CheckPoint(3);
-        AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 1);
-
-
-        if (ImageViewer.EXPERIMENTAL_EQUALITATION) {
-            Imgproc.GaussianBlur(candidatesFinder.OriginalEqualizedImage, candidatesFinder.CurrentImage, new Size(25, 25), 25);
-            fueGaussianBlureada = true;
-
-        }
-
-
-        candidatesFinder.Dilate();
-
-        AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 2);
-        TimeProfiler.CheckPoint(4);
-
-        candidatesFinder.Erode();
-
-        AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 3);
-        TimeProfiler.CheckPoint(5);
-
-
-        candidatesFinder.Substraction();
-
-        AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 4);
-        TimeProfiler.CheckPoint(6);
-
-
-
-        candidatesFinder.Sobel();
-        AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 5);
-        TimeProfiler.CheckPoint(7);
-
-
-
-        candidatesFinder.GaussianBlur();
-        AddStep(firstProcessSteps, candidatesFinder.PreMultiDilationImage, 6);
-        TimeProfiler.CheckPoint(8);
-        List<RotatedRect> outlines = new ArrayList<RotatedRect>();
         String plate = "";
         String finalPlate = "";
+
 
         int b=0;
         for (ImageSize is : ImageSize.values()) {
@@ -106,33 +63,9 @@ public class PlateRecognizer {
                 if (is == ImageSize.GRANDE)
                     continue;*/
             }
-            candidatesFinder.Dilate2(is);
-            TimeProfiler.CheckPoint(9, b);
-            candidatesFinder.Erode2();
-            AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 8);
-            TimeProfiler.CheckPoint(10, b);
-            candidatesFinder.OtsusThreshold();
-            AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 9);
-            TimeProfiler.CheckPoint(11, b);
-            //STEP 1: start Finding outlines in the binary image
-            candidatesFinder.FindOutlines();
-            TimeProfiler.CheckPoint(12, b);
 
-            //STEP 2: start selecting outlines
-            candidatesFinder.OutlinesSelection();
-            TimeProfiler.CheckPoint(13, b);
-            AddStepWithContourns(firstProcessSteps, candidatesFinder.CurrentImage,
-                    candidatesFinder.LastGreenCandidates, null, 10);
-            AddStepWithContourns(firstProcessSteps, candidatesFinder.CurrentImage,
-                    candidatesFinder.LastGreenCandidates, candidatesFinder.LastBlueCandidates, 10);
-            candidatesFinder.OutlinesFilter();
-            TimeProfiler.CheckPoint(14, b);
-            AddStepWithContourns(firstProcessSteps, candidatesFinder.CurrentImage,
-                    candidatesFinder.LastGreenCandidates, candidatesFinder.LastBlueCandidates, 11);
-
-            //    outlines.addAll(candidatesFinder.LastBlueCandidatesMAR);
-
-            outlines = candidatesFinder.LastBlueCandidatesMAR;
+            candidatesFinder.SetSize(is);
+            List<RotatedRect> outlines = GetBlueCandidates(candidatesFinder, b);
 
             //STEP 3: loop
             for (int i = 0; i < outlines.size(); ++i) {
@@ -161,7 +94,6 @@ public class PlateRecognizer {
                 TimeProfiler.CheckPoint(17, b, i);
 
                 candidateSelector.CropExtraRotatedRect(false);   //STEP 5:
-//            candidateSelector.CropExtraBoundget(i).angle);
                 TimeProfiler.CheckPoint(18, b, i);
                 AddStep(firstProcessSteps, candidateSelector.CurrentImage, 9);
                 candidateSelector.Equalize();
@@ -343,9 +275,9 @@ public class PlateRecognizer {
                             finalConfidence += confidences[Math.min(n, confidences.length - 1)];
                             Log.d("output", "n=" + n + " text:" + recognizedText + "confidence: " + confidences[Math.min(n, confidences.length - 1)]);
                         }
-                        //recognizedText = recognizedText.trim();
+
                         plate += recognizedText;
-                        lastPlate += process(recognizedText, n);//.substring(n*2, n*2+2);
+                        lastPlate += process(recognizedText, n);
                         TimeProfiler.CheckPoint(35, b, i);
 
                     }
@@ -361,6 +293,76 @@ public class PlateRecognizer {
         }
         CandidatesPlates = plate;
         return new PlateResult();
+    }
+
+    private List<RotatedRect> GetBlueCandidates(CandidatesFinder candidatesFinder, int b) {
+
+        candidatesFinder.Dilate2();
+        TimeProfiler.CheckPoint(9, b);
+        candidatesFinder.Erode2();
+        AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 8);
+        TimeProfiler.CheckPoint(10, b);
+        candidatesFinder.OtsusThreshold();
+        AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 9);
+        TimeProfiler.CheckPoint(11, b);
+        //STEP 1: start Finding outlines in the binary image
+        candidatesFinder.FindOutlines();
+        TimeProfiler.CheckPoint(12, b);
+
+        //STEP 2: start selecting outlines
+        candidatesFinder.OutlinesSelection();
+        TimeProfiler.CheckPoint(13, b);
+        AddStepWithContourns(firstProcessSteps, candidatesFinder.CurrentImage,
+                candidatesFinder.LastGreenCandidates, null, 10);
+        AddStepWithContourns(firstProcessSteps, candidatesFinder.CurrentImage,
+                candidatesFinder.LastGreenCandidates, candidatesFinder.LastBlueCandidates, 10);
+        candidatesFinder.OutlinesFilter();
+        TimeProfiler.CheckPoint(14, b);
+        AddStepWithContourns(firstProcessSteps, candidatesFinder.CurrentImage,
+                candidatesFinder.LastGreenCandidates, candidatesFinder.LastBlueCandidates, 11);
+
+
+        return candidatesFinder.LastBlueCandidatesMAR;
+    }
+
+    private void GetPreMultiDilationImage(CandidatesFinder candidatesFinder) {
+
+
+
+        candidatesFinder.ToGrayScale();
+        TimeProfiler.CheckPoint(2);
+        candidatesFinder.EqualizeHistOriginalImage(false);
+        TimeProfiler.CheckPoint(3);
+        AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 1);
+
+
+        candidatesFinder.Dilate();
+
+        AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 2);
+        TimeProfiler.CheckPoint(4);
+
+        candidatesFinder.Erode();
+
+        AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 3);
+        TimeProfiler.CheckPoint(5);
+
+
+        candidatesFinder.Substraction();
+
+        AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 4);
+        TimeProfiler.CheckPoint(6);
+
+
+
+        candidatesFinder.Sobel();
+        AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 5);
+        TimeProfiler.CheckPoint(7);
+
+
+
+        candidatesFinder.GaussianBlur();
+        AddStep(firstProcessSteps, candidatesFinder.PreMultiDilationImage, 6);
+        TimeProfiler.CheckPoint(8);
     }
 
     private void AddCountournedImage(List<Mat> firstProcessSteps, Mat originalEqualizedImage, RotatedRect candidateRect, int i) {

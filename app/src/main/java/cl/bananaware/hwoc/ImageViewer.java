@@ -61,7 +61,6 @@ public class ImageViewer extends Activity {
     public final static boolean SHOW_PROCESS_DEBUG = false;
     public final static boolean GOOD_SIZE = false;
     public final static int I_LEVEL = 90;
-    public final static boolean EXPERIMENTAL_EQUALITATION = false;
     public final static boolean CHARS = false;
 
     private final String GROUP1 = "ABCDEFGHIJKLNPRSTUVXYZW";
@@ -98,6 +97,7 @@ public class ImageViewer extends Activity {
         TimeProfiler.CheckPoint(0);
 
 
+        PlateClient plateClient = new PlateClient(this.getBaseContext());
 
         Bitmap b;
 
@@ -140,7 +140,7 @@ public class ImageViewer extends Activity {
             InitializeGallery(R.id.gallery2, plateRecognizer.secondProcessSteps);
             InitializeGallery(R.id.gallery3, plateRecognizer.finalCandidates);
         }
-        SetPlate(plate);
+        //SetPlate(plate);
         SetFinalPlate(finalPlate);
         SetTime(TimeProfiler.GetTotalTime());
         Log.d("times", TimeProfiler.GetTimes(true));
@@ -148,26 +148,7 @@ public class ImageViewer extends Activity {
     }
 
 
-    private Bitmap getGrayscale_custom_matrix(Bitmap src){
-        int width = src.getWidth();
-        int height = src.getHeight();
 
-        //Custom color matrix
-        float[] matrix = new float[]{
-                0.3f, 0.59f, 0.11f, 0, 0,
-                0.3f, 0.59f, 0.11f, 0, 0,
-                0.3f, 0.59f, 0.11f, 0, 0,
-                0, 0, 0, 1, 0,};
-
-        Bitmap dest = Bitmap.createBitmap(width, height,
-                Bitmap.Config.ALPHA_8);
-
-        Paint paint = new Paint();
-        ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
-        paint.setColorFilter(filter);
-
-        return dest;
-    }
 
     private void SetFinalPlate(PlateRecognizer.PlateResult finalPlate) {
         TextView p = (TextView) findViewById(R.id.finalPlateText);
@@ -179,11 +160,11 @@ public class ImageViewer extends Activity {
         TextView p = (TextView) findViewById(R.id.totalTime);
         p.setText(s);
     }
-
+/*
     private void SetPlate(String plate) {
         TextView p = (TextView) findViewById(R.id.plateText);
         p.setText(plate);
-    }
+    }*/
 
     @TargetApi(23)
     private void getStorageAccessPermissions() {
