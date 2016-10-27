@@ -1,4 +1,4 @@
-package cl.bananaware.hwoc;
+package cl.bananaware.hwoc.ImageProcessing;
 
 import android.util.Log;
 
@@ -14,6 +14,9 @@ import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cl.bananaware.hwoc.ImageViewer;
+import cl.bananaware.hwoc.R;
 
 /**
  * Created by fergu on 07-08-2016.

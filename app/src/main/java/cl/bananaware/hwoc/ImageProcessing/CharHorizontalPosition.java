@@ -1,4 +1,4 @@
-package cl.bananaware.hwoc;
+package cl.bananaware.hwoc.ImageProcessing;
 
 public class CharHorizontalPosition{
     public int Start;

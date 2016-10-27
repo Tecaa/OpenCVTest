@@ -1,4 +1,4 @@
-package cl.bananaware.hwoc;
+package cl.bananaware.hwoc.ImageProcessing;
 
 /**
  * Created by fergu on 07-08-2016.

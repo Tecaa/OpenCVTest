@@ -6,16 +6,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.AssetManager;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.ColorMatrixColorFilter;
-import android.graphics.Paint;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -24,49 +19,30 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Gallery;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
-import com.googlecode.tesseract.android.TessBaseAPI;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
-import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.MatOfPoint2f;
-import org.opencv.core.RotatedRect;
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
-import org.opencv.imgproc.Imgproc;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+
+import cl.bananaware.hwoc.ApiRestClasses.Plate;
+import cl.bananaware.hwoc.ImageProcessing.PlateRecognizer;
+import cl.bananaware.hwoc.ImageProcessing.PlateResult;
 
 /**
  * Created by Marco on 21-04-2016.
  */
 public class ImageViewer extends Activity {
-    public final static boolean SHOW_PROCESS_DEBUG = false;
+    public final static boolean SHOW_PROCESS_DEBUG = true;
     public final static boolean GOOD_SIZE = false;
     public final static int I_LEVEL = 90;
     public final static boolean CHARS = false;
-
-    private final String GROUP1 = "ABCDEFGHIJKLNPRSTUVXYZW";
-    private final String GROUP2 = "BCDFGHJKLPRSTVXYZW0123456789";
-    private final String GROUP3 = "0123456789";
-
 
     final int REQUEST_CODE_WRITE_EXTERNAL_PERMISSIONS= 1;
     @Override
@@ -74,6 +50,8 @@ public class ImageViewer extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.cameraview);
         getStorageAccessPermissions(); // Request storage read/write permissions from the user
+
+
     }
     public void onResume()
     {
@@ -91,57 +69,23 @@ public class ImageViewer extends Activity {
 
 
     private void CodePostOpenCVLoaded() {
-
-        DebugHWOC debugHWOC = new DebugHWOC(getResources());
         TimeProfiler.ResetCheckPoints();
         TimeProfiler.CheckPoint(0);
 
-
-        PlateClient plateClient = new PlateClient(this.getBaseContext());
-
-        Bitmap b;
-
-        Intent intent = getIntent();
-        String abs = intent.getExtras().getString("uri");
-        Boolean captured = intent.getExtras().getBoolean("captured");
-
-        try {
-            if (captured) {
-                BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-
-                b = BitmapFactory.decodeFile(abs, bmOptions);
-            }
-            else {
-                // SLOW OPERATION
-                b = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), Uri.parse(abs));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            Toast.makeText(getBaseContext(),"Error cargando la imagen",
-                    Toast.LENGTH_SHORT).show();
+        Bitmap b = getImage();
+        if (b == null)
             return;
-        }
 
-        //b = getGrayscale_custom_matrix(b);
-
-
-        PlateRecognizer plateRecognizer = new PlateRecognizer();
-        plateRecognizer.InitDebug(debugHWOC);
-
-        Mat m_ = new Mat();
-        Utils.bitmapToMat(b, m_);
-        PlateRecognizer.PlateResult finalPlate = plateRecognizer.Recognize(m_);
+        MainActivity.plateProcessSystem.ProcessCapture(b);
         TimeProfiler.CheckPoint(36);
-        String plate = plateRecognizer.CandidatesPlates;
 
         if (SHOW_PROCESS_DEBUG) {
-            InitializeGallery(R.id.gallery1, plateRecognizer.firstProcessSteps);
-            InitializeGallery(R.id.gallery2, plateRecognizer.secondProcessSteps);
-            InitializeGallery(R.id.gallery3, plateRecognizer.finalCandidates);
+            InitializeGallery(R.id.gallery1, MainActivity.plateProcessSystem.plateRecognizer.firstProcessSteps);
+            InitializeGallery(R.id.gallery2, MainActivity.plateProcessSystem.plateRecognizer.secondProcessSteps);
+            InitializeGallery(R.id.gallery3, MainActivity.plateProcessSystem.plateRecognizer.finalCandidates);
         }
-        //SetPlate(plate);
-        SetFinalPlate(finalPlate);
+
+        SetFinalPlate(MainActivity.plateProcessSystem.LastPlateReaded);
         SetTime(TimeProfiler.GetTotalTime());
         Log.d("times", TimeProfiler.GetTimes(true));
         Log.d("times", TimeProfiler.GetTimes(false));
@@ -150,7 +94,7 @@ public class ImageViewer extends Activity {
 
 
 
-    private void SetFinalPlate(PlateRecognizer.PlateResult finalPlate) {
+    private void SetFinalPlate(PlateResult finalPlate) {
         TextView p = (TextView) findViewById(R.id.finalPlateText);
         p.setText(finalPlate.Plate + " " + finalPlate.Confidence + "%");
     }
@@ -160,11 +104,6 @@ public class ImageViewer extends Activity {
         TextView p = (TextView) findViewById(R.id.totalTime);
         p.setText(s);
     }
-/*
-    private void SetPlate(String plate) {
-        TextView p = (TextView) findViewById(R.id.plateText);
-        p.setText(plate);
-    }*/
 
     @TargetApi(23)
     private void getStorageAccessPermissions() {
@@ -204,6 +143,33 @@ public class ImageViewer extends Activity {
         Utils.matToBitmap(images.get(position), bm);
         ImageView ii = (ImageView) findViewById(R.id.image1);
         ii.setImageBitmap(bm);
+    }
+
+    public Bitmap getImage() {
+        Bitmap b;
+        Intent intent = getIntent();
+        String abs = intent.getExtras().getString("uri");
+        Boolean captured = intent.getExtras().getBoolean("captured");
+
+
+        try {
+            if (captured) {
+                BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+
+                b = BitmapFactory.decodeFile(abs, bmOptions);
+            }
+            else {
+                // SLOW OPERATION
+                b = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), Uri.parse(abs));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            Toast.makeText(getBaseContext(),"Error cargando la imagen",
+                    Toast.LENGTH_SHORT).show();
+            return null;
+        }
+        return b;
     }
 
     public class ImageAdapter extends BaseAdapter {
@@ -262,6 +228,4 @@ public class ImageViewer extends Activity {
             }
         }
     };
-
-
 }

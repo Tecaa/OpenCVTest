@@ -1,22 +1,18 @@
 package cl.bananaware.hwoc;
 
 import org.opencv.android.BaseLoaderCallback;
-import org.opencv.android.JavaCameraView;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.*;
 //import org.opencv.highgui.Highgui;
 import org.opencv.imgproc.Imgproc;
-import org.w3c.dom.Text;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Camera;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
-import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
@@ -25,10 +21,9 @@ import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.List;
-import java.util.ListIterator;
+import cl.bananaware.hwoc.ImageProcessing.PlateRecognizer;
+import cl.bananaware.hwoc.ImageProcessing.PlateResult;
 
 public class testcam extends Activity implements CustomCameraBridgeViewBase.CustomCvCameraViewListener2, OnTouchListener {
 
@@ -59,7 +54,7 @@ public class testcam extends Activity implements CustomCameraBridgeViewBase.Cust
     public testcam() {
         Log.i(TAG, "Instantiated new " + this.getClass());
     }
-    PlateRecognizer plateRecognizer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "called onCreate");
@@ -92,9 +87,6 @@ public class testcam extends Activity implements CustomCameraBridgeViewBase.Cust
         params.setPictureSize(resolution.width,resolution.height);
         mCamera.setParameters(params);
 */
-
-        plateRecognizer = new PlateRecognizer();
-        plateRecognizer.InitDebug(new DebugHWOC(getResources()));
         context = getApplicationContext();
     }
 
@@ -200,7 +192,7 @@ public class testcam extends Activity implements CustomCameraBridgeViewBase.Cust
         @Override
         protected String doInBackground(String... params) {
 
-            final PlateRecognizer.PlateResult plate = plateRecognizer.Recognize(mRgba.clone());
+            final PlateResult plate = MainActivity.plateProcessSystem.ProcessCapture(mRgba.clone());
 
             Log.d("plate", TimeProfiler.GetTimes(true, 10));
             Log.d("plate", ++counter + " Plate:" + plate.Plate + " " + plate.Confidence + "% " + TimeProfiler.GetTimes(false, 1) + " TOTAL: " + TimeProfiler.GetTotalTime());

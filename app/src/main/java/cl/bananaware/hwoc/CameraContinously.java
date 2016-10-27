@@ -21,12 +21,10 @@ import android.media.ImageReader;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
@@ -34,32 +32,31 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import org.opencv.android.Utils;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import cl.bananaware.hwoc.ImageProcessing.PlateRecognizer;
+import cl.bananaware.hwoc.ImageProcessing.PlateResult;
 
 public class CameraContinously extends AppCompatActivity {
 
     private static final String TAG = "AndroidCameraApi";
     private Button takePictureButton;
     private TextureView textureView;
-    private PlateRecognizer plateRecognizer;
+
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     static {
         ORIENTATIONS.append(Surface.ROTATION_0, 90);
@@ -96,11 +93,6 @@ public class CameraContinously extends AppCompatActivity {
                 takePicture();
             }
         });
-
-        DebugHWOC debugHWOC = new DebugHWOC(getResources());
-        plateRecognizer = new PlateRecognizer();
-        plateRecognizer.InitDebug(debugHWOC);
-
     }
     TextureView.SurfaceTextureListener textureListener = new TextureView.SurfaceTextureListener() {
         @Override
@@ -221,11 +213,10 @@ public class CameraContinously extends AppCompatActivity {
 
 
 
-                            PlateRecognizer plateRecognizer = new PlateRecognizer();
 
                             TimeProfiler.CheckPoint(2);
                             String t = TimeProfiler.GetTotalTime();
-                            PlateRecognizer.PlateResult plate = plateRecognizer.Recognize(mat);
+                            PlateResult plate = MainActivity.plateProcessSystem.ProcessCapture(mat);
 
                             String time = TimeProfiler.GetTotalTime();
                             Toast.makeText(CameraContinously.this, "Plate:" + plate.Plate + " " + plate.Confidence + "%"

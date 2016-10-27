@@ -1,11 +1,5 @@
-package cl.bananaware.hwoc;
+package cl.bananaware.hwoc.ImageProcessing;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.Image;
-import android.util.Log;
-
-import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -17,6 +11,9 @@ import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cl.bananaware.hwoc.ImageViewer;
+import cl.bananaware.hwoc.TimeProfiler;
 
 /**
  * Created by fergu on 06-08-2016.

@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
     public static TessBaseAPI baseApi;
+    public static PlateProcessSystem plateProcessSystem;
     /**
      * Checks if the app has permission to write to device storage
      *
@@ -95,7 +96,13 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         setContentView(R.layout.show_camera);
 
         InitOCT();
+        InitPPS();
 
+    }
+
+    private void InitPPS() {
+        plateProcessSystem = new PlateProcessSystem(this.getBaseContext());
+        plateProcessSystem.InitDebug(new DebugHWOC(getResources()));
     }
 
     private void InitOCT() {

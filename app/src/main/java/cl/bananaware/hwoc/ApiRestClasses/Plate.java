@@ -36,4 +36,22 @@ public class Plate {
         JSONArray array = new JSONArray(response);
         return Plate.FromJSONArray(array);
     }
+
+
+    @Override
+    public boolean equals(Object v) {
+        boolean retVal = false;
+
+        if (v instanceof Plate){
+            Plate ptr = (Plate) v;
+            retVal = ptr.plate.equals(this.plate);
+        }
+
+        return retVal;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.plate.hashCode();
+    }
 }

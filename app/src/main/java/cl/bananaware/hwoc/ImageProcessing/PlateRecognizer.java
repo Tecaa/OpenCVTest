@@ -1,13 +1,7 @@
-package cl.bananaware.hwoc;
+package cl.bananaware.hwoc.ImageProcessing;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.Image;
-import android.net.Uri;
-import android.provider.MediaStore;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
 
@@ -16,20 +10,24 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Rect;
 import org.opencv.core.RotatedRect;
-import org.opencv.core.Size;
-import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cl.bananaware.hwoc.DebugHWOC;
+import cl.bananaware.hwoc.ImageViewer;
+import cl.bananaware.hwoc.MainActivity;
+import cl.bananaware.hwoc.R;
+import cl.bananaware.hwoc.TimeProfiler;
 
 /**
  * Created by fergu on 08-09-2016.
  */
 public class PlateRecognizer {
     private DebugHWOC debugHWOC;
-    List<Mat> finalCandidates;
-    List<Mat> firstProcessSteps;
-    List<Mat> secondProcessSteps;
+    public List<Mat> finalCandidates;
+    public List<Mat> firstProcessSteps;
+    public List<Mat> secondProcessSteps;
 
 
     private final String GROUP1 = "ABCDEFGHIJKLNPRSTUVXYZWM";
@@ -493,18 +491,5 @@ public class PlateRecognizer {
         finalCandidates = new ArrayList<Mat>();
         firstProcessSteps = new ArrayList<Mat>();
         secondProcessSteps = new ArrayList<Mat>();
-    }
-
-    public class PlateResult {
-        public String Plate;
-        public int Confidence;
-        public PlateResult() {
-            Plate = "";
-            Confidence = 0;
-        }
-        public PlateResult(String plate, int confidence) {
-            Plate = plate;
-            Confidence = confidence;
-        }
     }
 }
