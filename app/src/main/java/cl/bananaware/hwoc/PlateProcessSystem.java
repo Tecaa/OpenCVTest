@@ -26,7 +26,7 @@ import cl.bananaware.hwoc.ImageProcessing.PlateResult;
  * Created by fergu on 21-10-2016.
  */
 public class PlateProcessSystem {
-    private static final int ACCEPTABLE_CONFIDENCE = 60;
+
     // Acquire a reference to the system Location Manager
     Context context;
     Location currentLocation;
@@ -39,6 +39,7 @@ public class PlateProcessSystem {
         context = cont;
         stolenPlates = new ArrayList<Plate>();
         // Test data
+
         stolenPlates.add(new Plate("ZU3520"));
 
         plateApiClient = new PlateApiClient();
@@ -57,17 +58,15 @@ public class PlateProcessSystem {
     Bitmap image;
     Mat m_image;
     // Toma una captura y almacena la posicion del gps y la imagen.
-    public PlateResult ProcessCapture(Bitmap img) {
-
-
+    public PlateResult ProcessCapture(Bitmap img, Boolean justProcess) {
         m_image = new Mat();
         image = img;
         Utils.bitmapToMat(image, m_image);
-        return ProcessCapture(m_image);
+        return ProcessCapture(m_image, justProcess);
     }
 
-    public PlateResult ProcessCapture(Mat mat) {
-        PlateResult plate = ImageProcess(mat);
+    public PlateResult ProcessCapture(Mat mat, Boolean justProcess) {
+        PlateResult plate = ImageProcess(mat, justProcess);
         Location location = GetPosition();
 
         if (plate != null) {
@@ -105,16 +104,17 @@ public class PlateProcessSystem {
 
 
     // Se procesa la captura realizada
-    private PlateResult ImageProcess(Mat mat)
+    private PlateResult ImageProcess(Mat mat, boolean justProcess)
     {
-
-
         LastPlateReaded = plateRecognizer.Recognize(m_image);
-        if (LastPlateReaded.Confidence >= ACCEPTABLE_CONFIDENCE) {
-            Plate p = new Plate(LastPlateReaded.Plate);
-            if (stolenPlates.contains(p))
-                return LastPlateReaded;
-        }
+
+        if (justProcess)
+            return LastPlateReaded;
+
+
+        Plate p = new Plate(LastPlateReaded.Plate);
+        if (stolenPlates.contains(p))
+            return LastPlateReaded;
 
         return null;
     }

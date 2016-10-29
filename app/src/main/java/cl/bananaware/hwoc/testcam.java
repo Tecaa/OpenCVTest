@@ -192,7 +192,7 @@ public class testcam extends Activity implements CustomCameraBridgeViewBase.Cust
         @Override
         protected String doInBackground(String... params) {
 
-            final PlateResult plate = MainActivity.plateProcessSystem.ProcessCapture(mRgba.clone());
+            final PlateResult plate = MainActivity.plateProcessSystem.ProcessCapture(mRgba.clone(), false);
 
             Log.d("plate", TimeProfiler.GetTimes(true, 10));
             Log.d("plate", ++counter + " Plate:" + plate.Plate + " " + plate.Confidence + "% " + TimeProfiler.GetTimes(false, 1) + " TOTAL: " + TimeProfiler.GetTotalTime());

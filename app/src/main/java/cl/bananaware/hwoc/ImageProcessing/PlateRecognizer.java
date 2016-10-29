@@ -33,8 +33,8 @@ public class PlateRecognizer {
     private final String GROUP1 = "ABCDEFGHIJKLNPRSTUVXYZWM";
     private final String GROUP2 = "BCDFGHJKLPRSTVXYZW0123456789";
     private final String GROUP3 = "0123456789";
+    private final int ACCEPTABLE_CONFIDENCE = 45;
 
-    public String CandidatesPlates;
     public void InitDebug(DebugHWOC d)
     {
         debugHWOC = d;
@@ -49,7 +49,7 @@ public class PlateRecognizer {
 
         String lastPlate = "";
         boolean correctPlate = false;
-        String plate = "";
+
         String finalPlate = "";
 
 
@@ -218,11 +218,11 @@ public class PlateRecognizer {
                                 whiteList = GROUP1;
                                 break;
                             case 2://3
-                                plate += "-";
+
                                 whiteList = GROUP2;
                                 break;
                             case 4://5
-                                plate += "-";
+
                                 whiteList = GROUP3;
                                 break;
                         }
@@ -237,7 +237,7 @@ public class PlateRecognizer {
                         MainActivity.baseApi.setImage(temp);
                         String recognizedText = MainActivity.baseApi.getUTF8Text();
                         Log.d("output", "n=" + n + " text:" + recognizedText);
-                        plate += recognizedText;
+
 
                     }
                 } else {
@@ -250,11 +250,11 @@ public class PlateRecognizer {
                                 whiteList = "ABCDEFGHIJKLNPRSTUVXYZW";
                                 break;
                             case 1://3
-                                plate += "-";
+
                                 whiteList = "BCDFGHJKLPRSTVXYZW0123456789";
                                 break;
                             case 2://5
-                                plate += "-";
+
                                 whiteList = "0123456789";
                                 break;
                         }
@@ -274,7 +274,7 @@ public class PlateRecognizer {
                             Log.d("output", "n=" + n + " text:" + recognizedText + "confidence: " + confidences[Math.min(n, confidences.length - 1)]);
                         }
 
-                        plate += recognizedText;
+
                         lastPlate += process(recognizedText, n);
                         TimeProfiler.CheckPoint(35, b, i);
 
@@ -282,15 +282,23 @@ public class PlateRecognizer {
                     finalPlate += lastPlate;
                 }
                 correctPlate = isCorrectPlate(lastPlate);
-                if (correctPlate)
-                    return new PlateResult(lastPlate, finalConfidence/3) ;
-                plate += " || ";
-                finalPlate += " || ";
+                finalConfidence /= 3;
+                if (correctPlate && aceptableConfidence(finalConfidence))
+                    return new PlateResult(lastPlate, finalConfidence) ;
+
+                finalPlate = "";
+                lastPlate = "";
             }
             b++;
         }
-        CandidatesPlates = plate;
         return new PlateResult();
+    }
+
+    private boolean aceptableConfidence(int finalConfidence) {
+        if (finalConfidence >= ACCEPTABLE_CONFIDENCE)
+            return true;
+        else
+            return false;
     }
 
     private List<RotatedRect> GetBlueCandidates(CandidatesFinder candidatesFinder, int b) {

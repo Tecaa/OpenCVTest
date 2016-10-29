@@ -42,8 +42,8 @@ public final class TimeProfiler {
         times.add(new TimeProfilerElement(i, index, index2, System.currentTimeMillis()));
     }
 
-    public static String GetTotalTime() {
-        return "[TOTAL] " + (times.get(times.size()-1).TimeMillis - times.get(0).TimeMillis) + " [ms]";
+    public static long GetTotalTime() {
+        return (times.get(times.size()-1).TimeMillis - times.get(0).TimeMillis);
     }
     public static String GetTimes(boolean sort)
     {

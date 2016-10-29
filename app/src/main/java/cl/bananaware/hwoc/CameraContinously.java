@@ -215,10 +215,10 @@ public class CameraContinously extends AppCompatActivity {
 
 
                             TimeProfiler.CheckPoint(2);
-                            String t = TimeProfiler.GetTotalTime();
-                            PlateResult plate = MainActivity.plateProcessSystem.ProcessCapture(mat);
+                            long t = TimeProfiler.GetTotalTime();
+                            PlateResult plate = MainActivity.plateProcessSystem.ProcessCapture(mat, false);
 
-                            String time = TimeProfiler.GetTotalTime();
+                            long time = TimeProfiler.GetTotalTime();
                             Toast.makeText(CameraContinously.this, "Plate:" + plate.Plate + " " + plate.Confidence + "%"
                                     + " " + time + " " + t, Toast.LENGTH_LONG).show();
 

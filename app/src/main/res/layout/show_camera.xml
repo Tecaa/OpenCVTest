@@ -35,4 +35,11 @@
         android:id="@+id/testcam"
         android:layout_gravity="right|center_vertical"
         android:onClick="testcamClick"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Batch"
+        android:id="@+id/batch"
+        android:layout_gravity="left|center_vertical"
+        android:onClick="batchClick"/>
 </FrameLayout>

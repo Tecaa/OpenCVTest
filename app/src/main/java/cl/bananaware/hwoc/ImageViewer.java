@@ -39,7 +39,7 @@ import cl.bananaware.hwoc.ImageProcessing.PlateResult;
  * Created by Marco on 21-04-2016.
  */
 public class ImageViewer extends Activity {
-    public final static boolean SHOW_PROCESS_DEBUG = true;
+    public static boolean SHOW_PROCESS_DEBUG = true;
     public final static boolean GOOD_SIZE = false;
     public final static int I_LEVEL = 90;
     public final static boolean CHARS = false;
@@ -76,7 +76,7 @@ public class ImageViewer extends Activity {
         if (b == null)
             return;
 
-        MainActivity.plateProcessSystem.ProcessCapture(b);
+        MainActivity.plateProcessSystem.ProcessCapture(b, false);
         TimeProfiler.CheckPoint(36);
 
         if (SHOW_PROCESS_DEBUG) {
@@ -100,9 +100,9 @@ public class ImageViewer extends Activity {
     }
 
 
-    private void SetTime(String s) {
+    private void SetTime(long s) {
         TextView p = (TextView) findViewById(R.id.totalTime);
-        p.setText(s);
+        p.setText(String.valueOf(s) + " [ms]");
     }
 
     @TargetApi(23)

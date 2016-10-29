@@ -284,6 +284,28 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         startActivity(i);
     }
 
+    public void batchClick(View v) {
+        //directoryPicker();
+        FolderBatch folderBatch = new FolderBatch(this.getBaseContext());
+        folderBatch.Process(Environment.getExternalStorageDirectory().getAbsolutePath()
+                + "/DCIM/Imágenes con Patentes");
+    }
+
+    private void directoryPicker() {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        Uri uri = Uri.parse(Environment.getExternalStorageDirectory().getPath());
+        intent.setDataAndType(uri, "resource/folder");
+        if (intent.resolveActivityInfo(getPackageManager(), 0) != null)
+        {
+            startActivity(intent);
+        }
+        else
+        {
+            // if you reach this place, it means there is no any file
+            // explorer app installed on your device
+            ;
+        }
+    }
 
     public void galleryClick(View v) {
 
