@@ -91,6 +91,8 @@ public class PlateRecognizer {
                 }
                 TimeProfiler.CheckPoint(17, b, i);
 
+                // INTENTAR OTBTENER TAMAÑO REAL ACA
+                //Mat img = candidateSelector.GetFinalImage(true);
                 candidateSelector.CropExtraRotatedRect(false);   //STEP 5:
                 TimeProfiler.CheckPoint(18, b, i);
                 AddStep(firstProcessSteps, candidateSelector.CurrentImage, 9);
@@ -303,9 +305,10 @@ public class PlateRecognizer {
 
     private List<RotatedRect> GetBlueCandidates(CandidatesFinder candidatesFinder, int b) {
 
+        candidatesFinder.Erode2();
+        AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 8);
         candidatesFinder.Dilate2();
         TimeProfiler.CheckPoint(9, b);
-        candidatesFinder.Erode2();
         AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 8);
         TimeProfiler.CheckPoint(10, b);
         candidatesFinder.OtsusThreshold();

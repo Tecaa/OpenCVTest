@@ -100,13 +100,13 @@ public class CandidatesFinder {
     }
 
     public void Dilate() {
-        final float DILATATION_AMPLIFIER = 1.25f; //Estaba en 1.4
+        final float DILATATION_AMPLIFIER = 1;//1.25f; //Estaba en 1.4
         Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 9*DILATATION_AMPLIFIER, 3*DILATATION_AMPLIFIER ));
         Imgproc.dilate( CurrentImage, CurrentImage, element);
     }
 
     public void Erode() {
-        final float EROTION_AMPLIFIER= 1.9f; //estaba en 1. 1.5 funciona tb
+        final float EROTION_AMPLIFIER= 1;//1.9f; //estaba en 1. 1.5 funciona tb
         Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 9*EROTION_AMPLIFIER, 3*EROTION_AMPLIFIER ));
         Imgproc.erode( CurrentImage, CurrentImage, element);
     }
@@ -166,8 +166,8 @@ public class CandidatesFinder {
         //Poniendolo en 2 se corrige
         //float DILATATION_AMPLIFIER = 2.9f;
         Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT,
-                new Size( 9*imSize.DilationAmplifier, 3*imSize.DilationAmplifier));
-        Imgproc.dilate( PreMultiDilationImage, CurrentImage, element);
+                new Size( 9*1.5, 3/**1.5*/));
+        Imgproc.dilate(  CurrentImage, CurrentImage, element);
     }
 
     public void Erode2() {
@@ -177,8 +177,10 @@ public class CandidatesFinder {
             EROTATION_AMPLIFIER = 2.4F;
         else
             EROTATION_AMPLIFIER = 1.5F;
-        Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 9*EROTATION_AMPLIFIER, 3 ));
-        Imgproc.erode( CurrentImage, CurrentImage, element);
+        Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT,
+                new Size( 9*1.5, 3/**1.5*/));
+        //Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 9*EROTATION_AMPLIFIER, 3 ));
+        Imgproc.erode(PreMultiDilationImage, CurrentImage, element);
     }
 
     public void OtsusThreshold() {

@@ -97,13 +97,20 @@ public class CharacterSeparator {
 
             }
 
+
+
+        }
+
+        for (int i=0; i< finalsContourns.size(); ++i)
+        {
+            Rect boundingRect = Imgproc.boundingRect(contourns.get(i));
+
             if (REMOVE_OUTSIDE) {
                 if (boundingRect.area() >= 0.03 * CurrentImage.size().area()) {
                     Imgproc.drawContours(maskInsideContour, contourns, i,
                             new Scalar(255), -1); // This is a OpenCV function
                 }
             }
-
         }
         // REMOVER LO QUE ESTÁ SOBRE LAS ROJAS Y BAJO ELLAS
         // ADEMAS REMOVER LO QUE ES MUY  PEQUEÑO (CIRCULOS INTERIORES PARA EVITAR ERRORES)
