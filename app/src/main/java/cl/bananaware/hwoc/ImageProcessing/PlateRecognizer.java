@@ -184,6 +184,7 @@ public class PlateRecognizer {
 
                 if (!characterSeparator.FilterCountourns()) {
                     TimeProfiler.CheckPoint(32, b, i);
+                    AddStep(secondProcessSteps, characterSeparator.ImageWithContournsPreFiltred, 21);
                     AddStep(secondProcessSteps, characterSeparator.ImageWithContourns, 21);
                     AddImage(secondProcessSteps, R.drawable.filter_countourns, 22);
 
@@ -192,6 +193,7 @@ public class PlateRecognizer {
                 }
                 TimeProfiler.CheckPoint(32, b, i);
 
+                AddStep(secondProcessSteps, characterSeparator.ImageWithContournsPreFiltred, 21);
                 AddStep(secondProcessSteps, characterSeparator.ImageWithContourns, 23);
                 AddStep(secondProcessSteps, characterSeparator.CleanedImage, 24);
 
@@ -306,6 +308,7 @@ public class PlateRecognizer {
 
     private List<RotatedRect> GetBlueCandidates(CandidatesFinder candidatesFinder, int b) {
 
+        candidatesFinder.SetPreMultiDilationImage();
         candidatesFinder.Erode2();
         AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 8);
         candidatesFinder.Dilate2();
@@ -469,6 +472,7 @@ public class PlateRecognizer {
         }
         else
         {
+            return "";/*
             int index;
             switch (n)
             {
@@ -483,7 +487,7 @@ public class PlateRecognizer {
                 default:
                     index = recognizedText.length();
                     return recognizedText.substring(Math.max(index-2,0),index);
-            }
+            }*/
         }
 
     }

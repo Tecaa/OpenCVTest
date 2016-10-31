@@ -25,7 +25,7 @@ import cl.bananaware.hwoc.ImageViewer;
 public class CharacterSeparator {
     public Mat CurrentImage;
     public Mat CleanedImage;
-    public Mat ImageWithContourns;
+    public Mat ImageWithContourns, ImageWithContournsPreFiltred;
     public Mat OriginalImage;
     //private Mat VerticalHistogram;
     public List<MatOfPoint> contourns = new ArrayList<MatOfPoint>();
@@ -36,6 +36,7 @@ public class CharacterSeparator {
         CurrentImage = mat;
         OriginalImage = mat.clone();
         ImageWithContourns = new Mat();
+        ImageWithContournsPreFiltred = new Mat();
         CleanedImage = new Mat();
       //  VerticalHistogram = new Mat(new Size(1, CurrentImage.width()), CvType.CV_32SC1);
         correctLeftPositions.add(0.00);
@@ -67,17 +68,19 @@ public class CharacterSeparator {
 
         if (ImageViewer.SHOW_PROCESS_DEBUG) {
             Imgproc.cvtColor(CurrentImage, ImageWithContourns, Imgproc.COLOR_GRAY2RGB);
+            Imgproc.cvtColor(CurrentImage, ImageWithContournsPreFiltred, Imgproc.COLOR_GRAY2RGB);
             for (int cId = 0; cId < contourns.size(); cId++) {
                 Imgproc.drawContours(ImageWithContourns, contourns, cId, new Scalar(0, 255, 0), 1);
+                Imgproc.drawContours(ImageWithContournsPreFiltred, contourns, cId, new Scalar(0, 255, 0), 1);
             }
         }
     }
 
     public boolean FilterCountourns() {
 
-        alturas = new CaracteristicaRelacionador(0.3);
-        anchuras = new CaracteristicaRelacionador(0.3);
-        areas = new CaracteristicaRelacionador(0.3);
+        alturas = new CaracteristicaRelacionador(0.15);
+        anchuras = new CaracteristicaRelacionador(0.15);
+        areas = new CaracteristicaRelacionador(0.15);
 
         final boolean REMOVE_OUTSIDE = true;
         List<Point> pts = new ArrayList<Point>();
@@ -93,18 +96,8 @@ public class CharacterSeparator {
             if (areaCheck(boundingRect) && aspectRatioCheck(boundingRect))
             {
                 finalsContourns.add(contourns.get(i));
-                /*
-                if (min_x > boundingRect.x)
-                    min_x = boundingRect.x;
-                if (max_x < boundingRect.x + boundingRect.width)
-                    max_x = boundingRect.x + boundingRect.width;
-                if (min_y > boundingRect.y)
-                    min_y = boundingRect.y;
-                if (max_y < boundingRect.y + boundingRect.height)
-                    max_y = boundingRect.y + boundingRect.height;*/
 
-
-                relationAddValues(contourns.get(i));
+                relationAddValues(boundingRect);
 
             }
             if (REMOVE_OUTSIDE) {
@@ -112,6 +105,12 @@ public class CharacterSeparator {
                     Imgproc.drawContours(CurrentImage, contourns, i,
                             new Scalar(0), -1); // This is a OpenCV function
                 }
+            }
+        }
+
+        if (ImageViewer.SHOW_PROCESS_DEBUG) {
+            for (int cId = 0; cId < finalsContourns.size(); cId++) {
+                Imgproc.drawContours(ImageWithContournsPreFiltred, finalsContourns, cId, new Scalar(255, 0, 0), 1);
             }
         }
 
@@ -157,22 +156,30 @@ public class CharacterSeparator {
     CaracteristicaRelacionador alturas;
     CaracteristicaRelacionador anchuras;
     CaracteristicaRelacionador areas;
-    private void relationAddValues(MatOfPoint matOfPoint) {
+    private void relationAddValues(Rect r) {
 
-        alturas.NuevoValor(matOfPoint.height());
-        anchuras.NuevoValor(matOfPoint.width());
-        areas.NuevoValor(matOfPoint.size().area());
+        alturas.NuevoValor(r.height);
+        anchuras.NuevoValor(r.width);
+        areas.NuevoValor(r.area());
     }
 
     private void relationFilter() {
-        List<MatOfPoint> copy = finalsContourns;
+        List<MatOfPoint> dels = new ArrayList<MatOfPoint>();
+        Log.d("size", "-----------------------------");
         for (int i=0; i<finalsContourns.size();++i){
-            if (!alturas.EsMayoria(finalsContourns.get(i).height())
-                || !anchuras.EsMayoria(finalsContourns.get(i).width())
-                || !areas.EsMayoria(finalsContourns.get(i).size().area()))
-                copy.remove(i);
+            Rect r = Imgproc.boundingRect(finalsContourns.get(i));
+            Log.d("size", "Altura " + r.height);
+            Log.d("size", "\t\tAnchura " + r.width);
+            Log.d("size", "\t\t\t\tArea " + r.area());
+            boolean altura = alturas.EsMayoria(r.height);
+            boolean anchura = anchuras.EsMayoria(r.width);
+            boolean area = areas.EsMayoria(r.area());
+            if (!altura || !anchura || !area)
+                dels.add(finalsContourns.get(i));
         }
-        finalsContourns = copy;
+        finalsContourns.removeAll(dels);
+
+
     }
 
 
@@ -361,7 +368,7 @@ public class CharacterSeparator {
 
         public CaracteristicaContador(double valor)
         {
-            frecuencia = 0;
+            frecuencia = 1;
             valorCaracteristica = valor;
         }
     }
@@ -401,7 +408,10 @@ public class CharacterSeparator {
                     mayorFrecuencia = caracteristicas.get(i).frecuencia;
                 }
                 if (DentroRango(valor, caracteristicas.get(i).valorCaracteristica, porcentajeAceptabilidad)) {
-                    indiceBusqueda = i;
+                    if (indiceBusqueda == -1)
+                        indiceBusqueda = i;
+                    else if (indiceBusqueda != -1 && caracteristicas.get(indiceBusqueda).frecuencia < caracteristicas.get(i).frecuencia )
+                        indiceBusqueda = i;
                 }
             }
             return (indiceBusqueda == indiceMayorFrecuancia);

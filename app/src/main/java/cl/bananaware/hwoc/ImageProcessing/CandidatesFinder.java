@@ -180,7 +180,7 @@ public class CandidatesFinder {
         Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT,
                 new Size( 9*1.5, 3/**1.5*/));
         //Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 9*EROTATION_AMPLIFIER, 3 ));
-        Imgproc.erode(PreMultiDilationImage, CurrentImage, element);
+        Imgproc.erode(CurrentImage, CurrentImage, element);
     }
 
     public void OtsusThreshold() {
@@ -228,10 +228,10 @@ public class CandidatesFinder {
     }
 
     public void OutlinesFilter() {
-
+/*
         quicksort(LastBlueCandidatesMAR, 0, LastBlueCandidatesMAR.size()-1, LastBlueCandidates);
         LastBlueCandidates = LastBlueCandidates.subList(0, Math.min(3, LastBlueCandidates.size()));
-        LastBlueCandidatesMAR = LastBlueCandidatesMAR.subList(0, Math.min(3, LastBlueCandidatesMAR.size()));
+        LastBlueCandidatesMAR = LastBlueCandidatesMAR.subList(0, Math.min(3, LastBlueCandidatesMAR.size()));*/
     }
     public void quicksort(List<RotatedRect> A, int izq, int der, List<MatOfPoint> B) {
 
@@ -274,4 +274,8 @@ public class CandidatesFinder {
         return Math.pow(rr.center.y-CurrentImage.height()/2,2) + Math.pow(rr.center.x-CurrentImage.width()/2,2);
     }
 
+
+    public void SetPreMultiDilationImage() {
+        CurrentImage = PreMultiDilationImage;
+    }
 }
