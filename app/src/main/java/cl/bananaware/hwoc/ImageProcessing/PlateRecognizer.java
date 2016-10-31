@@ -244,6 +244,7 @@ public class PlateRecognizer {
                     }
                 } else {
                     AddImage(secondProcessSteps, R.drawable.npp, 25);
+                    AddStep(secondProcessSteps, characterSeparator.CroppedChars.get(0), 25);
                     for (int n = 0; n < 3; ++n) {
 
 
@@ -273,7 +274,7 @@ public class PlateRecognizer {
                         int[] confidences = MainActivity.baseApi.wordConfidences();
                         if (confidences.length != 0) {
                             finalConfidence += confidences[Math.min(n, confidences.length - 1)];
-                            Log.d("output", "n=" + n + " text:" + recognizedText + "confidence: " + confidences[Math.min(n, confidences.length - 1)]);
+                            Log.d("output", "n=" + n + " text:" + recognizedText + "\tconfidence: " + confidences[Math.min(n, confidences.length - 1)]);
                         }
 
 

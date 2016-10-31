@@ -6,8 +6,10 @@ import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
+import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
@@ -73,19 +75,25 @@ public class CharacterSeparator {
 
     public boolean FilterCountourns() {
 
-        int min_x = CurrentImage.width();
-        int max_x = 0;
-        int min_y = CurrentImage.height();
-        int max_y = 0;
+        alturas = new CaracteristicaRelacionador(0.3);
+        anchuras = new CaracteristicaRelacionador(0.3);
+        areas = new CaracteristicaRelacionador(0.3);
 
         final boolean REMOVE_OUTSIDE = true;
-        Mat maskInsideContour = Mat.zeros(CurrentImage.size(), CvType.CV_8UC1);
+        List<Point> pts = new ArrayList<Point>();
         for (int i=0; i<contourns.size(); ++i)
         {
             Rect boundingRect = Imgproc.boundingRect(contourns.get(i));
+
+
+            MatOfPoint mop = contourns.get(i);
+            MatOfPoint2f mop2f = CandidateSelector.mopToMop2f(mop);
+            RotatedRect rr = Imgproc.minAreaRect(mop2f);
+
             if (areaCheck(boundingRect) && aspectRatioCheck(boundingRect))
             {
                 finalsContourns.add(contourns.get(i));
+                /*
                 if (min_x > boundingRect.x)
                     min_x = boundingRect.x;
                 if (max_x < boundingRect.x + boundingRect.width)
@@ -93,73 +101,50 @@ public class CharacterSeparator {
                 if (min_y > boundingRect.y)
                     min_y = boundingRect.y;
                 if (max_y < boundingRect.y + boundingRect.height)
-                    max_y = boundingRect.y + boundingRect.height;
+                    max_y = boundingRect.y + boundingRect.height;*/
+
+
+                relationAddValues(contourns.get(i));
 
             }
-
-
-
-        }
-
-        for (int i=0; i< finalsContourns.size(); ++i)
-        {
-            Rect boundingRect = Imgproc.boundingRect(contourns.get(i));
-
             if (REMOVE_OUTSIDE) {
-                if (boundingRect.area() >= 0.03 * CurrentImage.size().area()) {
-                    Imgproc.drawContours(maskInsideContour, contourns, i,
-                            new Scalar(255), -1); // This is a OpenCV function
+                if (boundingRect.area() < 0.03 * CurrentImage.size().area()) {
+                    Imgproc.drawContours(CurrentImage, contourns, i,
+                            new Scalar(0), -1); // This is a OpenCV function
                 }
             }
         }
+
+        relationFilter();
+        pts = getPoints();
+
+
+
         // REMOVER LO QUE ESTÁ SOBRE LAS ROJAS Y BAJO ELLAS
         // ADEMAS REMOVER LO QUE ES MUY  PEQUEÑO (CIRCULOS INTERIORES PARA EVITAR ERRORES)
+
+        if (pts.size() <= 0)
+            return false;
+
+        MatOfPoint2f mpp = new MatOfPoint2f(pts.toArray(new Point[pts.size()]));
+        RotatedRect rr = Imgproc.minAreaRect(mpp);
+
         if (REMOVE_OUTSIDE) {
+            Point[] pointss = new Point[4];
+            rr.points(pointss);
 
 
-            // 'contours' is the vector of contours returned from findContours
-            // 'image' is the image you are masking
+            Mat mask = new Mat(CurrentImage.size(), CvType.CV_8UC1, new Scalar(0));     // suppose img is your image Mat
 
-            // Create mask for region within contour
-            //Mat maskInsideContour = Mat.zeros(CurrentImage.size(), CvType.CV_8UC1);
-
-            //for (int idxOfContour = 0; idxOfContour < contourns.size(); idxOfContour++) {
-            // Change to the index of the contour you wish to draw
-
-
-            //}
-
-            //Ajustamos debido a que es un borde interior, y ahora necesitamos el borde exterior del contorno.
-            final int LIMIT = 1;
-            min_y -= LIMIT;
-            min_y = Math.max(min_y,0);
-            min_x -= LIMIT;
-            min_x = Math.max(min_x,0);
-            max_y += LIMIT;
-            max_y = Math.min(max_y,CurrentImage.height());
-            max_x += LIMIT;
-            max_x = Math.min(max_x,CurrentImage.width());
-            if (0 != min_y)
-                Imgproc.rectangle(CurrentImage, new Point(0,0), new Point(CurrentImage.width(), min_y), new Scalar(0,0,0), -1);
-            if (0 != min_x)
-                Imgproc.rectangle(CurrentImage, new Point(0,0), new Point(min_x, CurrentImage.height()), new Scalar(0,0,0), -1);
-            if (CurrentImage.height() != max_y)
-                Imgproc.rectangle(CurrentImage, new Point(0,max_y), new Point(CurrentImage.width(), CurrentImage.height()), new Scalar(0,0,0), -1);
-            if (CurrentImage.width() != max_x)
-                Imgproc.rectangle(CurrentImage, new Point(max_x,0), new Point(CurrentImage.width(), CurrentImage.height()), new Scalar(0,0,0), -1);
-
-            // At this point, maskInsideContour has value of 255 for pixels
-            // within the contour and value of 0 for those not in contour.
-
+            List<MatOfPoint> qqqq = new ArrayList<MatOfPoint>();
+            qqqq.add(new MatOfPoint(pointss));
+            Imgproc.fillPoly(mask, qqqq, new Scalar(255));                           // <- do it here
             Mat maskedImage = new Mat(CurrentImage.size(), CvType.CV_8UC1);  // Assuming you have 3 channel image
-
-            // Do one of the two following lines:
-            maskedImage.setTo(new Scalar(0, 0, 0));  // Set all pixels to (180, 180, 180)
-            CurrentImage.copyTo(maskedImage, maskInsideContour);  // Copy pixels within contour to maskedImage.
-            CurrentImage = maskedImage;
-            // Now regions outside the contour in maskedImage is set to (180, 180, 180) and region
-            // within it is set to the value of the pixels in the contour.
-            CleanedImage = maskedImage;
+            maskedImage.setTo(new Scalar(0));  // Set all pixels to (180, 180, 180)
+            CurrentImage.copyTo(maskedImage, mask);  // Copy pixels within contour to maskedImage.
+            //CurrentImage = C;
+            CleanedImage = maskedImage.clone();
+            CurrentImage = maskedImage.clone();
         }
         if (ImageViewer.SHOW_PROCESS_DEBUG) {
             for (int cId = 0; cId < finalsContourns.size(); cId++) {
@@ -169,6 +154,28 @@ public class CharacterSeparator {
         return finalsContourns.size() != 0;
 
     }
+    CaracteristicaRelacionador alturas;
+    CaracteristicaRelacionador anchuras;
+    CaracteristicaRelacionador areas;
+    private void relationAddValues(MatOfPoint matOfPoint) {
+
+        alturas.NuevoValor(matOfPoint.height());
+        anchuras.NuevoValor(matOfPoint.width());
+        areas.NuevoValor(matOfPoint.size().area());
+    }
+
+    private void relationFilter() {
+        List<MatOfPoint> copy = finalsContourns;
+        for (int i=0; i<finalsContourns.size();++i){
+            if (!alturas.EsMayoria(finalsContourns.get(i).height())
+                || !anchuras.EsMayoria(finalsContourns.get(i).width())
+                || !areas.EsMayoria(finalsContourns.get(i).size().area()))
+                copy.remove(i);
+        }
+        finalsContourns = copy;
+    }
+
+
     int charsPlateLength;
     int InitialPixelX;
     public void CalculatePlateLength()
@@ -184,7 +191,7 @@ public class CharacterSeparator {
 
             boolean added = false;
             for (int k=0; k<hcs.size(); ++k) {
-                if (Math.abs(hcs.get(k).Start - r.y)/r.height <= ERROR && Math.abs(hcs.get(k).End - r.y + r.width)/r.height <= ERROR) {
+                if (Math.abs(hcs.get(k).Start - r.y)/r.height <= ERROR && Math.abs(hcs.get(k).End - (r.y + r.height))/r.height <= ERROR) {
                     ++hcs.get(k).Counts;
                     added = true;
                 }
@@ -210,6 +217,7 @@ public class CharacterSeparator {
         InitialPixelY = hcs.get(modaIndex).Start;
         HeightChars = hcs.get(modaIndex).End - InitialPixelY;
     }
+
     int InitialPixelY;
     int HeightChars;
     List<CharHorizontalPosition> positions = new ArrayList<CharHorizontalPosition>();
@@ -305,9 +313,9 @@ public class CharacterSeparator {
     }
     public void CropAll() {
         int extra = Math.max(Math.round(charsPlateLength*0.0144f), 1);
-        int xStart = 0;//Math.max(positions.get(i).Start-extra, 0);
+        int xStart = Math.max(InitialPixelX-extra, 0);
         int yStart = Math.max(InitialPixelY-extra,0);
-        int xWidth = CurrentImage.width();//Math.min(positions.get(i).End - positions.get(i).Start+2*extra,CurrentImage.width()-xStart);
+        int xWidth = Math.min(charsPlateLength +2*extra,CurrentImage.width()-xStart);
         int yWidth = Math.min(HeightChars+2*extra, CurrentImage.height() - yStart);
         Rect roi = new Rect(xStart, yStart, xWidth, yWidth);
         //CroppedChars.add(new Mat(CurrentImage.clone(), roi)); //black and white image
@@ -316,5 +324,92 @@ public class CharacterSeparator {
         /*CroppedChars.add(CurrentImage);  // gray scale image
         CroppedChars.add(CurrentImage);  // gray scale image*/
 
+    }
+
+    public List<Point> getPoints() {
+        List<Point> pts = new ArrayList<Point>();
+        for (int i=0;  i<finalsContourns.size();++i) {
+            MatOfPoint mop = finalsContourns.get(i);
+            MatOfPoint2f mop2f = CandidateSelector.mopToMop2f(mop);
+            RotatedRect rr = Imgproc.minAreaRect(mop2f);
+            Point[] p = new Point[4];
+            rr.points(p);
+
+            for (int k = 0; k < p.length; ++k) {
+                if (p[k].x < 0)
+                    p[k].x = 0;
+                if (p[k].x > CurrentImage.width())
+                    p[k].x = CurrentImage.width();
+                if (p[k].y < 0)
+                    p[k].y = 0;
+                if (p[k].y > CurrentImage.height())
+                    p[k].y = CurrentImage.height();
+            }
+
+            pts.add(p[0]);
+            pts.add(p[1]);
+            pts.add(p[2]);
+            pts.add(p[3]);
+        }
+        return pts;
+    }
+
+    public class CaracteristicaContador
+    {
+        double valorCaracteristica;
+        int frecuencia;
+
+        public CaracteristicaContador(double valor)
+        {
+            frecuencia = 0;
+            valorCaracteristica = valor;
+        }
+    }
+    public class CaracteristicaRelacionador
+    {
+        List<CaracteristicaContador> caracteristicas;
+        double porcentajeAceptabilidad;
+
+        public CaracteristicaRelacionador(double porcentaje)
+        {
+            caracteristicas = new ArrayList<CaracteristicaContador>();
+            porcentajeAceptabilidad = porcentaje;
+        }
+        public void NuevoValor(double valor)
+        {
+            boolean insertado = false;
+            for (CaracteristicaContador cc:caracteristicas) {
+                if (DentroRango(valor, cc.valorCaracteristica, porcentajeAceptabilidad)) {
+                    ++cc.frecuencia;
+                    insertado = true;
+                    break;
+                }
+            }
+            if (!insertado)
+                caracteristicas.add(new CaracteristicaContador(valor));
+        }
+        public boolean EsMayoria(double valor)
+        {
+            int mayorFrecuencia = 0;
+            int indiceMayorFrecuancia = 0;
+            int indiceBusqueda = -1;
+
+            for (int i=0; i<caracteristicas.size(); ++i) {
+                if (mayorFrecuencia < caracteristicas.get(i).frecuencia)
+                {
+                    indiceMayorFrecuancia = i;
+                    mayorFrecuencia = caracteristicas.get(i).frecuencia;
+                }
+                if (DentroRango(valor, caracteristicas.get(i).valorCaracteristica, porcentajeAceptabilidad)) {
+                    indiceBusqueda = i;
+                }
+            }
+            return (indiceBusqueda == indiceMayorFrecuancia);
+        }
+        private boolean DentroRango(double valor, double valorCaracteristica, double porcentaje)
+        {
+            return (valor >= valorCaracteristica * (1-porcentajeAceptabilidad)
+                    && valor <= valorCaracteristica * (1+porcentajeAceptabilidad));
+        }
     }
 }

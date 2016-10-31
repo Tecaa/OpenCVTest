@@ -317,7 +317,7 @@ public class CandidateSelector {
             }
         }
     }
-    private MatOfPoint2f mopToMop2f(MatOfPoint mop) {
+    public static MatOfPoint2f mopToMop2f(MatOfPoint mop) {
         return new MatOfPoint2f( mop.toArray() );
     }
 
