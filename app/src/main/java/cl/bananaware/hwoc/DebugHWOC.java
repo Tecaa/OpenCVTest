@@ -115,7 +115,7 @@ public class DebugHWOC {
         vertices[3] = new Point(rRect.x+ rRect.width, rRect.y);
 
         for (int j = 0; j < 4; j++){
-            Imgproc.line(mat, vertices[j], vertices[(j+1)%4], new Scalar(255,0,0), 4);
+            Imgproc.line(mat, vertices[j], vertices[(j+1)%4], new Scalar(255,0,0), 1);
         }
         return mat;
     }

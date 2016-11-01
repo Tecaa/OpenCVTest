@@ -176,20 +176,36 @@ public class PlateRecognizer {
                 characterSeparator.AdaptiveThreshold();
                 TimeProfiler.CheckPoint(30, b, i);
                 AddStep(secondProcessSteps, characterSeparator.CurrentImage, 20);
-                characterSeparator.FindCountourns();
+                characterSeparator.FindCountourns(1);
 
                 TimeProfiler.CheckPoint(31, b, i);
                 AddStepWithContourns(secondProcessSteps, characterSeparator.CurrentImage,
                         characterSeparator.contourns, null, 20);
 
-                if (!characterSeparator.FilterCountourns()) {
+                int cant = characterSeparator.FilterCountourns();
+                if (cant <= 3) {
                     TimeProfiler.CheckPoint(32, b, i);
                     AddStep(secondProcessSteps, characterSeparator.ImageWithContournsPreFiltred, 21);
                     AddStep(secondProcessSteps, characterSeparator.ImageWithContourns, 21);
                     AddImage(secondProcessSteps, R.drawable.filter_countourns, 22);
 
                     Log.d("filter", "q=" /*+ q*/ + " !FilterCountourns");
-                    continue;
+
+                    //Segundo intento
+                    if (characterSeparator.isBiggerBoundingArea) {
+                        characterSeparator.CutImage();
+                        characterSeparator.FindCountourns(2);
+                        if (characterSeparator.FilterCountourns() == 0) {
+                            AddStep(secondProcessSteps, characterSeparator.CurrentImage, 9);
+                            AddStep(secondProcessSteps, characterSeparator.ImageWithContournsPreFiltred, 21);
+                            AddStep(secondProcessSteps, characterSeparator.ImageWithContourns, 21);
+                            AddImage(secondProcessSteps, R.drawable.filter_countourns, 22);
+                            continue;
+                        }
+                    }
+                    else
+                        continue;
+
                 }
                 TimeProfiler.CheckPoint(32, b, i);
 
@@ -266,21 +282,22 @@ public class PlateRecognizer {
                         MainActivity.baseApi.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, whiteList);
 
 
-                        Mat m = characterSeparator.CroppedChars.get(0);
+                        //Mat m = characterSeparator.CroppedChars.get(0);
+                        Mat m = characterSeparator.GetCharsGroupN(n);
                         Bitmap temp = Bitmap.createBitmap(m.cols(), m.rows(), Bitmap.Config.ARGB_8888);
-
+                        AddStep(secondProcessSteps, m, 25);
 
                         Utils.matToBitmap(m, temp);
                         MainActivity.baseApi.setImage(temp);
                         String recognizedText = MainActivity.baseApi.getUTF8Text();
                         int[] confidences = MainActivity.baseApi.wordConfidences();
                         if (confidences.length != 0) {
-                            finalConfidence += confidences[Math.min(n, confidences.length - 1)];
+                            finalConfidence += confidences[0];// confidences[Math.min(n, confidences.length - 1)];
                             Log.d("output", "n=" + n + " text:" + recognizedText + "\tconfidence: " + confidences[Math.min(n, confidences.length - 1)]);
                         }
 
 
-                        lastPlate += process(recognizedText, n);
+                        lastPlate += recognizedText;//process(recognizedText, n);
                         TimeProfiler.CheckPoint(35, b, i);
 
                     }
@@ -404,8 +421,15 @@ public class PlateRecognizer {
     }
 
     private void AddStep(List<Mat> firstProcessSteps, Mat currentImage, int i) {
-        if (debugHWOC != null)
+        if (debugHWOC != null) {
+
+            if (currentImage.size().width <= 0 || currentImage.size().height <= 0)
+            {
+                Log.e("ERROR", "ERROR IMAGEN SIN SUFICIENTE ANCHO O ALTO");
+                return;
+            }
             debugHWOC.AddStep(firstProcessSteps, currentImage, i);
+        }
     }
 
     private boolean isCorrectPlate(String lastPlate) {

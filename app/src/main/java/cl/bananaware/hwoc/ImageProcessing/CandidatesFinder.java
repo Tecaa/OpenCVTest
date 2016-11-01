@@ -151,7 +151,7 @@ public class CandidatesFinder {
         Size size;
         int sigma;
         //if (ImageViewer.GOOD_SIZE) {
-            size = new Size(5, 5);
+        size = new Size(9, 9);//size = new Size(5, 5);
             sigma = 2; //4?
         /*}
         else {

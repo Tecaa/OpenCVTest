@@ -1,5 +1,7 @@
 package cl.bananaware.hwoc.ImageProcessing;
 
+import android.support.annotation.BoolRes;
+import android.support.v4.app.NotificationCompatSideChannelService;
 import android.util.Log;
 
 import org.opencv.core.Core;
@@ -22,8 +24,10 @@ import cl.bananaware.hwoc.R;
  * Created by fergu on 07-08-2016.
  */
 public class CandidateSelector {
+    private static final boolean ROTATED_RECT = false;
     private double OriginalAngle;
-    public RotatedRect CandidateRect, MinAreaRect;
+    public RotatedRect CandidateRect, MinAreaRotatedRect;
+    public Rect MinAreaRect;
     public Mat OriginalEqualizedImage, CurrentImage, OriginalImageRealSize;
     public Mat CroppedExtraBoundingBox;
     private double MinAreaRectAngle;
@@ -33,6 +37,7 @@ public class CandidateSelector {
     private int maxAreaCandidateProIndex;
     private float horizontalDilatationAmplifier;
     final double EXTRA = 1.1;
+    final double EXTRA2 = 1.0;
     public List<MatOfPoint> GreenCandidatesPro;
     private double scale;
     public CandidateSelector(Mat OriginalEqualizedImage, Mat OriginalImageRealSize, RotatedRect candidate)
@@ -72,20 +77,12 @@ public class CandidateSelector {
     }
 
     public double CropExtraRotatedRect(boolean realSize) {
-        /*Rect roi = new Rect(Math.max(CandidateRect.boundingRect().x -dx, 0),
-                Math.max(CandidateRect.boundingRect().y-dx,0), newWidth, newHeight);
-
-        if (roi.x + roi.width > OriginalEqualizedImage.width()) {
-            roi.width = OriginalEqualizedImage.width() - roi.x;
-        }
-        if (roi.y + roi.height > OriginalEqualizedImage.height())
-            roi.height = OriginalEqualizedImage.height() - roi.y;
-        */
         double factor = 0;
         if (realSize) {
+
             RotatedRect rr = CandidateRect.clone();
-            rr.size.width = newWidth * EXTRA*scale;
-            rr.size.height = newHeight * EXTRA*scale;
+            rr.size.width = ((double)newWidth) * EXTRA*scale;
+            rr.size.height = ((double)newHeight) * EXTRA*scale;
             rr.center.x = (rr.center.x - dx) *scale;
             rr.center.y = (rr.center.y - dy) *scale;
 
@@ -98,8 +95,6 @@ public class CandidateSelector {
             Mat rotated = new Mat();
             CurrentImage = new Mat();
             Mat precrop = OriginalImageRealSize.clone();
-
-            //factor = ResizeImages(rr, precrop);
 
             Mat matrix = Imgproc.getRotationMatrix2D(rr.center, /*MinAreaRectAngle + */rr.angle, 1.0);
             Imgproc.warpAffine(precrop, rotated, matrix, precrop.size(), Imgproc.INTER_CUBIC); // SLOW OPERATION
@@ -120,8 +115,8 @@ public class CandidateSelector {
             /*rr.size.width *= EXTRA;
             rr.size.height *= EXTRA;
             */
-            rr.size.width = newWidth * EXTRA;
-            rr.size.height = newHeight * EXTRA;
+            rr.size.width = ((double)newWidth) * EXTRA;
+            rr.size.height = ((double)newHeight) * EXTRA;
 
             //rr.center.x -= dx;
             //rr.center.y -= dy;
@@ -324,10 +319,18 @@ public class CandidateSelector {
     public boolean FindMinAreaRectInMaxArea() {
         if (GreenCandidatesPro.size() == 0)
             return false;
-        MatOfPoint mop2 = GreenCandidatesPro.get(maxAreaCandidateProIndex);
-        MatOfPoint2f mop2f2 = mopToMop2f(mop2);
-        MinAreaRect = Imgproc.minAreaRect(mop2f2);
-            return true;
+
+        if (ROTATED_RECT) {
+            MatOfPoint mop2 = GreenCandidatesPro.get(maxAreaCandidateProIndex);
+            MatOfPoint2f mop2f2 = mopToMop2f(mop2);
+            MinAreaRotatedRect = Imgproc.minAreaRect(mop2f2);
+        }
+        else
+        {
+            MatOfPoint mop2 = GreenCandidatesPro.get(maxAreaCandidateProIndex);
+            MinAreaRect = Imgproc.boundingRect(mop2);
+        }
+        return true;
     }
 
     final double MIN_AREA = 420; //950 is a good value
@@ -336,17 +339,26 @@ public class CandidateSelector {
         // Autos chilenos 36cm x 13cm Concentrarse en éstos
         // Motos chilenas nuevas 14,5cm x 12cm.
         // Motos chilenas antiguas 14,5cm x 8cm.
-        MinAreaRectAngle = MinAreaRect.angle;
-        MinAreaRectSize = MinAreaRect.size;
-        if (MinAreaRect.angle < -45.) {
-            MinAreaRectAngle += 90.0;
-            //swaping height and width
-            double widthTemp = MinAreaRectSize.width;
-            MinAreaRectSize.width = MinAreaRectSize.height;
-            MinAreaRectSize.height = widthTemp;
+        Size rectSize;
+        if (ROTATED_RECT) {
+            MinAreaRectAngle = MinAreaRotatedRect.angle;
+            MinAreaRectSize = MinAreaRotatedRect.size;
+            if (MinAreaRotatedRect.angle < -45.) {
+                MinAreaRectAngle += 90.0;
+                //swaping height and width
+                double widthTemp = MinAreaRectSize.width;
+                MinAreaRectSize.width = MinAreaRectSize.height;
+                MinAreaRectSize.height = widthTemp;
+            }
+            rectSize.width = MinAreaRectSize.width;
+            rectSize.height = MinAreaRectSize.height;
+        }
+        else
+        {
+            rectSize= MinAreaRect.size();
         }
 
-        double imageRatio = MinAreaRectSize.width / MinAreaRectSize.height;//Math.max(mr2.size.width,mr2.size.height)/Math.min(mr2.size.width,mr2.size.height);
+        double imageRatio = rectSize.width / rectSize.height;//Math.max(mr2.size.width,mr2.size.height)/Math.min(mr2.size.width,mr2.size.height);
         final double OFFICIAL_RATIO = 36f/13f;
         final double MIN_RATIO = 2.1f;// funciona 2.2f;
         final double MAX_RATIO = 5.7f;
@@ -360,7 +372,7 @@ public class CandidateSelector {
         if (checkError == null)
         {
             // AREAS Y PORCENTAJE DE AREAS
-            double area = MinAreaRectSize.width*MinAreaRectSize.height;
+            double area = rectSize.width*rectSize.height;
             double maxAreaImage = OriginalEqualizedImage.size().width * OriginalEqualizedImage.size().height;
             double percentajeImage = area/maxAreaImage;
             if (area*scale < MIN_AREA)
@@ -375,28 +387,49 @@ public class CandidateSelector {
         if (realSizeCrop) {
 
             if (factor != 0) {
-                MinAreaRect.center.x *= scale * EXTRA * factor;
-                MinAreaRect.center.y *= scale * EXTRA * factor;
-                MinAreaRect.size.height *= scale * factor;
-                MinAreaRect.size.width *= scale * factor;
+                MinAreaRotatedRect.center.x *= scale * EXTRA * factor ;
+                MinAreaRotatedRect.center.y *= scale * EXTRA * factor ;
+                MinAreaRotatedRect.size.height *= scale * factor;
+                MinAreaRotatedRect.size.width *= scale * factor;
             }
-
-
-//            Imgproc.cvtColor(CroppedExtraBoundingBox, CroppedExtraBoundingBox, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
-//            Imgproc.cvtColor(CurrentImage, CurrentImage, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
         }
-
-
-
-        Mat matrix = Imgproc.getRotationMatrix2D(MinAreaRect.center, MinAreaRectAngle  /*this.OriginalAngle */, 1.0);
+        Mat matrix = Imgproc.getRotationMatrix2D(MinAreaRotatedRect.center, MinAreaRectAngle  /*this.OriginalAngle */, 1.0);
         // perform the affine transformation
         Mat rotated = new Mat();
         Mat precrop = CurrentImage;
         //Mat precrop = CroppedExtraBoundingBox.clone();
         Imgproc.warpAffine(precrop, rotated, matrix, precrop.size(), Imgproc.INTER_CUBIC);
         // crop the resulting image
-        Imgproc.getRectSubPix(rotated, MinAreaRectSize, MinAreaRect.center, CurrentImage);
+        Imgproc.getRectSubPix(rotated, MinAreaRectSize, MinAreaRotatedRect.center, CurrentImage);
     }
+
+    private void CropRect(boolean realSizeCrop, double factor) {
+
+        if (realSizeCrop) {
+
+            if (factor != 0) {
+                MinAreaRect.x *= (scale * EXTRA * factor) ;/// 2.0;
+                MinAreaRect.y *= (scale * EXTRA * factor) ;/// 2.0;
+                MinAreaRect.height *= scale * factor;
+                MinAreaRect.width *= scale * factor;
+
+/*
+                if (MinAreaRect.width / MinAreaRect.height > 0)
+                    MinAreaRect.width *= EXTRA2;
+                else
+                    MinAreaRect.height *= EXTRA2;*/
+
+                MinAreaRect.x = Math.max(0, MinAreaRect.x);
+                MinAreaRect.width = Math.min(CurrentImage.width() - MinAreaRect.x, MinAreaRect.width);
+                MinAreaRect.y = Math.max(0, MinAreaRect.y);
+                MinAreaRect.height = Math.min(CurrentImage.height() - MinAreaRect.y, MinAreaRect.height);
+
+
+
+        }}
+        CurrentImage = CurrentImage.submat(MinAreaRect);
+    }
+
 
     public boolean PercentajeAreaCandidateCheck() {
         double area1 = OriginalEqualizedImage.size().area();
@@ -408,23 +441,16 @@ public class CandidateSelector {
     public Mat GetFinalImage(boolean realSizeCrop) {
         if (realSizeCrop)
         {
-            //CropExtraBoundingBox(true);
-
-  /*          MinAreaRect.size.height *= scale*EXTRA;
-            MinAreaRect.size.width *= scale*EXTRA;
-            MinAreaRect.center.y *= scale;
-            MinAreaRect.center.x *= scale;
-
-            if (MinAreaRect.angle < -45.) {
-                MinAreaRect.angle += 90.0;
-            }
-*/
             double factor = CropExtraRotatedRect(true);
-            //DebugHWOC.drawRotatedRectInMat(MinAreaRect, this.CurrentImage);
-            CropMinRotatedRect(true, factor);
+            if (ROTATED_RECT)
+                CropMinRotatedRect(true, factor);
+            else
+                CropRect(true, factor);
         }
         return CurrentImage;//o CurrentImage.clone()?
     }
+
+
 
 
     public void Equalize() {

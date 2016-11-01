@@ -11,6 +11,7 @@ import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
@@ -23,12 +24,13 @@ import cl.bananaware.hwoc.ImageViewer;
  * Created by fergu on 12-08-2016.
  */
 public class CharacterSeparator {
+    private static final int PADDING = 10;
     public Mat CurrentImage;
     public Mat CleanedImage;
     public Mat ImageWithContourns, ImageWithContournsPreFiltred;
     public Mat OriginalImage;
     //private Mat VerticalHistogram;
-    public List<MatOfPoint> contourns = new ArrayList<MatOfPoint>();
+    public List<MatOfPoint> contourns;
     public List<MatOfPoint> finalsContourns = new ArrayList<MatOfPoint>();
     private List<Double> correctLeftPositions = new ArrayList<Double>();
     private List<Double> correctRightPositions = new ArrayList<Double>();
@@ -58,11 +60,13 @@ public class CharacterSeparator {
                 Imgproc.THRESH_BINARY, 13, 5);
     }
 
-    public void FindCountourns()
+    public void FindCountourns(int time)
     {
-        Core.bitwise_not(CurrentImage, CurrentImage);
+        if (time == 1)
+            Core.bitwise_not(CurrentImage, CurrentImage);
 
         Mat hierarchy = new Mat();
+        contourns = new ArrayList<MatOfPoint>();
         Imgproc.findContours(CurrentImage.clone(),contourns,hierarchy,Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);
 
 
@@ -76,17 +80,25 @@ public class CharacterSeparator {
         }
     }
 
-    public boolean FilterCountourns() {
+    Boolean isBiggerBoundingArea;
+    public int FilterCountourns() {
 
-        alturas = new CaracteristicaRelacionador(0.15);
-        anchuras = new CaracteristicaRelacionador(0.15);
-        areas = new CaracteristicaRelacionador(0.15);
+        alturas = new CaracteristicaRelacionador(0.4);
+        anchuras = new CaracteristicaRelacionador(0.4);
+        areas = new CaracteristicaRelacionador(0.4);
 
         final boolean REMOVE_OUTSIDE = true;
-        List<Point> pts = new ArrayList<Point>();
+        //List<Point> pts = new ArrayList<Point>();
+        isBiggerBoundingArea = false;
+        double biggerBoundingArea = 0;
+        finalsContourns.clear();
         for (int i=0; i<contourns.size(); ++i)
         {
             Rect boundingRect = Imgproc.boundingRect(contourns.get(i));
+            double a = boundingRect.area();
+            if (a >= biggerBoundingArea)
+                biggerBoundingArea = a;
+
 
 
             MatOfPoint mop = contourns.get(i);
@@ -101,7 +113,7 @@ public class CharacterSeparator {
 
             }
             if (REMOVE_OUTSIDE) {
-                if (boundingRect.area() < 0.03 * CurrentImage.size().area()) {
+                if (boundingRect.area() < 0.025 * CurrentImage.size().area()) {
                     Imgproc.drawContours(CurrentImage, contourns, i,
                             new Scalar(0), -1); // This is a OpenCV function
                 }
@@ -114,29 +126,38 @@ public class CharacterSeparator {
             }
         }
 
+        if (biggerBoundingArea / CurrentImage.size().area() >= 0.8)
+            isBiggerBoundingArea = true;
+
+        if (finalsContourns.size() <= 3)
+            return finalsContourns.size();
+
         relationFilter();
-        pts = getPoints();
+        //pts = getPoints();
 
 
 
         // REMOVER LO QUE ESTÁ SOBRE LAS ROJAS Y BAJO ELLAS
         // ADEMAS REMOVER LO QUE ES MUY  PEQUEÑO (CIRCULOS INTERIORES PARA EVITAR ERRORES)
 
-        if (pts.size() <= 0)
-            return false;
+        //if (pts.size() <= 0)
+          //  return false;
 
-        MatOfPoint2f mpp = new MatOfPoint2f(pts.toArray(new Point[pts.size()]));
-        RotatedRect rr = Imgproc.minAreaRect(mpp);
+        //MatOfPoint2f mpp = new MatOfPoint2f(pts.toArray(new Point[pts.size()]));
+        //RotatedRect rr = Imgproc.minAreaRect(mpp);
+
+
 
         if (REMOVE_OUTSIDE) {
-            Point[] pointss = new Point[4];
-            rr.points(pointss);
+            //Point[] pointss = new Point[4];
+            //rr.points(pointss);
 
 
             Mat mask = new Mat(CurrentImage.size(), CvType.CV_8UC1, new Scalar(0));     // suppose img is your image Mat
 
             List<MatOfPoint> qqqq = new ArrayList<MatOfPoint>();
-            qqqq.add(new MatOfPoint(pointss));
+            //qqqq.add(new MatOfPoint(pointss));
+            qqqq.add(GetLimits(finalsContourns));
             Imgproc.fillPoly(mask, qqqq, new Scalar(255));                           // <- do it here
             Mat maskedImage = new Mat(CurrentImage.size(), CvType.CV_8UC1);  // Assuming you have 3 channel image
             maskedImage.setTo(new Scalar(0));  // Set all pixels to (180, 180, 180)
@@ -150,9 +171,113 @@ public class CharacterSeparator {
                 Imgproc.drawContours(ImageWithContourns, finalsContourns, cId, new Scalar(255, 0, 0), 1);
             }
         }
-        return finalsContourns.size() != 0;
+        return finalsContourns.size();
 
     }
+
+    private MatOfPoint GetLimits(List<MatOfPoint> finalsContourns) {
+        List<Point> superior = new ArrayList<Point>();
+        List<Point> inferior = new ArrayList<Point>();
+
+        Double x_min = Double.MAX_VALUE;
+        Double x_max = 0.0;
+        for (int i=0; i<finalsContourns.size(); ++i)
+        {
+            //Rect temp = Imgproc.boundingRect(finalsContourns.get(i));
+            RotatedRect temp = Imgproc.minAreaRect(CandidateSelector.mopToMop2f(finalsContourns.get(i)));
+            LimitsPointResult res = GetLimitsPoints(temp);
+            superior.add(res.g1);
+            superior.add(res.g2);
+            inferior.add(res.l1);
+            inferior.add(res.l2);
+
+            if (x_min > res.x_min) {
+                x_min = res.x_min;
+            }
+            if (x_max < res.x_max) {
+                x_max = res.x_max;
+            }
+        }
+
+        LinearRegression lrSuperior = new LinearRegression();
+        LinearRegression lrInferior = new LinearRegression();
+
+        lrSuperior.AddPairs(superior);
+        lrInferior.AddPairs(inferior);
+
+        lrSuperior.CalculateCoeficients();
+        lrInferior.CalculateCoeficients();
+
+        //get 4 points
+        Point[] points = new Point[4];
+        points[0] = new Point(x_min, lrSuperior.PredictValue(x_min));
+        points[1] = new Point(x_max, lrSuperior.PredictValue(x_max));
+        points[2] = new Point(x_max, lrInferior.PredictValue(x_max));
+        points[3] = new Point(x_min, lrInferior.PredictValue(x_min));
+        /*
+        points[0] = new Point(x_min, (x_min - y_iz_max.x)/(y_der_max.x - y_iz_max.x) * (y_der_max.y - y_iz_max.y) + y_iz_max.y);
+        points[1] = new Point(x_max, (x_max - y_iz_max.x)/(y_der_max.x - y_iz_max.x) * (y_der_max.y - y_iz_max.y) + y_iz_max.y);
+        points[2] = new Point(x_max, (x_max - y_iz_low.x)/(y_der_low.x - y_iz_low.x) * (y_der_low.y - y_iz_low.y) + y_iz_low.y);
+        points[3] = new Point(x_min, (x_min - y_iz_low.x)/(y_der_low.x - y_iz_low.x) * (y_der_low.y - y_iz_low.y) + y_iz_low.y);*/
+
+        return new MatOfPoint(points);
+    }
+
+    private Double GetRightValue(Point[] points_der) {
+        Double right = points_der[0].x;
+        for (int i=1; i< points_der.length; ++i) {
+            if (points_der[i].x > right)
+                right = points_der[i].x;
+        }
+        return  right;
+    }
+
+    private Double GetLeftValue(Point[] points_iz) {
+        Double left = points_iz[0].x;
+        for (int i=1; i< points_iz.length; ++i) {
+            if (points_iz[i].x < left)
+                left = points_iz[i].x;
+        }
+        return  left;
+    }
+
+    private LimitsPointResult GetLimitsPoints(RotatedRect rr) {
+        Point[] ps = new Point[4];
+        rr.points(ps);
+
+        Point great1 = ps[0];
+        Point great2 = ps[0];
+        Point lower1 = ps[0];
+        Point lower2 = ps[0];
+        Double x_min = ps[0].x;
+        Double x_max = ps[0].x;
+
+
+        for (int i = 1; i< ps.length; ++i) {
+            if (ps[i].y > great1.y) {
+                great2 = great1;
+                great1 = ps[i];
+            }
+            else if (ps[i].y > great2.y) {
+                great2 = ps[i];
+            }
+
+            if (ps[i].y < lower1.y) {
+                lower2 = lower1;
+                lower1 = ps[i];
+            }
+            else if (ps[i].y < lower2.y) {
+                lower2 = ps[i];
+            }
+
+            if (ps[i].x < x_min)
+                x_min = ps[i].x;
+            if (ps[i].x > x_max)
+                x_max = ps[i].x;
+        }
+        return new LimitsPointResult(great1, great2, lower1, lower2, x_min, x_max);
+    }
+
     CaracteristicaRelacionador alturas;
     CaracteristicaRelacionador anchuras;
     CaracteristicaRelacionador areas;
@@ -318,15 +443,16 @@ public class CharacterSeparator {
             //CroppedChars.add(new Mat(OriginalImage.clone(), roi));  // gray scale image
         }
     }
+    Rect CropCharactersROI;
     public void CropAll() {
         int extra = Math.max(Math.round(charsPlateLength*0.0144f), 1);
         int xStart = Math.max(InitialPixelX-extra, 0);
         int yStart = Math.max(InitialPixelY-extra,0);
         int xWidth = Math.min(charsPlateLength +2*extra,CurrentImage.width()-xStart);
         int yWidth = Math.min(HeightChars+2*extra, CurrentImage.height() - yStart);
-        Rect roi = new Rect(xStart, yStart, xWidth, yWidth);
+        CropCharactersROI = new Rect(xStart, yStart, xWidth, yWidth);
         //CroppedChars.add(new Mat(CurrentImage.clone(), roi)); //black and white image
-        Core.copyMakeBorder(new Mat(CurrentImage, roi), CurrentImage, 10, 10, 10, 10, 0);
+        Core.copyMakeBorder(new Mat(CurrentImage, CropCharactersROI), CurrentImage, PADDING, PADDING, PADDING, PADDING, 0);
         CroppedChars.add(CurrentImage);  // gray scale image
         /*CroppedChars.add(CurrentImage);  // gray scale image
         CroppedChars.add(CurrentImage);  // gray scale image*/
@@ -359,6 +485,35 @@ public class CharacterSeparator {
             pts.add(p[3]);
         }
         return pts;
+    }
+
+    public void CutImage() {
+        Rect myROI = new Rect(0,0,CurrentImage.width(), (int)(CurrentImage.height()*0.8f));
+        CurrentImage = CurrentImage.submat(myROI);
+    }
+
+    public Mat GetCharsGroupN(int n) {
+        Rect r;
+
+        int EXTRA = (int)(charsPlateLength * 0.01);
+        int ancho = charsPlateLength/3;
+        int base = InitialPixelX - CropCharactersROI.x + PADDING;
+        switch (n)
+        {
+            case 0:
+                r = new Rect(base - EXTRA, 0, ancho+2*EXTRA, CurrentImage.height());
+                break;
+            case 1:
+                r = new Rect(base + ancho-EXTRA, 0, ancho+2*EXTRA, CurrentImage.height());
+                break;
+            case 2:
+            default:
+                r = new Rect(base + 2*ancho - EXTRA, 0, ancho+2*EXTRA, CurrentImage.height());
+                break;
+        }
+
+        //Size s = CroppedChars.get(0).size();
+        return CroppedChars.get(0).submat(r);
     }
 
     public class CaracteristicaContador
