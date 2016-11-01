@@ -212,10 +212,8 @@ public class CandidateSelector {
                 roi.height = OriginalEqualizedImage.height() - roi.y;
             CurrentImage = new Mat(OriginalEqualizedImage, roi).clone();
         }
-        Log.d("caida", "check 2.2.7");
         if (ImageViewer.SHOW_PROCESS_DEBUG)
             CroppedExtraBoundingBox = CurrentImage.clone();
-        Log.d("caida", "check 2.2.8");
     }
 
     public void Sobel() {

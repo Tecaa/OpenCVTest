@@ -164,10 +164,10 @@ public class PlateRecognizer {
 
                 //NOTA: ACA RECIEN OBTENER IMAGEN TAMAÑO REAL.
                 AddImage(secondProcessSteps, R.drawable.qpp, 19);
-                //Mat img = finalCandidates.get(q);
 
 
-                if (ImageViewer.SHOW_PROCESS_DEBUG)
+
+                //if (ImageViewer.SHOW_PROCESS_DEBUG)
                     img = img.clone();
 
                 CharacterSeparator characterSeparator = new CharacterSeparator(img);

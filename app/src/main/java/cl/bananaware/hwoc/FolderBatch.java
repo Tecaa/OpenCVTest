@@ -21,7 +21,7 @@ public class FolderBatch {
 
     public FolderBatch(Context context)
     {
-        //ImageViewer.SHOW_PROCESS_DEBUG = false;
+        ImageViewer.SHOW_PROCESS_DEBUG = false;
 
         files = new ArrayList<File>();
         plateProcessSystem = new PlateProcessSystem(context);
