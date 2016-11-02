@@ -59,6 +59,38 @@ public class CandidatesFinder {
         LastBlueCandidates = new ArrayList<MatOfPoint>();
         TimeProfiler.CheckPoint(1.6);
     }
+    public CandidatesFinder(Mat m_, Mat m_Chica)
+    {
+        OriginalImage = m_;
+        OriginalEqualizedImage = new Mat();
+        PreMultiDilationImage = new Mat();
+        //Utils.bitmapToMat(bm, OriginalImage);
+        OriginalImageRealSize = new Mat();
+
+        if (!PROBANDO)
+            Imgproc.cvtColor(OriginalImage, OriginalImageRealSize, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
+
+        /*
+        final int MAX_PIXELS;
+        if (ImageViewer.GOOD_SIZE)
+            MAX_PIXELS = 1000;
+        else
+            MAX_PIXELS = 400;*/
+
+        OriginalImage = m_Chica;//Resize(OriginalImage, MAX_PIXELS);
+
+        TimeProfiler.CheckPoint(1.3);
+        //OriginalImageRealSize = OriginalImage.clone(); //test
+        scale = OriginalImageRealSize.size().width/OriginalImage.size().width;
+        CurrentImage = OriginalImage.clone();
+
+        BlueCandidates = new ArrayList<MatOfPoint>();
+        //BlueCandidatesRR = new ArrayList<RotatedRect>();
+        GreenCandidates = new ArrayList<MatOfPoint>();
+        LastGreenCandidates = new ArrayList<MatOfPoint>();
+        LastBlueCandidates = new ArrayList<MatOfPoint>();
+        TimeProfiler.CheckPoint(1.6);
+    }
 
 
     public static double Resize(Mat originalImage, int maxPixels) {

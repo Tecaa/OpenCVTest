@@ -31,7 +31,7 @@ public class CharacterSeparator {
     public Mat OriginalImage;
     //private Mat VerticalHistogram;
     public List<MatOfPoint> contourns;
-    public List<MatOfPoint> finalsContourns = new ArrayList<MatOfPoint>();
+    public List<MatOfPoint> finalsContourns;
     private List<Double> correctLeftPositions = new ArrayList<Double>();
     private List<Double> correctRightPositions = new ArrayList<Double>();
     public CharacterSeparator(Mat mat) {
@@ -84,14 +84,14 @@ public class CharacterSeparator {
     public int FilterCountourns() {
 
         alturas = new CaracteristicaRelacionador(0.4);
-        anchuras = new CaracteristicaRelacionador(0.4);
-        areas = new CaracteristicaRelacionador(0.4);
+        anchuras = new CaracteristicaRelacionador(0.40);
+        areas = new CaracteristicaRelacionador(0.40);
 
         final boolean REMOVE_OUTSIDE = true;
         //List<Point> pts = new ArrayList<Point>();
         isBiggerBoundingArea = false;
         double biggerBoundingArea = 0;
-        finalsContourns.clear();
+        finalsContourns = new ArrayList<MatOfPoint>();
         for (int i=0; i<contourns.size(); ++i)
         {
             Rect boundingRect = Imgproc.boundingRect(contourns.get(i));

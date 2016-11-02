@@ -231,7 +231,6 @@ public class CandidateSelector {
     }
 
     public void GaussianBlur() {
-
         int factor = GetGaussianBlurFactor(CurrentImage.size());
         Imgproc.GaussianBlur(CurrentImage, CurrentImage, new Size(factor,factor), 2);
     }
