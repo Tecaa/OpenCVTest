@@ -120,7 +120,8 @@ public class CandidatesFinder {
     }
     public void ToGrayScale() {
         if (!PROBANDO)
-            Imgproc.cvtColor(CurrentImage, CurrentImage, Imgproc.COLOR_RGB2GRAY);
+            if (CurrentImage.channels()>= 3)
+                Imgproc.cvtColor(CurrentImage, CurrentImage, Imgproc.COLOR_RGB2GRAY);
     }
 
     public void EqualizeHistOriginalImage(boolean doit) {

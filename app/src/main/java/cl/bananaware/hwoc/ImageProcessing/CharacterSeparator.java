@@ -81,58 +81,22 @@ public class CharacterSeparator {
     }
 
     Boolean isBiggerBoundingArea;
-    public int FilterCountourns() {
+    public int FilterAndRotateCountourns(int time) {
+        Mat image = CurrentImage.clone();
+        if (time == 2 && PatentInclinationAngle != 0)
+            rotatePlateImage(image, -PatentInclinationAngle);
+        int sizeF = getFinalContourns(image);
 
-        alturas = new CaracteristicaRelacionador(0.4);
-        anchuras = new CaracteristicaRelacionador(0.40);
-        areas = new CaracteristicaRelacionador(0.40);
-
-        final boolean REMOVE_OUTSIDE = true;
-        //List<Point> pts = new ArrayList<Point>();
-        isBiggerBoundingArea = false;
-        double biggerBoundingArea = 0;
-        finalsContourns = new ArrayList<MatOfPoint>();
-        for (int i=0; i<contourns.size(); ++i)
-        {
-            Rect boundingRect = Imgproc.boundingRect(contourns.get(i));
-            double a = boundingRect.area();
-            if (a >= biggerBoundingArea)
-                biggerBoundingArea = a;
-
-
-
-            MatOfPoint mop = contourns.get(i);
-            MatOfPoint2f mop2f = CandidateSelector.mopToMop2f(mop);
-            RotatedRect rr = Imgproc.minAreaRect(mop2f);
-
-            if (areaCheck(boundingRect) && aspectRatioCheck(boundingRect))
-            {
-                finalsContourns.add(contourns.get(i));
-
-                relationAddValues(boundingRect);
-
-            }
-            if (REMOVE_OUTSIDE) {
-                if (boundingRect.area() < 0.025 * CurrentImage.size().area()) {
-                    Imgproc.drawContours(CurrentImage, contourns, i,
-                            new Scalar(0), -1); // This is a OpenCV function
-                }
-            }
-        }
-
-        if (ImageViewer.SHOW_PROCESS_DEBUG) {
-            for (int cId = 0; cId < finalsContourns.size(); cId++) {
-                Imgproc.drawContours(ImageWithContournsPreFiltred, finalsContourns, cId, new Scalar(255, 0, 0), 1);
-            }
-        }
-
-        if (biggerBoundingArea / CurrentImage.size().area() >= 0.8)
-            isBiggerBoundingArea = true;
-
-        if (finalsContourns.size() <= 3)
-            return finalsContourns.size();
+        if (sizeF <= 3)
+            return sizeF;
 
         relationFilter();
+        MatOfPoint limits = GetLimits(finalsContourns);
+        //rotatePlateImage(CurrentImage, -PatentInclinationAngle);
+
+        /*sizeF = getFinalContourns(2);
+        if (sizeF <= 3)
+            return sizeF;*/
         //pts = getPoints();
 
 
@@ -153,18 +117,20 @@ public class CharacterSeparator {
             //rr.points(pointss);
 
 
-            Mat mask = new Mat(CurrentImage.size(), CvType.CV_8UC1, new Scalar(0));     // suppose img is your image Mat
+            Mat mask = new Mat(image.size(), CvType.CV_8UC1, new Scalar(0));     // suppose img is your image Mat
 
             List<MatOfPoint> qqqq = new ArrayList<MatOfPoint>();
             //qqqq.add(new MatOfPoint(pointss));
-            qqqq.add(GetLimits(finalsContourns));
+            qqqq.add(limits);
             Imgproc.fillPoly(mask, qqqq, new Scalar(255));                           // <- do it here
-            Mat maskedImage = new Mat(CurrentImage.size(), CvType.CV_8UC1);  // Assuming you have 3 channel image
+            Mat maskedImage = new Mat(image.size(), CvType.CV_8UC1);  // Assuming you have 3 channel image
             maskedImage.setTo(new Scalar(0));  // Set all pixels to (180, 180, 180)
-            CurrentImage.copyTo(maskedImage, mask);  // Copy pixels within contour to maskedImage.
+            image.copyTo(maskedImage, mask);  // Copy pixels within contour to maskedImage.
             //CurrentImage = C;
             CleanedImage = maskedImage.clone();
             CurrentImage = maskedImage.clone();
+
+
         }
         if (ImageViewer.SHOW_PROCESS_DEBUG) {
             for (int cId = 0; cId < finalsContourns.size(); cId++) {
@@ -175,6 +141,16 @@ public class CharacterSeparator {
 
     }
 
+    private void rotatePlateImage(Mat src, double angle)
+    {
+
+        Point pt = new Point(src.cols()/2., src.rows()/2.);
+        Mat r = Imgproc.getRotationMatrix2D(pt, angle, 1.0);
+        Imgproc.warpAffine(src, src, r, new Size(src.cols(), src.rows()));
+    }
+
+
+    double PatentInclinationAngle;
     private MatOfPoint GetLimits(List<MatOfPoint> finalsContourns) {
         List<Point> superior = new ArrayList<Point>();
         List<Point> inferior = new ArrayList<Point>();
@@ -219,7 +195,7 @@ public class CharacterSeparator {
         points[1] = new Point(x_max, (x_max - y_iz_max.x)/(y_der_max.x - y_iz_max.x) * (y_der_max.y - y_iz_max.y) + y_iz_max.y);
         points[2] = new Point(x_max, (x_max - y_iz_low.x)/(y_der_low.x - y_iz_low.x) * (y_der_low.y - y_iz_low.y) + y_iz_low.y);
         points[3] = new Point(x_min, (x_min - y_iz_low.x)/(y_der_low.x - y_iz_low.x) * (y_der_low.y - y_iz_low.y) + y_iz_low.y);*/
-
+        PatentInclinationAngle = Math.atan2(-(points[1].y - points[0].y), points[1].x - points[0].x)*180.0 / Math.PI;
         return new MatOfPoint(points);
     }
 
@@ -514,6 +490,60 @@ public class CharacterSeparator {
 
         //Size s = CroppedChars.get(0).size();
         return CroppedChars.get(0).submat(r);
+    }
+
+    final boolean REMOVE_OUTSIDE = true;
+    public int getFinalContourns(Mat image) {
+
+        alturas = new CaracteristicaRelacionador(0.40);
+        anchuras = new CaracteristicaRelacionador(0.40);
+        areas = new CaracteristicaRelacionador(0.40);
+
+        //List<Point> pts = new ArrayList<Point>();
+        isBiggerBoundingArea = false;
+        double biggerBoundingArea = 0;
+        finalsContourns = new ArrayList<MatOfPoint>();
+
+        for (int i=0; i<contourns.size(); ++i)
+        {
+
+            Rect boundingRect = Imgproc.boundingRect(contourns.get(i));
+            double a = boundingRect.area();
+            if (a >= biggerBoundingArea)
+                biggerBoundingArea = a;
+
+
+
+            //MatOfPoint mop = contourns.get(i);
+            //MatOfPoint2f mop2f = CandidateSelector.mopToMop2f(mop);
+            //RotatedRect rr = Imgproc.minAreaRect(mop2f);
+
+            if (areaCheck(boundingRect) && aspectRatioCheck(boundingRect))
+            {
+                finalsContourns.add(contourns.get(i));
+
+                relationAddValues(boundingRect);
+
+            }
+            if (REMOVE_OUTSIDE){
+                if (boundingRect.area() < 0.025 * image.size().area()) {
+                    Imgproc.drawContours(image, contourns, i,
+                            new Scalar(0), -1); // This is a OpenCV function
+                }
+            }
+        }
+
+        if (ImageViewer.SHOW_PROCESS_DEBUG) {
+            for (int cId = 0; cId < finalsContourns.size(); cId++) {
+                Imgproc.drawContours(ImageWithContournsPreFiltred, finalsContourns, cId, new Scalar(255, 0, 0), 1);
+            }
+        }
+
+        if (biggerBoundingArea / image.size().area() >= 0.75)
+            isBiggerBoundingArea = true;
+
+
+        return finalsContourns.size();
     }
 
     public class CaracteristicaContador

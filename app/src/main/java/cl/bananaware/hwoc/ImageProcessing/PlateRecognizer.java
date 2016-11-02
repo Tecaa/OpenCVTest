@@ -54,8 +54,8 @@ public class PlateRecognizer {
         for (int mt = 0; mt<matss.size()/2; ++mt) {
 
 
-            /*if (1 == 1)
-                return new PlateResult();*/
+            //if (1 == 1)
+           //    return new PlateResult();
 
 
             CandidatesFinder candidatesFinder = new CandidatesFinder(matss.get(mt+3),matss.get(mt));
@@ -194,7 +194,7 @@ public class PlateRecognizer {
                     AddStepWithContourns(secondProcessSteps, characterSeparator.CurrentImage,
                             characterSeparator.contourns, null, 20);
 
-                    int cant = characterSeparator.FilterCountourns();
+                    int cant = characterSeparator.FilterAndRotateCountourns(1);
                     if (cant <= 3) {
                         TimeProfiler.CheckPoint(32, b, i);
                         AddStep(secondProcessSteps, characterSeparator.ImageWithContournsPreFiltred, 21);
@@ -207,7 +207,8 @@ public class PlateRecognizer {
                         if (characterSeparator.isBiggerBoundingArea) {
                             characterSeparator.CutImage();
                             characterSeparator.FindCountourns(2);
-                            if (characterSeparator.FilterCountourns() == 0) {
+                            cant = characterSeparator.FilterAndRotateCountourns(2);
+                            if (cant <= 3) {
                                 AddStep(secondProcessSteps, characterSeparator.CurrentImage, 9);
                                 AddStep(secondProcessSteps, characterSeparator.ImageWithContournsPreFiltred, 21);
                                 AddStep(secondProcessSteps, characterSeparator.ImageWithContourns, 21);
@@ -349,24 +350,24 @@ public class PlateRecognizer {
         Core.bitwise_not( x, x );
         Imgproc.threshold(x, x, 255, 255, Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);
 
-        //AddStep(firstProcessSteps, x, 2);
+        AddStep(firstProcessSteps, x, 2);
 
 
         final float EROTION_AMPLIFIER= 1;//1.9f; //estaba en 1. 1.5 funciona tb
-        Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 10*EROTION_AMPLIFIER, 10*EROTION_AMPLIFIER ));
+        Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 8*EROTION_AMPLIFIER, 8*EROTION_AMPLIFIER ));
         Imgproc.erode( x, x, element);
 
-        //AddStep(firstProcessSteps, x, 2);
+        AddStep(firstProcessSteps, x, 2);
 
         Mat element2 = Imgproc.getStructuringElement( Imgproc.MORPH_RECT, new Size( 30, 30 ));
         Imgproc.dilate( x, x, element2);
 
-        //AddStep(firstProcessSteps, x, 2);
+        AddStep(firstProcessSteps, x, 2);
 
         List<MatOfPoint> cs = new ArrayList<MatOfPoint>();
         Imgproc.findContours(x, cs, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE );
 
-        //AddStepWithContourns(firstProcessSteps, x, cs, null, 0);
+        AddStepWithContourns(firstProcessSteps, x, cs, null, 0);
         List<Rect> biggers = new ArrayList<Rect>();
         biggers.add(0, new Rect());
         biggers.add(1, new Rect());
@@ -402,6 +403,7 @@ public class PlateRecognizer {
         }
         List<Mat> mats = new ArrayList<Mat>();
         List<Mat> matsOriginal = new ArrayList<Mat>();
+        AddStep(firstProcessSteps, x_gray, 2);
         for (int i=0; i< biggers.size(); ++i)
         {
             mats.add(x_gray.submat(biggers.get(i)));
