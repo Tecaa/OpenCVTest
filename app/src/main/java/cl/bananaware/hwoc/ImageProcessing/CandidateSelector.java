@@ -36,36 +36,39 @@ public class CandidateSelector {
     public int newHeight;
     private int maxAreaCandidateProIndex;
     private float horizontalDilatationAmplifier;
-    final double EXTRA = 1.1;
+    final double EXTRA = 1.15;
     final double EXTRA2 = 1.0;
     public List<MatOfPoint> GreenCandidatesPro;
     private double scale;
-    public CandidateSelector(Mat OriginalEqualizedImage, Mat OriginalImageRealSize, RotatedRect candidate)
-    {
+
+    public CandidateSelector(Mat OriginalEqualizedImage, Mat OriginalImageRealSize, RotatedRect candidate) {
         this.OriginalEqualizedImage = OriginalEqualizedImage;
         this.OriginalImageRealSize = OriginalImageRealSize;
-        scale = OriginalImageRealSize.size().width/OriginalEqualizedImage.size().width;
+        scale = OriginalImageRealSize.size().width / OriginalEqualizedImage.size().width;
         this.CandidateRect = candidate;
         GreenCandidatesPro = new ArrayList<MatOfPoint>();
-        double angle  = candidate.angle;
+        double angle = candidate.angle;
         if (angle < -45.)
             angle += 90.0;
         this.OriginalAngle = angle;
     }
+
     int dx;
     int dy;
+
     public void CalculateBounds() {
         //FUNCIONA MEJOR CON DX =0 DY=0 :o?
-        dx = Math.round(0.01f * (float)CandidateRect.boundingRect().size().width);//Math.round(0.02f * (float)CandidateRect.boundingRect().size().width);
-        dy = Math.round(0.05f * (float)CandidateRect.boundingRect().size().height);;//Math.round(0.06f * (float)CandidateRect.boundingRect().size().height);;
+        dx = Math.round(0.01f * (float) CandidateRect.boundingRect().size().width);//Math.round(0.02f * (float)CandidateRect.boundingRect().size().width);
+        dy = Math.round(0.05f * (float) CandidateRect.boundingRect().size().height);
+        ;//Math.round(0.06f * (float)CandidateRect.boundingRect().size().height);;
 
-        newWidth = (int)(CandidateRect.boundingRect().size().width + 2*dx);
-        newHeight = (int)(CandidateRect.boundingRect().size().height + 2*dy);
+        newWidth = (int) (CandidateRect.boundingRect().size().width + 2 * dx);
+        newHeight = (int) (CandidateRect.boundingRect().size().height + 2 * dy);
     }
 
     public void TruncateBounds() {
-        newWidth = Math.min(newWidth, OriginalEqualizedImage.width() - CandidateRect.boundingRect().x-dx);
-        newHeight = Math.min(newHeight, OriginalEqualizedImage.height() - CandidateRect.boundingRect().y-dy);
+        newWidth = Math.min(newWidth, OriginalEqualizedImage.width() - CandidateRect.boundingRect().x - dx);
+        newHeight = Math.min(newHeight, OriginalEqualizedImage.height() - CandidateRect.boundingRect().y - dy);
 /*
         // si excedimos el ancho de la imagen, lo truncamos
         if (OriginalEqualizedImage.width() < CandidateRect.boundingRect().x + newWidth)
@@ -81,10 +84,10 @@ public class CandidateSelector {
         if (realSize) {
 
             RotatedRect rr = CandidateRect.clone();
-            rr.size.width = ((double)newWidth) * EXTRA*scale;
-            rr.size.height = ((double)newHeight) * EXTRA*scale;
-            rr.center.x = (rr.center.x - dx) *scale;
-            rr.center.y = (rr.center.y - dy) *scale;
+            rr.size.width = ((double) newWidth) * EXTRA * scale;
+            rr.size.height = ((double) newHeight) * EXTRA * scale;
+            rr.center.x = (rr.center.x - dx) * scale;
+            rr.center.y = (rr.center.y - dy) * scale;
 
             if (rr.angle < -45.) {
                 rr.angle += 90.0;
@@ -105,18 +108,17 @@ public class CandidateSelector {
             factor = ResizeImageMax(CurrentImage, 250);
 
             if (ImageViewer.SHOW_PROCESS_DEBUG)
-                CroppedExtraBoundingBox = CurrentImage.clone();
+            CroppedExtraBoundingBox = CurrentImage.clone();
 
-        }
-        else {
+        } else {
 
 
             RotatedRect rr = CandidateRect.clone();
             /*rr.size.width *= EXTRA;
             rr.size.height *= EXTRA;
             */
-            rr.size.width = ((double)newWidth) * EXTRA;
-            rr.size.height = ((double)newHeight) * EXTRA;
+            rr.size.width = ((double) newWidth) * EXTRA;
+            rr.size.height = ((double) newHeight) * EXTRA;
 
             //rr.center.x -= dx;
             //rr.center.y -= dy;
@@ -138,7 +140,7 @@ public class CandidateSelector {
             // crop the resulting image
             Imgproc.getRectSubPix(rotated, rr.size, rr.center, CurrentImage);
             if (ImageViewer.SHOW_PROCESS_DEBUG)
-                CroppedExtraBoundingBox = CurrentImage.clone();
+            CroppedExtraBoundingBox = CurrentImage.clone();
 
         }
 
@@ -155,8 +157,8 @@ public class CandidateSelector {
         Log.d("factor", String.valueOf(factor));
 
         Imgproc.resize(currentImage, currentImage,
-                new Size(currentImage.width()*factor,
-                        currentImage.height()*factor));
+                new Size(currentImage.width() * factor,
+                        currentImage.height() * factor));
         return factor;
     }
 
@@ -169,27 +171,25 @@ public class CandidateSelector {
         rr.center.y *= factor;
 
         Imgproc.resize(originalImageRealSize, originalImageRealSize,
-                new Size(originalImageRealSize.width()*factor,
-                        originalImageRealSize.height()*factor));
+                new Size(originalImageRealSize.width() * factor,
+                        originalImageRealSize.height() * factor));
         return factor;
     }
 
     private double GetResizeFactor(Size s, int max) {
-        if (s.width>s.height &&  s.width > max)
-        {
-            return max/s.width;
+        if (s.width > s.height && s.width > max) {
+            return max / s.width;
         }
-        if (s.height>s.width && s.height > max)
-        {
-            return max/s.height;
+        if (s.height > s.width && s.height > max) {
+            return max / s.height;
         }
         return 1;
     }
 
 
     public void CropExtraBoundingBox(boolean realSizeCrop) {
-        Rect roi = new Rect(Math.max(CandidateRect.boundingRect().x -dx, 0),
-                Math.max(CandidateRect.boundingRect().y-dx,0), newWidth, newHeight);
+        Rect roi = new Rect(Math.max(CandidateRect.boundingRect().x - dx, 0),
+                Math.max(CandidateRect.boundingRect().y - dx, 0), newWidth, newHeight);
         if (realSizeCrop) {
             Rect roiScaled = new Rect((int) (roi.x * scale),
                     (int) (roi.y * scale), (int) (roi.width * scale), (int) (roi.height * scale));
@@ -203,8 +203,7 @@ public class CandidateSelector {
                     + (roiScaled.x + roiScaled.width) + "x" + (roiScaled.y + roiScaled.height) + " ||"
                     + OriginalImageRealSize.width() + " " + OriginalImageRealSize.height());
             CurrentImage = new Mat(OriginalImageRealSize, roiScaled);
-        }
-        else {
+        } else {
             if (roi.x + roi.width > OriginalEqualizedImage.width()) {
                 roi.width = OriginalEqualizedImage.width() - roi.x;
             }
@@ -232,7 +231,7 @@ public class CandidateSelector {
 
     public void GaussianBlur() {
         int factor = GetGaussianBlurFactor(CurrentImage.size());
-        Imgproc.GaussianBlur(CurrentImage, CurrentImage, new Size(factor,factor), 2);
+        Imgproc.GaussianBlur(CurrentImage, CurrentImage, new Size(factor, factor), 2);
     }
 
     private int GetGaussianBlurFactor(Size size) {
@@ -246,17 +245,16 @@ public class CandidateSelector {
         Mat element;
         if (ImageViewer.GOOD_SIZE) {
             DILATION_AMPLIFIER = 1.3f;
-            element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT,
-                    new Size( Math.round(12*DILATION_AMPLIFIER*horizontalDilatationAmplifier), 3*DILATION_AMPLIFIER ));
-        }
-        else {
+            element = Imgproc.getStructuringElement(Imgproc.MORPH_RECT,
+                    new Size(Math.round(12 * DILATION_AMPLIFIER * horizontalDilatationAmplifier), 3 * DILATION_AMPLIFIER));
+        } else {
             DILATION_AMPLIFIER = 1f; //1.2 estaba, evaluar hacerlo dinámico
-            element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT,
-                    new Size( Math.round(12*DILATION_AMPLIFIER*horizontalDilatationAmplifier), 2 /* estaba en 1 */ ));
+            element = Imgproc.getStructuringElement(Imgproc.MORPH_RECT,
+                    new Size(Math.round(12 * DILATION_AMPLIFIER * horizontalDilatationAmplifier), 2 /* estaba en 1 */));
         }
 
 
-        Imgproc.dilate( CurrentImage, CurrentImage, element );
+        Imgproc.dilate(CurrentImage, CurrentImage, element);
     }
 
     public void Erode() {
@@ -265,9 +263,9 @@ public class CandidateSelector {
             EROTION_AMPLIFIER = 1;
         else
             EROTION_AMPLIFIER = 0.6f;
-        Mat element = Imgproc.getStructuringElement( Imgproc.MORPH_RECT,
-                new Size( Math.round(9*EROTION_AMPLIFIER*horizontalDilatationAmplifier), 3*EROTION_AMPLIFIER ));
-        Imgproc.erode( CurrentImage, CurrentImage, element);
+        Mat element = Imgproc.getStructuringElement(Imgproc.MORPH_RECT,
+                new Size(Math.round(9 * EROTION_AMPLIFIER * horizontalDilatationAmplifier), 3 * EROTION_AMPLIFIER));
+        Imgproc.erode(CurrentImage, CurrentImage, element);
     }
 
     private float calculateHorizontalAmplifier(Size size) {
@@ -276,7 +274,7 @@ public class CandidateSelector {
         final float MAX_VALUE = 10f;
         float val = 1;
         if (size.width > 150)
-            val = (float)(size.width* 13.0/744.0-1663.0/744.0);
+            val = (float) (size.width * 13.0 / 744.0 - 1663.0 / 744.0);
 
         Log.d("test", "WIDTH: " + String.valueOf(size.width));
         return val;//Math.max(val, MIN_VALUE);
@@ -290,25 +288,25 @@ public class CandidateSelector {
 
     public void FindOutlines() {
         Mat hierarchy = new Mat();
-        Imgproc.findContours(CurrentImage.clone(), GreenCandidatesPro, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE );
+        Imgproc.findContours(CurrentImage.clone(), GreenCandidatesPro, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);
     }
 
     public void FindMaxAreaCandidatePro() {
         double maxArea = 0;
         maxAreaCandidateProIndex = 0;
-        for(int j=0; j<GreenCandidatesPro.size(); ++j)
-        {
+        for (int j = 0; j < GreenCandidatesPro.size(); ++j) {
             MatOfPoint mop = GreenCandidatesPro.get(j);
             MatOfPoint2f mop2f = mopToMop2f(mop);
             RotatedRect mr = Imgproc.minAreaRect(mop2f);
 
-            double currentArea=mr.size.width * mr.size.height;
+            double currentArea = mr.size.width * mr.size.height;
             if (currentArea > maxArea) {
                 maxArea = currentArea;
                 maxAreaCandidateProIndex = j;
             }
         }
     }
+
     public static MatOfPoint2f mopToMop2f(MatOfPoint mop) {
         return new MatOfPoint2f( mop.toArray() );
     }
@@ -405,11 +403,14 @@ public class CandidateSelector {
         if (realSizeCrop) {
 
             if (factor != 0) {
-                MinAreaRect.x *= (scale * EXTRA * factor) ;/// 2.0;
-                MinAreaRect.y *= (scale * EXTRA * factor) ;/// 2.0;
-                MinAreaRect.height *= scale * factor;
-                MinAreaRect.width *= scale * factor;
+                MinAreaRect.x *= (scale * EXTRA * factor);
+                MinAreaRect.y *= (scale * EXTRA * factor);
+                MinAreaRect.height *= scale * factor * EXTRA;
+                MinAreaRect.width *= scale * factor * EXTRA;
 
+                int mas = (int)(MinAreaRect.height * 0.2);
+                MinAreaRect.y -= mas;
+                MinAreaRect.height += mas;
 /*
                 if (MinAreaRect.width / MinAreaRect.height > 0)
                     MinAreaRect.width *= EXTRA2;

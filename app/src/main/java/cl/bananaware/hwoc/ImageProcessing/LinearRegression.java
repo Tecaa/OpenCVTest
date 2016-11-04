@@ -12,7 +12,7 @@ import java.util.List;
  * Created by fergu on 31-10-2016.
  */
 public class LinearRegression {
-    int MAXN = 30;
+    int MAXN = 30*100;
     int n = 0;
     double[] x = new double[MAXN];
     double[] y = new double[MAXN];

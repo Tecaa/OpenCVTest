@@ -1,5 +1,6 @@
 package cl.bananaware.hwoc.ImageProcessing;
 
+import android.text.BoringLayout;
 import android.util.Log;
 
 import org.opencv.core.Core;
@@ -17,6 +18,7 @@ import org.opencv.imgproc.Imgproc;
 import java.util.ArrayList;
 import java.util.List;
 
+import cl.bananaware.hwoc.DebugHWOC;
 import cl.bananaware.hwoc.HeightCandidate;
 import cl.bananaware.hwoc.ImageViewer;
 
@@ -82,12 +84,14 @@ public class CharacterSeparator {
 
     Boolean isBiggerBoundingArea;
     public int FilterAndRotateCountourns(int time) {
-        Mat image = CurrentImage.clone();
+        FinalContournImage = CurrentImage.clone();
+        if (time == 1)
+            hasBeenRotated = false;
         if (time == 2 && PatentInclinationAngle != 0)
-            rotatePlateImage(image, -PatentInclinationAngle);
-        int sizeF = getFinalContourns(image);
+            rotatePlateImage(FinalContournImage, -PatentInclinationAngle);
+        int sizeF = getFinalContourns(FinalContournImage);
 
-        if (sizeF <= 3)
+        if (sizeF <= 3 || biggerAreaCheck())
             return sizeF;
 
         relationFilter();
@@ -117,16 +121,18 @@ public class CharacterSeparator {
             //rr.points(pointss);
 
 
-            Mat mask = new Mat(image.size(), CvType.CV_8UC1, new Scalar(0));     // suppose img is your image Mat
+            Mat mask = new Mat(FinalContournImage.size(), CvType.CV_8UC1, new Scalar(0));     // suppose img is your image Mat
 
             List<MatOfPoint> qqqq = new ArrayList<MatOfPoint>();
             //qqqq.add(new MatOfPoint(pointss));
             qqqq.add(limits);
             Imgproc.fillPoly(mask, qqqq, new Scalar(255));                           // <- do it here
-            Mat maskedImage = new Mat(image.size(), CvType.CV_8UC1);  // Assuming you have 3 channel image
+            Mat maskedImage = new Mat(FinalContournImage.size(), CvType.CV_8UC1);  // Assuming you have 3 channel image
             maskedImage.setTo(new Scalar(0));  // Set all pixels to (180, 180, 180)
-            image.copyTo(maskedImage, mask);  // Copy pixels within contour to maskedImage.
+            FinalContournImage.copyTo(maskedImage, mask);  // Copy pixels within contour to maskedImage.
             //CurrentImage = C;
+            if (!hasBeenRotated)
+                rotatePlateImage(maskedImage, -PatentInclinationAngle);
             CleanedImage = maskedImage.clone();
             CurrentImage = maskedImage.clone();
 
@@ -141,9 +147,27 @@ public class CharacterSeparator {
 
     }
 
+    public boolean biggerAreaCheck() {
+        boolean thereAreFinalContornsInside = false;
+        for(int i=0; i<finalsContourns.size();++i)
+        {
+            Rect r = Imgproc.boundingRect(finalsContourns.get(i));
+            if (r.x >= biggerAreaRect.x && r.x <= biggerAreaRect.x + biggerAreaRect.width
+                    && r.y >= biggerAreaRect.y && r.y <= biggerAreaRect.y + biggerAreaRect.height) {
+                thereAreFinalContornsInside = true;
+                break;
+            }
+        }
+        if (isBiggerBoundingArea && !thereAreFinalContornsInside)
+            return true;
+        else
+            return false;
+    }
+
+    boolean hasBeenRotated;
     private void rotatePlateImage(Mat src, double angle)
     {
-
+        hasBeenRotated = true;
         Point pt = new Point(src.cols()/2., src.rows()/2.);
         Mat r = Imgproc.getRotationMatrix2D(pt, angle, 1.0);
         Imgproc.warpAffine(src, src, r, new Size(src.cols(), src.rows()));
@@ -384,8 +408,7 @@ public class CharacterSeparator {
     }*/
     private boolean aspectRatioCheck(Rect br) {
         final double MIN_RATIO = 0.3;// estaba en 0.3
-        final double MAX_RATIO = 2.4;
-
+        final double MAX_RATIO = 2.4; //2.4
         double ratio = (double)br.width / (double)br.height;
         if (ratio > MIN_RATIO && ratio < MAX_RATIO)
             return true;
@@ -394,19 +417,21 @@ public class CharacterSeparator {
     }
 
     private boolean areaCheck(Rect br) {
-        final double MAX_AREA_PERCENTAJE = 0.2;
-        final double MIN_AREA_PERCENTAJE = 0.03;
+        final double MAX_AREA_PERCENTAJE = 0.3; //0.2
+        final double MIN_AREA_PERCENTAJE = 0.01; //0.03
         double areaPercentaje = br.area() / CurrentImage.size().area();
+
         if (areaPercentaje > MIN_AREA_PERCENTAJE && areaPercentaje < MAX_AREA_PERCENTAJE)
             return true;
         else
             return false;
     }
 
-    List<Mat> CroppedChars = new ArrayList<Mat>();
+    List<Mat> CroppedChars;
     public void CropChars() {
         final float PERCENTAJE_PLATE_X = 0.018F; //0.018 funciona bien
         final float PERCENTAJE_PLATE_Y = 0.035F;
+        CroppedChars  = new ArrayList<Mat>();
         for(int i=0; i<positions.size(); ++i) {
             int extra_x = Math.max(Math.round(charsPlateLength*PERCENTAJE_PLATE_X), 1);
             int extra_y = Math.max(Math.round(charsPlateLength*PERCENTAJE_PLATE_Y), 1);
@@ -421,12 +446,14 @@ public class CharacterSeparator {
     }
     Rect CropCharactersROI;
     public void CropAll() {
+        CroppedChars  = new ArrayList<Mat>();
         int extra = Math.max(Math.round(charsPlateLength*0.0144f), 1);
         int xStart = Math.max(InitialPixelX-extra, 0);
         int yStart = Math.max(InitialPixelY-extra,0);
         int xWidth = Math.min(charsPlateLength +2*extra,CurrentImage.width()-xStart);
         int yWidth = Math.min(HeightChars+2*extra, CurrentImage.height() - yStart);
         CropCharactersROI = new Rect(xStart, yStart, xWidth, yWidth);
+        Log.d("qq", xStart + "  " + yStart + "  " +  xWidth +" "+ yWidth);
         //CroppedChars.add(new Mat(CurrentImage.clone(), roi)); //black and white image
         Core.copyMakeBorder(new Mat(CurrentImage, CropCharactersROI), CurrentImage, PADDING, PADDING, PADDING, PADDING, 0);
         CroppedChars.add(CurrentImage);  // gray scale image
@@ -464,15 +491,18 @@ public class CharacterSeparator {
     }
 
     public void CutImage() {
-        Rect myROI = new Rect(0,0,CurrentImage.width(), (int)(CurrentImage.height()*0.8f));
+        //Rect myROI = new Rect(0,0,CurrentImage.width(), (int)(CurrentImage.height()*0.7f));
+        Rect myROI = new Rect(0,0,CurrentImage.width(), (int)(biggerAreaRect.y + biggerAreaRect.height*0.75));
         CurrentImage = CurrentImage.submat(myROI);
     }
 
     public Mat GetCharsGroupN(int n) {
         Rect r;
 
-        int EXTRA = (int)(charsPlateLength * 0.01);
-        int ancho = charsPlateLength/3;
+        int largoPlate = (int)(Math.cos(PatentInclinationAngle*Math.PI/180)*charsPlateLength);
+
+        int EXTRA = (int)(largoPlate * 0.008);
+        int ancho = (int)((largoPlate * 1.05) /3);
         int base = InitialPixelX - CropCharactersROI.x + PADDING;
         switch (n)
         {
@@ -488,62 +518,195 @@ public class CharacterSeparator {
                 break;
         }
 
+        r.x = Math.max(r.x, 0);
+        r.width = Math.min(r.width, CurrentImage.width() - r.x);
+        //Log.d("qq" ,r.x + " " + r.y +" " + r.width + " " + r.height);
         //Size s = CroppedChars.get(0).size();
         return CroppedChars.get(0).submat(r);
     }
 
     final boolean REMOVE_OUTSIDE = true;
+    private final int MAX_CONTOUR_SIZE = 100;
+    public Mat FinalContournImage;
+    double biggerBoundingArea;
+    Rect biggerAreaRect;
+    public Mat preRevisionFinalContourns;
     public int getFinalContourns(Mat image) {
+/*
+        if (contourns.size() >= MAX_CONTOUR_SIZE) {
+            isBiggerBoundingArea = false;
+            return 0;
+        }*/
 
         alturas = new CaracteristicaRelacionador(0.40);
         anchuras = new CaracteristicaRelacionador(0.40);
-        areas = new CaracteristicaRelacionador(0.40);
+        areas = new CaracteristicaRelacionador(0.35);
 
         //List<Point> pts = new ArrayList<Point>();
         isBiggerBoundingArea = false;
-        double biggerBoundingArea = 0;
+        biggerBoundingArea = 0;
+        biggerAreaRect = new Rect();
         finalsContourns = new ArrayList<MatOfPoint>();
-
+        Log.e("qwer", "============================");
         for (int i=0; i<contourns.size(); ++i)
         {
 
             Rect boundingRect = Imgproc.boundingRect(contourns.get(i));
             double a = boundingRect.area();
-            if (a >= biggerBoundingArea)
+            if (a >= biggerBoundingArea) {
                 biggerBoundingArea = a;
-
+                biggerAreaRect = boundingRect;
+            }
 
 
             //MatOfPoint mop = contourns.get(i);
             //MatOfPoint2f mop2f = CandidateSelector.mopToMop2f(mop);
             //RotatedRect rr = Imgproc.minAreaRect(mop2f);
-
-            if (areaCheck(boundingRect) && aspectRatioCheck(boundingRect))
+            boolean area_check =areaCheck(boundingRect);
+            boolean ratio_check = aspectRatioCheck(boundingRect);
+            boolean area_contourn_check = areaContournCheck(Imgproc.contourArea(contourns.get(i)));
+            //Log.e("err", "x " +Boolean.valueOf(area_check) + "  " + Boolean.valueOf(ratio_check) + " " + Boolean.valueOf(area_contourn_check));
+            if (area_check && ratio_check && area_contourn_check)
             {
-                finalsContourns.add(contourns.get(i));
+                if (ImageViewer.SHOW_PROCESS_DEBUG) {
+                    //Log.e("err", String.valueOf(Imgproc.contourArea(contourns.get(i)) / CurrentImage.size().area()));
+                    Log.e("qwer", boundingRect.size().width + " " + boundingRect.size().height + "  "  +CurrentImage.size().width + " " + CurrentImage.size().height);
+                    Log.e("qwer", String.valueOf(boundingRect.area() / CurrentImage.size().area()));
+                }
 
+                finalsContourns.add(contourns.get(i));
+/*
+                Log.d("err", "a" + String.valueOf(contourns.get(i).size().area()));
+                Log.d("err", "\t\t\t" + String.valueOf());*/
                 relationAddValues(boundingRect);
 
             }
             if (REMOVE_OUTSIDE){
-                if (boundingRect.area() < 0.025 * image.size().area()) {
+                if (boundingRect.area() < 0.015 * image.size().area()) {
                     Imgproc.drawContours(image, contourns, i,
                             new Scalar(0), -1); // This is a OpenCV function
                 }
             }
         }
+        if (ImageViewer.SHOW_PROCESS_DEBUG) {
+            preRevisionFinalContourns = CurrentImage.clone();
+            for (int i=0; i< finalsContourns.size(); ++i){
+                Imgproc.drawContours(preRevisionFinalContourns, finalsContourns, i,
+                        new Scalar(150,20,250), 2); // This is a OpenCV function
+            }
+        }
+        revisionFinalContourns(finalsContourns);
 
         if (ImageViewer.SHOW_PROCESS_DEBUG) {
             for (int cId = 0; cId < finalsContourns.size(); cId++) {
-                Imgproc.drawContours(ImageWithContournsPreFiltred, finalsContourns, cId, new Scalar(255, 0, 0), 1);
+                Imgproc.drawContours(ImageWithContournsPreFiltred, finalsContourns, cId, new Scalar(255, 0, 255), 1);
             }
         }
-
-        if (biggerBoundingArea / image.size().area() >= 0.75)
+        double imageArea = image.size().area();
+        Log.d("imageArea" , String.valueOf(imageArea) + "   " + String.valueOf(biggerBoundingArea / imageArea));
+        if (biggerBoundingArea / imageArea >= 0.65) //0.65
+        {
             isBiggerBoundingArea = true;
-
+        }
 
         return finalsContourns.size();
+    }
+
+    private void revisionFinalContourns(List<MatOfPoint> finalsContourns) {
+        if (finalsContourns.size() != 7 &&
+             finalsContourns.size() != 8)
+            return;
+
+        bubbleSort(finalsContourns);
+        List<MatOfPoint> group1 = new ArrayList<MatOfPoint>();
+        List<MatOfPoint> group2 = new ArrayList<MatOfPoint>();
+        List<MatOfPoint> group3 = new ArrayList<MatOfPoint>();
+
+        double majorDistance1 = 0;
+        int majorDistance1index = -1;
+
+        double majorDistance2 = 0;
+        int majorDistance2index = -1;
+
+        Rect lastBB =Imgproc.boundingRect(finalsContourns.get(0));
+        for (int i=1 ; i<finalsContourns.size();++i)
+        {
+            Rect bb = Imgproc.boundingRect(finalsContourns.get(i));
+            double distance = bb.x - lastBB.x;
+            if (distance> majorDistance1)
+            {
+                majorDistance2 = majorDistance1;
+                majorDistance2index = majorDistance1index;
+
+                majorDistance1 = distance;
+                majorDistance1index = i;
+            }
+            else if (distance> majorDistance2)
+            {
+                majorDistance2 = distance;
+                majorDistance2index = i;
+            }
+            lastBB = bb;
+        }
+
+        if (majorDistance1index < majorDistance2index)
+        {
+            for (int i=0; i< majorDistance1index; ++i)
+                group1.add(finalsContourns.get(i));
+            for (int i=majorDistance1index; i< majorDistance2index; ++i)
+                group2.add(finalsContourns.get(i));
+            for (int i=majorDistance2index; i< finalsContourns.size(); ++i)
+                group3.add(finalsContourns.get(i));
+        }
+        else
+        {
+            for (int i=0; i< majorDistance2index; ++i)
+                group1.add(finalsContourns.get(i));
+            for (int i=majorDistance2index; i< majorDistance1index; ++i)
+                group2.add(finalsContourns.get(i));
+            for (int i=majorDistance1index; i< finalsContourns.size(); ++i)
+                group3.add(finalsContourns.get(i));
+        }
+
+        if (group1.size() > 2)
+            finalsContourns.remove(0);
+        if (group3.size() > 2)
+            finalsContourns.remove(finalsContourns.size()-1);
+
+    }
+
+    private void bubbleSort(List<MatOfPoint> arr) {
+        boolean swapped = true;
+        int j = 0;
+        MatOfPoint tmp;
+        while (swapped) {
+            swapped = false;
+            j++;
+            for (int i = 0; i < arr.size() - j; i++) {
+                Rect r = Imgproc.boundingRect(arr.get(i));
+                Rect r1 = Imgproc.boundingRect(arr.get(i+1));
+                if (r.x > r1.x) {
+                    tmp = arr.get(i);
+                    arr.set(i, arr.get(i+1));
+                    arr.set(i+1, tmp);
+                    swapped = true;
+                }
+            }
+        }
+    }
+
+    private boolean areaContournCheck(double area) {
+        final double MIN_AREA_PERCENTAJE = 0.001; //0.003
+
+        double areaPercentaje = area / CurrentImage.size().area();
+
+        /*if (1==1)
+            return true;*/
+        Log.d("err", "area contourn : " + areaPercentaje);
+        if (area > 0 && areaPercentaje > MIN_AREA_PERCENTAJE)
+            return true;
+        else
+            return false;
     }
 
     public class CaracteristicaContador

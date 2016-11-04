@@ -52,7 +52,7 @@ public class PlateProcessSystem {
 
         // Acquire a reference to the system Location Manager
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        plateRecognizer = new PlateRecognizer();
+        //plateRecognizer = new PlateRecognizer();
     }
 
     Bitmap image;
@@ -106,6 +106,8 @@ public class PlateProcessSystem {
     // Se procesa la captura realizada
     private PlateResult ImageProcess(Mat mat, boolean justProcess)
     {
+        plateRecognizer = new PlateRecognizer();
+        plateRecognizer.InitDebug(debugHWOC);
         LastPlateReaded = plateRecognizer.Recognize(m_image);
 
         if (justProcess)
@@ -120,8 +122,9 @@ public class PlateProcessSystem {
     }
 
     public void InitDebug(DebugHWOC debugHWOC) {
-        plateRecognizer.InitDebug(debugHWOC);
+        this.debugHWOC = debugHWOC;
+        //plateRecognizer.InitDebug(debugHWOC);
     }
-
+    private DebugHWOC debugHWOC;
 
 }

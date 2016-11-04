@@ -19,7 +19,7 @@ import cl.bananaware.hwoc.TimeProfiler;
  * Created by fergu on 06-08-2016.
  */
 public class CandidatesFinder {
-    public static boolean PROBANDO = false;
+    public static final boolean PROBANDO = false;
     public Mat OriginalEqualizedImage, OriginalImage, OriginalImageRealSize;
     public Mat CurrentImage;
     public Mat PreMultiDilationImage;
@@ -120,7 +120,7 @@ public class CandidatesFinder {
     }
     public void ToGrayScale() {
         if (!PROBANDO)
-            if (CurrentImage.channels()>= 3)
+            if (CurrentImage.channels() >= 3)
                 Imgproc.cvtColor(CurrentImage, CurrentImage, Imgproc.COLOR_RGB2GRAY);
     }
 

@@ -58,7 +58,7 @@ public class PlateRecognizer {
            //    return new PlateResult();
 
 
-            CandidatesFinder candidatesFinder = new CandidatesFinder(matss.get(mt+3),matss.get(mt));
+            CandidatesFinder candidatesFinder = new CandidatesFinder(matss.get(mt+matss.size()/2),matss.get(mt));
             //CandidatesFinder candidatesFinder = new CandidatesFinder(m_);
             GetPreMultiDilationImage(candidatesFinder);
 
@@ -195,8 +195,10 @@ public class PlateRecognizer {
                             characterSeparator.contourns, null, 20);
 
                     int cant = characterSeparator.FilterAndRotateCountourns(1);
-                    if (cant <= 3) {
+                    if (cant <= 3 || characterSeparator.biggerAreaCheck()) {
                         TimeProfiler.CheckPoint(32, b, i);
+                        AddStep(secondProcessSteps, characterSeparator.preRevisionFinalContourns, 21);
+                        AddStep(secondProcessSteps, characterSeparator.FinalContournImage, 21);
                         AddStep(secondProcessSteps, characterSeparator.ImageWithContournsPreFiltred, 21);
                         AddStep(secondProcessSteps, characterSeparator.ImageWithContourns, 21);
                         AddImage(secondProcessSteps, R.drawable.filter_countourns, 22);
@@ -209,6 +211,8 @@ public class PlateRecognizer {
                             characterSeparator.FindCountourns(2);
                             cant = characterSeparator.FilterAndRotateCountourns(2);
                             if (cant <= 3) {
+                                AddStep(secondProcessSteps, characterSeparator.preRevisionFinalContourns, 21);
+                                AddStep(secondProcessSteps, characterSeparator.FinalContournImage, 21);
                                 AddStep(secondProcessSteps, characterSeparator.CurrentImage, 9);
                                 AddStep(secondProcessSteps, characterSeparator.ImageWithContournsPreFiltred, 21);
                                 AddStep(secondProcessSteps, characterSeparator.ImageWithContourns, 21);
@@ -220,7 +224,8 @@ public class PlateRecognizer {
 
                     }
                     TimeProfiler.CheckPoint(32, b, i);
-
+                    AddStep(secondProcessSteps, characterSeparator.preRevisionFinalContourns, 21);
+                    AddStep(secondProcessSteps, characterSeparator.FinalContournImage, 21);
                     AddStep(secondProcessSteps, characterSeparator.ImageWithContournsPreFiltred, 21);
                     AddStep(secondProcessSteps, characterSeparator.ImageWithContourns, 23);
                     AddStep(secondProcessSteps, characterSeparator.CleanedImage, 24);
@@ -242,6 +247,7 @@ public class PlateRecognizer {
                     if (ImageViewer.CHARS) {
                         for (int n = 0; n < characterSeparator.CroppedChars.size(); ++n) {
 
+                            MainActivity.baseApi.clear();
                             AddImage(secondProcessSteps, R.drawable.npp, 25);
                             AddStep(secondProcessSteps, characterSeparator.CroppedChars.get(n), 26);
 
@@ -277,7 +283,7 @@ public class PlateRecognizer {
                         AddStep(secondProcessSteps, characterSeparator.CroppedChars.get(0), 25);
                         for (int n = 0; n < 3; ++n) {
 
-
+                            MainActivity.baseApi.clear();
                             switch (n) {
                                 case 0://1
                                     whiteList = "ABCDEFGHIJKLNPRSTUVXYZW";
@@ -296,6 +302,8 @@ public class PlateRecognizer {
 
                             //Mat m = characterSeparator.CroppedChars.get(0);
                             Mat m = characterSeparator.GetCharsGroupN(n);
+                            if (m.rows() <= 0 || m.cols() <= 0)
+                                continue;
                             Bitmap temp = Bitmap.createBitmap(m.cols(), m.rows(), Bitmap.Config.ARGB_8888);
                             AddStep(secondProcessSteps, m, 25);
 
@@ -406,6 +414,9 @@ public class PlateRecognizer {
         AddStep(firstProcessSteps, x_gray, 2);
         for (int i=0; i< biggers.size(); ++i)
         {
+            if (biggers.get(i).area() == 0)
+                break;
+
             mats.add(x_gray.submat(biggers.get(i)));
             matsOriginal.add(m_.submat(biggersOriginal.get(i)));
 

@@ -106,6 +106,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     }
 
     private void InitOCT() {
+        Log.d("oct", "init OCT");
         String baseDir = getExternalFilesDir(Environment.MEDIA_MOUNTED).toString();
         String tessdataDir = baseDir + File.separator + "tessdata";
         CopyAssets(tessdataDir);
