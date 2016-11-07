@@ -195,15 +195,16 @@ public class testcam extends Activity implements CustomCameraBridgeViewBase.Cust
             final PlateResult plate = MainActivity.plateProcessSystem.ProcessCapture(mRgba.clone(), false);
 
             Log.d("plate", TimeProfiler.GetTimes(true, 10));
-            Log.d("plate", ++counter + " Plate:" + plate.Plate + " " + plate.Confidence + "% " + TimeProfiler.GetTimes(false, 1) + " TOTAL: " + TimeProfiler.GetTotalTime());
-            testcam.this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (plate.Confidence >= 60) {
-                        TextView textView = (TextView) findViewById(R.id.textView);
-                        textView.setText(++counter + " Plate:" + plate.Plate + " " + plate.Confidence + "%\n" + textView.getText());
+            if (plate != null) {
+                Log.d("plate", ++counter + " Plate:" + plate.Plate + " " + plate.Confidence + "% " + TimeProfiler.GetTimes(false, 1) + " TOTAL: " + TimeProfiler.GetTotalTime());
+                testcam.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                            TextView textView = (TextView) findViewById(R.id.textView);
+                            textView.setText(++counter + " Plate:" + plate.Plate + " " + plate.Confidence + "%\n" + textView.getText());
                     }
-                }});
+                });
+            }
             IsBusy = false;
             return "Executed";
         }

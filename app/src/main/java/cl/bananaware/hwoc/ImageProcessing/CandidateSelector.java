@@ -144,17 +144,11 @@ public class CandidateSelector {
 
         }
 
-        /*
-        CurrentImage = new Mat(OriginalEqualizedImage, roi).clone();
-        Log.d("caida", "check 2.2.7");
-        CroppedExtraBoundingBox = CurrentImage.clone();
-        Log.d("caida", "check 2.2.8");*/
         return factor;
     }
 
     private double ResizeImageMax(Mat currentImage, int max) {
         double factor = GetResizeFactor(currentImage.size(), max);
-        Log.d("factor", String.valueOf(factor));
 
         Imgproc.resize(currentImage, currentImage,
                 new Size(currentImage.width() * factor,
@@ -164,7 +158,6 @@ public class CandidateSelector {
 
     private double ResizeImages(RotatedRect rr, Mat originalImageRealSize) {
         double factor = GetResizeFactor(rr.size, 250);
-        Log.d("factor", String.valueOf(factor));
         rr.size.width *= factor;
         rr.size.height *= factor;
         rr.center.x *= factor;
@@ -198,10 +191,6 @@ public class CandidateSelector {
             }
             if (roiScaled.y + roiScaled.height > OriginalImageRealSize.height())
                 roiScaled.height = OriginalImageRealSize.height() - roiScaled.y;
-            Log.d("caida", "check 2.2.6");
-            Log.d("caida", roiScaled.x + " " + roiScaled.y + " " + roiScaled.width + " " + roiScaled.height + " | "
-                    + (roiScaled.x + roiScaled.width) + "x" + (roiScaled.y + roiScaled.height) + " ||"
-                    + OriginalImageRealSize.width() + " " + OriginalImageRealSize.height());
             CurrentImage = new Mat(OriginalImageRealSize, roiScaled);
         } else {
             if (roi.x + roi.width > OriginalEqualizedImage.width()) {
@@ -276,7 +265,6 @@ public class CandidateSelector {
         if (size.width > 150)
             val = (float) (size.width * 13.0 / 744.0 - 1663.0 / 744.0);
 
-        Log.d("test", "WIDTH: " + String.valueOf(size.width));
         return val;//Math.max(val, MIN_VALUE);
     }
 

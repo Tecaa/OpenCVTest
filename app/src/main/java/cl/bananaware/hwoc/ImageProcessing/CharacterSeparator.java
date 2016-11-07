@@ -83,56 +83,38 @@ public class CharacterSeparator {
     }
 
     Boolean isBiggerBoundingArea;
+    public Mat ImageNoCleaned;
     public int FilterAndRotateCountourns(int time) {
         FinalContournImage = CurrentImage.clone();
         if (time == 1)
             hasBeenRotated = false;
-        if (time == 2 && PatentInclinationAngle != 0)
+        if (time == 2 && PatentInclinationAngle != 0) {
             rotatePlateImage(FinalContournImage, -PatentInclinationAngle);
+            rotatePlateImage(ImageNoCleaned, -PatentInclinationAngle);
+        }
+        ImageNoCleaned = FinalContournImage.clone();
+
         int sizeF = getFinalContourns(FinalContournImage);
 
         if (sizeF <= 3 || biggerAreaCheck())
             return sizeF;
 
         relationFilter();
+        revisionFinalContourns(finalsContourns);
         MatOfPoint limits = GetLimits(finalsContourns);
-        //rotatePlateImage(CurrentImage, -PatentInclinationAngle);
-
-        /*sizeF = getFinalContourns(2);
-        if (sizeF <= 3)
-            return sizeF;*/
-        //pts = getPoints();
-
-
-
-        // REMOVER LO QUE ESTÁ SOBRE LAS ROJAS Y BAJO ELLAS
-        // ADEMAS REMOVER LO QUE ES MUY  PEQUEÑO (CIRCULOS INTERIORES PARA EVITAR ERRORES)
-
-        //if (pts.size() <= 0)
-          //  return false;
-
-        //MatOfPoint2f mpp = new MatOfPoint2f(pts.toArray(new Point[pts.size()]));
-        //RotatedRect rr = Imgproc.minAreaRect(mpp);
-
-
-
         if (REMOVE_OUTSIDE) {
-            //Point[] pointss = new Point[4];
-            //rr.points(pointss);
-
-
             Mat mask = new Mat(FinalContournImage.size(), CvType.CV_8UC1, new Scalar(0));     // suppose img is your image Mat
 
             List<MatOfPoint> qqqq = new ArrayList<MatOfPoint>();
-            //qqqq.add(new MatOfPoint(pointss));
             qqqq.add(limits);
             Imgproc.fillPoly(mask, qqqq, new Scalar(255));                           // <- do it here
             Mat maskedImage = new Mat(FinalContournImage.size(), CvType.CV_8UC1);  // Assuming you have 3 channel image
             maskedImage.setTo(new Scalar(0));  // Set all pixels to (180, 180, 180)
             FinalContournImage.copyTo(maskedImage, mask);  // Copy pixels within contour to maskedImage.
-            //CurrentImage = C;
-            if (!hasBeenRotated)
+            if (!hasBeenRotated) {
                 rotatePlateImage(maskedImage, -PatentInclinationAngle);
+                rotatePlateImage(ImageNoCleaned, -PatentInclinationAngle);
+            }
             CleanedImage = maskedImage.clone();
             CurrentImage = maskedImage.clone();
 
@@ -290,12 +272,9 @@ public class CharacterSeparator {
 
     private void relationFilter() {
         List<MatOfPoint> dels = new ArrayList<MatOfPoint>();
-        Log.d("size", "-----------------------------");
+
         for (int i=0; i<finalsContourns.size();++i){
             Rect r = Imgproc.boundingRect(finalsContourns.get(i));
-            Log.d("size", "Altura " + r.height);
-            Log.d("size", "\t\tAnchura " + r.width);
-            Log.d("size", "\t\t\t\tArea " + r.area());
             boolean altura = alturas.EsMayoria(r.height);
             boolean anchura = anchuras.EsMayoria(r.width);
             boolean area = areas.EsMayoria(r.area());
@@ -355,7 +334,6 @@ public class CharacterSeparator {
     List<CharHorizontalPosition> positions = new ArrayList<CharHorizontalPosition>();
     public void CalculateCharsPositions()
     {
-        Log.d("posi", "largo=" + charsPlateLength);
         for (int i=0; i<6; ++i)
         {
             CharHorizontalPosition chp = new CharHorizontalPosition();
@@ -381,7 +359,6 @@ public class CharacterSeparator {
         {
             Rect r = Imgproc.boundingRect(finalsContourns.get(i));
             float pos = (float)(r.x - InitialPixelX + r.width)/(float)(charsPlateLength);
-            //Log.d("posi", "i="+i+" " +pos+ "]");
             if (Math.abs(pos - correctRightPositions.get(j)) <= ERROR_PERCENTAJE)
                 return Math.round(pos * charsPlateLength) + InitialPixelX;
         }
@@ -393,7 +370,6 @@ public class CharacterSeparator {
         {
             Rect r = Imgproc.boundingRect(finalsContourns.get(i));
             float pos = (float) (r.x - InitialPixelX)/(float)charsPlateLength;
-            //Log.d("posi", "i="+i + " ["+pos);
             if (Math.abs(pos - correctLeftPositions.get(j)) <= ERROR_PERCENTAJE)
                 return Math.round(pos * charsPlateLength) + InitialPixelX;
         }
@@ -418,7 +394,7 @@ public class CharacterSeparator {
 
     private boolean areaCheck(Rect br) {
         final double MAX_AREA_PERCENTAJE = 0.3; //0.2
-        final double MIN_AREA_PERCENTAJE = 0.01; //0.03
+        final double MIN_AREA_PERCENTAJE = 0.015; //0.03
         double areaPercentaje = br.area() / CurrentImage.size().area();
 
         if (areaPercentaje > MIN_AREA_PERCENTAJE && areaPercentaje < MAX_AREA_PERCENTAJE)
@@ -453,7 +429,6 @@ public class CharacterSeparator {
         int xWidth = Math.min(charsPlateLength +2*extra,CurrentImage.width()-xStart);
         int yWidth = Math.min(HeightChars+2*extra, CurrentImage.height() - yStart);
         CropCharactersROI = new Rect(xStart, yStart, xWidth, yWidth);
-        Log.d("qq", xStart + "  " + yStart + "  " +  xWidth +" "+ yWidth);
         //CroppedChars.add(new Mat(CurrentImage.clone(), roi)); //black and white image
         Core.copyMakeBorder(new Mat(CurrentImage, CropCharactersROI), CurrentImage, PADDING, PADDING, PADDING, PADDING, 0);
         CroppedChars.add(CurrentImage);  // gray scale image
@@ -492,9 +467,72 @@ public class CharacterSeparator {
 
     public void CutImage() {
         //Rect myROI = new Rect(0,0,CurrentImage.width(), (int)(CurrentImage.height()*0.7f));
-        Rect myROI = new Rect(0,0,CurrentImage.width(), (int)(biggerAreaRect.y + biggerAreaRect.height*0.75));
+        Rect myROI;
+            myROI = new Rect(0,0,CurrentImage.width(), (int)(biggerAreaRect.y + biggerAreaRect.height*0.75));
         CurrentImage = CurrentImage.submat(myROI);
     }
+
+    public Boolean Is1985() {
+
+        Rect r;
+
+        //int largoPlate = (int)(Math.cos(PatentInclinationAngle*Math.PI/180.0)*charsPlateLength);
+        int largoPlate = charsPlateLength;
+
+        List<Integer> nonZero = new ArrayList<Integer>();
+        //int InitialYFixed = (int)(InitialPixelY + (charsPlateLength/2.0 * Math.sin(PatentInclinationAngle*Math.PI/180.0)));
+        int InitialYFixed = InitialPixelY;
+        for (int n=0; n<2; ++n) {
+            switch (n) {
+                case 0:
+                    /*r = new Rect(InitialPixelX + (int)(0.13*largoPlate),
+                            InitialPixelY + (int)(HeightChars * 0.05),
+                            (int)((0.40)*largoPlate),
+                            (int)(HeightChars * 0.8));*/
+                    r = new Rect(InitialPixelX + (int)(0.29*largoPlate),
+                            InitialYFixed + (int)(HeightChars * 0.05),
+                            (int)((0.07)*largoPlate),
+                            (int)(HeightChars * 0.48));
+                    break;
+                case 1:
+                default:
+                    /*r = new Rect(InitialPixelX + (int)(0.52*largoPlate),
+                            InitialPixelY + (int)(HeightChars * 0.05),
+                            (int)((0.40) *largoPlate),
+                            (int)(HeightChars * 0.8));*/
+                    r = new Rect(InitialPixelX + (int)(0.66*largoPlate),
+                            InitialYFixed + (int)(HeightChars * 0.05),
+                            (int)((0.07) *largoPlate),
+                            (int)(HeightChars * 0.48));
+                    break;
+            }
+
+
+//            Core.absdiff(ImageNoCleaned, CleanedImage, ImageNoCleaned);
+            r.x = Math.max(r.x, 0);
+            r.width = Math.min(r.width, ImageNoCleaned.width() - r.x);
+            r.y = Math.max(r.y, 0);
+            r.height = Math.min(r.height, ImageNoCleaned.height() - r.y);
+            if (r.width <= 0 || r.height <= 0)
+                return false;
+            if (ImageViewer.SHOW_PROCESS_DEBUG)
+            {
+                if (n==0)
+                    Inner1 = ImageNoCleaned.submat(r);
+                if (n==1)
+                    Inner2 = ImageNoCleaned.submat(r);
+            }
+
+            nonZero.add(Core.countNonZero(ImageNoCleaned.submat(r)));
+        }
+
+        if (nonZero.get(0)> nonZero.get(1))
+            return true;
+        else
+            return false;
+    }
+    public Mat Inner1;
+    public Mat Inner2;
 
     public Mat GetCharsGroupN(int n) {
         Rect r;
@@ -520,8 +558,6 @@ public class CharacterSeparator {
 
         r.x = Math.max(r.x, 0);
         r.width = Math.min(r.width, CurrentImage.width() - r.x);
-        //Log.d("qq" ,r.x + " " + r.y +" " + r.width + " " + r.height);
-        //Size s = CroppedChars.get(0).size();
         return CroppedChars.get(0).submat(r);
     }
 
@@ -547,7 +583,6 @@ public class CharacterSeparator {
         biggerBoundingArea = 0;
         biggerAreaRect = new Rect();
         finalsContourns = new ArrayList<MatOfPoint>();
-        Log.e("qwer", "============================");
         for (int i=0; i<contourns.size(); ++i)
         {
 
@@ -568,16 +603,8 @@ public class CharacterSeparator {
             //Log.e("err", "x " +Boolean.valueOf(area_check) + "  " + Boolean.valueOf(ratio_check) + " " + Boolean.valueOf(area_contourn_check));
             if (area_check && ratio_check && area_contourn_check)
             {
-                if (ImageViewer.SHOW_PROCESS_DEBUG) {
-                    //Log.e("err", String.valueOf(Imgproc.contourArea(contourns.get(i)) / CurrentImage.size().area()));
-                    Log.e("qwer", boundingRect.size().width + " " + boundingRect.size().height + "  "  +CurrentImage.size().width + " " + CurrentImage.size().height);
-                    Log.e("qwer", String.valueOf(boundingRect.area() / CurrentImage.size().area()));
-                }
 
                 finalsContourns.add(contourns.get(i));
-/*
-                Log.d("err", "a" + String.valueOf(contourns.get(i).size().area()));
-                Log.d("err", "\t\t\t" + String.valueOf());*/
                 relationAddValues(boundingRect);
 
             }
@@ -595,7 +622,7 @@ public class CharacterSeparator {
                         new Scalar(150,20,250), 2); // This is a OpenCV function
             }
         }
-        revisionFinalContourns(finalsContourns);
+
 
         if (ImageViewer.SHOW_PROCESS_DEBUG) {
             for (int cId = 0; cId < finalsContourns.size(); cId++) {
@@ -603,11 +630,12 @@ public class CharacterSeparator {
             }
         }
         double imageArea = image.size().area();
-        Log.d("imageArea" , String.valueOf(imageArea) + "   " + String.valueOf(biggerBoundingArea / imageArea));
         if (biggerBoundingArea / imageArea >= 0.65) //0.65
         {
             isBiggerBoundingArea = true;
         }
+
+
 
         return finalsContourns.size();
     }
@@ -672,7 +700,6 @@ public class CharacterSeparator {
             finalsContourns.remove(0);
         if (group3.size() > 2)
             finalsContourns.remove(finalsContourns.size()-1);
-
     }
 
     private void bubbleSort(List<MatOfPoint> arr) {
@@ -700,9 +727,6 @@ public class CharacterSeparator {
 
         double areaPercentaje = area / CurrentImage.size().area();
 
-        /*if (1==1)
-            return true;*/
-        Log.d("err", "area contourn : " + areaPercentaje);
         if (area > 0 && areaPercentaje > MIN_AREA_PERCENTAJE)
             return true;
         else

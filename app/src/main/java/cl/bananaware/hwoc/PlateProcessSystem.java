@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
@@ -25,33 +27,35 @@ import cl.bananaware.hwoc.ImageProcessing.PlateResult;
 /**
  * Created by fergu on 21-10-2016.
  */
-public class PlateProcessSystem {
+public class PlateProcessSystem{
 
     // Acquire a reference to the system Location Manager
     Context context;
     Location currentLocation;
     PlateApiClient plateApiClient;
-    LocationManager locationManager;
     List<Plate> stolenPlates;
     PlateRecognizer plateRecognizer;
     public PlateResult LastPlateReaded;
+
     public PlateProcessSystem(Context cont) {
         context = cont;
         stolenPlates = new ArrayList<Plate>();
         // Test data
 
-        stolenPlates.add(new Plate("ZU3520"));
 
-        plateApiClient = new PlateApiClient();
+        plateApiClient = new PlateApiClient(context);
         plateApiClient.getStolenPlatesRequest(new PlateApiClient.StolenPlatesArrived() {
             @Override
             public void callback(List<Plate> plates) {
                 stolenPlates = plates;
+                stolenPlates.add(new Plate("CGVL87"));
             }
         });
 
         // Acquire a reference to the system Location Manager
-        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+
+
+
         //plateRecognizer = new PlateRecognizer();
     }
 
@@ -59,15 +63,16 @@ public class PlateProcessSystem {
     Mat m_image;
     // Toma una captura y almacena la posicion del gps y la imagen.
     public PlateResult ProcessCapture(Bitmap img, Boolean justProcess) {
-        m_image = new Mat();
+        Mat m = new Mat();
         image = img;
-        Utils.bitmapToMat(image, m_image);
-        return ProcessCapture(m_image, justProcess);
+        Utils.bitmapToMat(image, m);
+        return ProcessCapture(m, justProcess);
     }
 
     public PlateResult ProcessCapture(Mat mat, Boolean justProcess) {
+        m_image = mat;
         PlateResult plate = ImageProcess(mat, justProcess);
-        Location location = GetPosition();
+        Location location = MainActivity.locationController.GetCurrentLocation();
 
         if (plate != null) {
             InsertReport(location, image, new Plate(plate.Plate));
@@ -83,23 +88,6 @@ public class PlateProcessSystem {
                 Log.d("test", correct.toString());
             }
         });
-    }
-
-    private Location GetPosition() {
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-
-
-            return null;
-        }
-        return locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
     }
 
 

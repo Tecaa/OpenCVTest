@@ -21,7 +21,7 @@ public class FolderBatch {
 
     public FolderBatch(Context context)
     {
-        ImageViewer.SHOW_PROCESS_DEBUG = false;
+
 
         files = new ArrayList<File>();
         plateProcessSystem = new PlateProcessSystem(context);
@@ -29,6 +29,7 @@ public class FolderBatch {
 
     public void Process(String path)
     {
+        ImageViewer.SHOW_PROCESS_DEBUG = false;
         GetFilesFromFolder(path);
         DoBatch();
     }

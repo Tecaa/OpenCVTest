@@ -11,6 +11,10 @@ public class PlateResult {
         Confidence = 0;
     }
     public PlateResult(String plate, int confidence) {
+        SetPlate(plate, confidence);
+    }
+
+    public void SetPlate(String plate, int confidence) {
         Plate = plate;
         Confidence = confidence;
     }

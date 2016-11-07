@@ -16,7 +16,10 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
+import java.security.Timestamp;
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import cl.bananaware.hwoc.DebugHWOC;
@@ -35,17 +38,24 @@ public class PlateRecognizer {
     public List<Mat> secondProcessSteps;
 
 
-    private final String GROUP1 = "ABCDEFGHIJKLNPRSTUVXYZWM";
-    private final String GROUP2 = "BCDFGHJKLPRSTVXYZW0123456789";
+    private final String GROUP1_1985 = "ABCDEFGHIJKLNPRSTUVXYZWM";
+    private final String GROUP1_2007 = "BCDFGHJKLPRSTVWXYZ";
+    private final String GROUP2_1985 = "0123456789";
+    private final String GROUP2_2007 = "BCDFGHJKLPRSTVWXYZ";
     private final String GROUP3 = "0123456789";
-    private final int ACCEPTABLE_CONFIDENCE = 45;
+    private final long MILISECOND_MAX = 1000 * 9;
+    private final int ACCEPTABLE_CONFIDENCE = 55; //45
 
+
+    private long initialMillis;
     public void InitDebug(DebugHWOC d)
     {
         debugHWOC = d;
     }
     public PlateResult Recognize(Mat m_)
     {
+        initialMillis = System.currentTimeMillis();
+        PlateResult result = new PlateResult();
         CleanAll();
         TimeProfiler.CheckPoint(1);
 
@@ -69,18 +79,16 @@ public class PlateRecognizer {
 
             int b = 0;
             for (ImageSize is : ImageSize.values()) {
-                if (!ImageViewer.GOOD_SIZE) {/*
-                if (is == ImageSize.PEQUEÑA)
+                if (is != ImageSize.PEQUEÑA)
                     continue;
-                if (is == ImageSize.GRANDE)
-                    continue;*/
-                }
 
                 candidatesFinder.SetSize(is);
                 List<RotatedRect> outlines = GetBlueCandidates(candidatesFinder, b);
 
                 //STEP 3: loop
                 for (int i = 0; i < outlines.size(); ++i) {
+                    if (System.currentTimeMillis() - initialMillis >= MILISECOND_MAX)
+                        return result;
                     TimeProfiler.CheckPoint(15, b, i);
                     CandidateSelector candidateSelector =
                             new CandidateSelector(candidatesFinder.OriginalEqualizedImage, candidatesFinder.OriginalImageRealSize, outlines.get(i));
@@ -99,7 +107,6 @@ public class PlateRecognizer {
 
                     if (!candidateSelector.PercentajeAreaCandidateCheck()) {
                         AddImage(firstProcessSteps, R.drawable.percentaje_area_candidate_check, 10);
-                        Log.d("filter", "i=" + i + "!PercentajeAreaCandidateCheck");
                         TimeProfiler.CheckPoint(17, b, i);
                         continue;
                     }
@@ -150,7 +157,6 @@ public class PlateRecognizer {
                     if (!candidateSelector.FindMinAreaRectInMaxArea()) {
                         AddImage(firstProcessSteps, R.drawable.find_min_area_rect_in_max_area, 16);
                         TimeProfiler.CheckPoint(27, b, i);
-                        Log.d("filter", "i=" + i + " !FindMinAreaRectInMaxArea");
                         continue;
                     }
                     TimeProfiler.CheckPoint(27, b, i);
@@ -166,7 +172,6 @@ public class PlateRecognizer {
                     if (checkError != null) {
 
                         AddImage(firstProcessSteps, checkError.getValue(), 18);
-                        Log.d("filter", "i=" + i + "!DoChecks");
                         continue;
                     }
 
@@ -202,8 +207,6 @@ public class PlateRecognizer {
                         AddStep(secondProcessSteps, characterSeparator.ImageWithContournsPreFiltred, 21);
                         AddStep(secondProcessSteps, characterSeparator.ImageWithContourns, 21);
                         AddImage(secondProcessSteps, R.drawable.filter_countourns, 22);
-
-                        Log.d("filter", "q=" /*+ q*/ + " !FilterCountourns");
 
                         //Segundo intento
                         if (characterSeparator.isBiggerBoundingArea) {
@@ -241,9 +244,15 @@ public class PlateRecognizer {
                         characterSeparator.CropAll();
 
                     TimeProfiler.CheckPoint(34, b, i);
+
+
+
+
                     String whiteList = "";
                     int finalConfidence = 0;
-
+                    boolean is1985 = characterSeparator.Is1985();//boolean is1985 = false;
+                    AddStep(secondProcessSteps, characterSeparator.Inner1, 26);
+                    AddStep(secondProcessSteps, characterSeparator.Inner2, 26);
                     if (ImageViewer.CHARS) {
                         for (int n = 0; n < characterSeparator.CroppedChars.size(); ++n) {
 
@@ -253,11 +262,11 @@ public class PlateRecognizer {
 
                             switch (n) {
                                 case 0://1
-                                    whiteList = GROUP1;
+                                    whiteList = GROUP1_2007 + GROUP1_1985;
                                     break;
                                 case 2://3
 
-                                    whiteList = GROUP2;
+                                    whiteList = GROUP2_2007 + GROUP2_1985;
                                     break;
                                 case 4://5
 
@@ -281,26 +290,37 @@ public class PlateRecognizer {
                     } else {
                         AddImage(secondProcessSteps, R.drawable.npp, 25);
                         AddStep(secondProcessSteps, characterSeparator.CroppedChars.get(0), 25);
-                        for (int n = 0; n < 3; ++n) {
 
+                        Integer confidence1985 = null;
+                        String recognizedText1985 = "";
+                        for (int n = 2; n >= 0; --n) {
                             MainActivity.baseApi.clear();
                             switch (n) {
                                 case 0://1
-                                    whiteList = "ABCDEFGHIJKLNPRSTUVXYZW";
+                                    if (is1985)
+                                        whiteList = GROUP1_1985;
+                                    else
+                                        whiteList = GROUP1_2007;
                                     break;
                                 case 1://3
-
-                                    whiteList = "BCDFGHJKLPRSTVXYZW0123456789";
+                                    if (is1985)
+                                        whiteList = GROUP2_1985;
+                                    else
+                                        whiteList = GROUP2_2007;
+                                    /*
+                                    if (confidence1985 == null)
+                                        whiteList = GROUP2_1985;
+                                    else
+                                        whiteList = GROUP2_2007;*/
                                     break;
                                 case 2://5
 
-                                    whiteList = "0123456789";
+                                    whiteList = GROUP3;
                                     break;
                             }
+
+
                             MainActivity.baseApi.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, whiteList);
-
-
-                            //Mat m = characterSeparator.CroppedChars.get(0);
                             Mat m = characterSeparator.GetCharsGroupN(n);
                             if (m.rows() <= 0 || m.cols() <= 0)
                                 continue;
@@ -311,38 +331,56 @@ public class PlateRecognizer {
                             MainActivity.baseApi.setImage(temp);
                             String recognizedText = MainActivity.baseApi.getUTF8Text();
                             int[] confidences = MainActivity.baseApi.wordConfidences();
-                            if (confidences.length != 0) {
-                                finalConfidence += confidences[0];// confidences[Math.min(n, confidences.length - 1)];
-                                Log.d("output", "n=" + n + " text:" + recognizedText + "\tconfidence: " + confidences[Math.min(n, confidences.length - 1)]);
+                            if (confidences.length == 0)
+                                break;
+
+                            Log.d("output", "n=" + n + " text:" + recognizedText + "\tconfidence: " + confidences[Math.min(n, confidences.length - 1)]);
+
+
+/*
+                            if (n==2) {
+                                if (confidence1985 == null) {
+                                    confidence1985 = confidences[0];
+                                    recognizedText1985 = recognizedText;
+                                    ++n;
+                                    continue;
+                                }
+                                else {
+                                    if (confidence1985 > confidences[0]) {
+                                        confidences[0] = confidence1985;
+                                        recognizedText = recognizedText1985;
+                                        is1985 = true;
+                                    }
+                                }
+
+
                             }
+*/
 
+                            finalConfidence += confidences[0];
 
-                            lastPlate += recognizedText;//process(recognizedText, n);
+                            lastPlate = recognizedText + lastPlate;//process(recognizedText, n);
                             TimeProfiler.CheckPoint(35, b, i);
 
                         }
 
                     }
-                    correctPlate = isCorrectPlate(lastPlate);
+                    correctPlate = isCorrectPlate(lastPlate, is1985);
                     finalConfidence /= 3;
-                    if (correctPlate && aceptableConfidence(finalConfidence))
-                        return new PlateResult(lastPlate, finalConfidence);
+                    if (correctPlate && aceptableConfidence(finalConfidence)) {
+                        result = new PlateResult(lastPlate, finalConfidence);
+                        return result;
+                    }
 
                     lastPlate = "";
                 }
                 b++;
             }
         }
-        return new PlateResult();
+        return result;
     }
 
     private List<Mat> GetPreImages(Mat m_) {
-
-
-
-
-
-
         //IDEA: SUBDIVIDIR LA IMAGEN EN LAS "MAYORES MANCHAS BLANCAS Y APLICAR TODO EL ALGORITMO SOBRE LAS SUBDIVICIONES
         // HASTA ENCONTRAR UNA PATENTE".
         // OTRA OPCION ES NO RECORTAR SINO QUE GENERAR "ZONAS ACEPTADAS (ZONAS BLANCAS)" EN DONDE
@@ -547,16 +585,29 @@ public class PlateRecognizer {
         }
     }
 
-    private boolean isCorrectPlate(String lastPlate) {
-        if (lastPlate.length() == 6
-                && GROUP1.contains(String.valueOf(lastPlate.charAt(0)))
-                && GROUP1.contains(String.valueOf(lastPlate.charAt(1)))
-                && GROUP2.contains(String.valueOf(lastPlate.charAt(2)))
-                && GROUP2.contains(String.valueOf(lastPlate.charAt(3)))
+    private boolean isCorrectPlate(String lastPlate, boolean is1985) {
+        if (lastPlate.length() == 6)
+        {
+            if (is1985
+                && GROUP1_1985.contains(String.valueOf(lastPlate.charAt(0)))
+                && GROUP1_1985.contains(String.valueOf(lastPlate.charAt(1)))
+                && GROUP2_1985.contains(String.valueOf(lastPlate.charAt(2)))
+                && GROUP2_1985.contains(String.valueOf(lastPlate.charAt(3)))
                 && GROUP3.contains(String.valueOf(lastPlate.charAt(4)))
                 && GROUP3.contains(String.valueOf(lastPlate.charAt(5)))
                 )
-            return true;
+                return true;
+            if (!is1985
+                    && GROUP1_2007.contains(String.valueOf(lastPlate.charAt(0)))
+                    && GROUP1_2007.contains(String.valueOf(lastPlate.charAt(1)))
+                    && GROUP2_2007.contains(String.valueOf(lastPlate.charAt(2)))
+                    && GROUP2_2007.contains(String.valueOf(lastPlate.charAt(3)))
+                    && GROUP3.contains(String.valueOf(lastPlate.charAt(4)))
+                    && GROUP3.contains(String.valueOf(lastPlate.charAt(5)))
+                    )
+                return true;
+            return false;
+        }
         else
             return false;
     }

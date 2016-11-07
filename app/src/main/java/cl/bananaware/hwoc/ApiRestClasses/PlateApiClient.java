@@ -1,19 +1,27 @@
 package cl.bananaware.hwoc.ApiRestClasses;
 
 import android.app.DownloadManager;
+import android.content.Context;
 import android.util.Log;
 
+import com.loopj.android.http.*;
+import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.HashMap;
 import java.util.List;
+
+import cz.msebera.android.httpclient.Header;
+
 
 /**
  * Created by fergu on 21-10-2016.
@@ -26,7 +34,7 @@ public class PlateApiClient {
         put("putReport","https://api.backand.com/1/objects/reports");
     }};
     AsyncHttpClient client;
-
+    private Context context;
 
     public interface StolenPlatesArrived{
         void callback(List<Plate> plates);
@@ -40,8 +48,9 @@ public class PlateApiClient {
     ArrayList<InsertReportResponse> InsertReportResultObservers = new ArrayList<InsertReportResponse>();
 
 
-    public PlateApiClient()
+    public PlateApiClient(Context context)
     {
+        this.context = context;
         connect();
     }
 
@@ -49,16 +58,16 @@ public class PlateApiClient {
     {
         client = new AsyncHttpClient();
         client.addHeader(TOKEN_KEY, TOKEN_VALUE);
+        client.addHeader("Content-Type", "application/json; charset=utf-8");
+
     }
     public void getStolenPlatesRequest(StolenPlatesArrived observer){
         RequestParams params = new RequestParams();
         StolenPlatesArrivedObservers.add(observer);
-        client.get(apiMethods.get("getStolenPlates"), params ,new AsyncHttpResponseHandler() {
-            // When the response returned by REST has Http response code '200'
+        client.get(apiMethods.get("getStolenPlates"), params ,new JsonHttpResponseHandler() {
             @Override
-            public void onSuccess(String response) {
+            public void onSuccess(int statusCode, Header[] headers, JSONObject jo) {
                 try {
-                    JSONObject jo = new JSONObject(response);
                     List<Plate> plates = Plate.FromJSONArray(jo.getJSONArray("data"));
                     for (Plate p : plates)
                     {
@@ -75,10 +84,9 @@ public class PlateApiClient {
 
                 }
             }
-            // When the response returned by REST has Http response code other than '200'
+
             @Override
-            public void onFailure(int statusCode, Throwable error,
-                                  String content) {
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 // Hide Progress Dialog
                 // When Http response code is '404'
                 if(statusCode == 404){
@@ -94,15 +102,59 @@ public class PlateApiClient {
 
                 }
             }
+
         });
     }
 
-    public void InsertReport(Report report, InsertReportResponse observer) {
+    public void InsertReport(final Report report, InsertReportResponse observer) {
+
+        RequestParams params = new RequestParams();
+        params.put("plate", report.plate);
+        params.put("position", new JSONArray(report.position));
+        params.put("image", "cffkyhjhf");
+        params.put("date", "2016-11-04 21:21:56Z");
+        params.setUseJsonStreamer(true);
+
+        InsertReportResultObservers.add(observer);
+        client.post(apiMethods.get("putReport"), params, new JsonHttpResponseHandler() {
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject jo) {
+                // called when response HTTP status is "200 OK"
+                //Log.i("API RESULT", Integer.toString(statusCode));
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String res, Throwable t) {
+                //Log.i("API RESULT", Integer.toString(statusCode));
+            }
+
+        });
+        /*
         RequestParams param = new RequestParams();
-        param.put("report", report);
+
+        //String json = new Gson().toJson(report);
+        param.put("plate", report.plate);
+        param.put("image", "qwerasdf");
+        param.put("date", "2016-11-04 21:21:56Z");//report.date);
+
+        try {
+            JSONArray arr = new JSONArray(report.position);
+            param.put("position", arr);
+        }
+        catch (JSONException e)
+        {
+            return;
+        }
+
         InsertReportResultObservers.add(observer);
         client.post(apiMethods.get("putReport") ,param, new AsyncHttpResponseHandler() {
             // When the response returned by REST has Http response code '200'
+            @Override
+            public void onFinish() {
+                    boolean que_pasa = true;
+
+            }
             @Override
             public void onSuccess(String response) {
 
@@ -133,6 +185,7 @@ public class PlateApiClient {
                 }
             }
         });
+        */
     }
 
 

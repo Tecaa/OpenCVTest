@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     };
     public static TessBaseAPI baseApi;
     public static PlateProcessSystem plateProcessSystem;
+    public static LocationController locationController;
     /**
      * Checks if the app has permission to write to device storage
      *
@@ -95,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.show_camera);
 
+        locationController = new LocationController(this.getApplicationContext());
         InitOCT();
         InitPPS();
 
