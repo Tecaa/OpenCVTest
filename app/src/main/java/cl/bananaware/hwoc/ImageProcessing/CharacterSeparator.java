@@ -562,17 +562,17 @@ public class CharacterSeparator {
     }
 
     final boolean REMOVE_OUTSIDE = true;
-    private final int MAX_CONTOUR_SIZE = 100;
+    private final int MAX_CONTOUR_SIZE = 125;
     public Mat FinalContournImage;
     double biggerBoundingArea;
     Rect biggerAreaRect;
     public Mat preRevisionFinalContourns;
     public int getFinalContourns(Mat image) {
-/*
+
         if (contourns.size() >= MAX_CONTOUR_SIZE) {
             isBiggerBoundingArea = false;
             return 0;
-        }*/
+        }
 
         alturas = new CaracteristicaRelacionador(0.40);
         anchuras = new CaracteristicaRelacionador(0.40);

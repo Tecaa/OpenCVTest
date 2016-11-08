@@ -40,6 +40,7 @@ import cl.bananaware.hwoc.ImageProcessing.PlateResult;
  */
 public class ImageViewer extends Activity {
     public static boolean SHOW_PROCESS_DEBUG = true;
+    public static boolean USE_API_DEBUG = false;
     public final static boolean GOOD_SIZE = false;
     public final static int I_LEVEL = 90;
     public final static boolean CHARS = false;

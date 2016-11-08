@@ -219,7 +219,8 @@ public class CameraContinously extends AppCompatActivity {
                             PlateResult plate = MainActivity.plateProcessSystem.ProcessCapture(mat, false);
 
                             long time = TimeProfiler.GetTotalTime();
-                            Toast.makeText(CameraContinously.this, "Plate:" + plate.Plate + " " + plate.Confidence + "%"
+                            if (plate != null)
+                                Toast.makeText(CameraContinously.this, "Plate:" + plate.Plate + " " + plate.Confidence + "%"
                                     + " " + time + " " + t, Toast.LENGTH_LONG).show();
 
                             /*

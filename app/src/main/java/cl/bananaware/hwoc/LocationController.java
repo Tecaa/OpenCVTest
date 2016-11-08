@@ -34,6 +34,8 @@ public class LocationController implements LocationListener {
             ; // no se pudieron dar permisos
         }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+        Log.d("loc", "requestLocation");
     }
 
     public Location GetCurrentLocation()
@@ -42,6 +44,7 @@ public class LocationController implements LocationListener {
     }
     @Override
     public void onLocationChanged(Location location) {
+        Log.d("loc", "onLocatinoChange");
         Log.d("loc", "location change " + location.getLatitude());
         this.currentLocation = location;
     }

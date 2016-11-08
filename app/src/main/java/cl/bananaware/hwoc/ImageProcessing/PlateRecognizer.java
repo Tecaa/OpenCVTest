@@ -43,7 +43,7 @@ public class PlateRecognizer {
     private final String GROUP2_1985 = "0123456789";
     private final String GROUP2_2007 = "BCDFGHJKLPRSTVWXYZ";
     private final String GROUP3 = "0123456789";
-    private final long MILISECOND_MAX = 1000 * 9;
+    private final long MILISECOND_MAX = 1000 * (3+1);
     private final int ACCEPTABLE_CONFIDENCE = 55; //45
 
 
@@ -87,8 +87,10 @@ public class PlateRecognizer {
 
                 //STEP 3: loop
                 for (int i = 0; i < outlines.size(); ++i) {
-                    if (System.currentTimeMillis() - initialMillis >= MILISECOND_MAX)
+                    if (System.currentTimeMillis() - initialMillis >= MILISECOND_MAX) {
+                        Log.d("time", "time excedeed " + (System.currentTimeMillis() - initialMillis ));
                         return result;
+                    }
                     TimeProfiler.CheckPoint(15, b, i);
                     CandidateSelector candidateSelector =
                             new CandidateSelector(candidatesFinder.OriginalEqualizedImage, candidatesFinder.OriginalImageRealSize, outlines.get(i));
@@ -574,7 +576,7 @@ public class PlateRecognizer {
     }
 
     private void AddStep(List<Mat> firstProcessSteps, Mat currentImage, int i) {
-        if (debugHWOC != null) {
+        if (debugHWOC != null && ImageViewer.SHOW_PROCESS_DEBUG && currentImage != null) {
 
             if (currentImage.size().width <= 0 || currentImage.size().height <= 0)
             {

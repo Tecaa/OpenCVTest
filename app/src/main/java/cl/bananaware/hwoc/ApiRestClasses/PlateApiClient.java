@@ -14,12 +14,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.HashMap;
 import java.util.List;
 
+import cl.bananaware.hwoc.ImageViewer;
 import cz.msebera.android.httpclient.Header;
 
 
@@ -56,12 +58,19 @@ public class PlateApiClient {
 
     private void connect()
     {
+        if (!ImageViewer.USE_API_DEBUG)
+            return;
         client = new AsyncHttpClient();
         client.addHeader(TOKEN_KEY, TOKEN_VALUE);
-        client.addHeader("Content-Type", "application/json; charset=utf-8");
+        //client.addHeader("Content-Type", "multipart/form-data; charset=utf-8");
+        //client.addHeader("Content-Type", "application/json; charset=utf-8");
+        client.setTimeout(60000);
 
     }
     public void getStolenPlatesRequest(StolenPlatesArrived observer){
+        if (!ImageViewer.USE_API_DEBUG)
+            return;
+
         RequestParams params = new RequestParams();
         StolenPlatesArrivedObservers.add(observer);
         client.get(apiMethods.get("getStolenPlates"), params ,new JsonHttpResponseHandler() {
@@ -107,13 +116,15 @@ public class PlateApiClient {
     }
 
     public void InsertReport(final Report report, InsertReportResponse observer) {
+        if (!ImageViewer.USE_API_DEBUG)
+            return;
 
         RequestParams params = new RequestParams();
         params.put("plate", report.plate);
         params.put("position", new JSONArray(report.position));
-        params.put("image", "cffkyhjhf");
+        params.put("image", new ByteArrayInputStream(report.image2), report.plate + ".jpg");
         params.put("date", "2016-11-04 21:21:56Z");
-        params.setUseJsonStreamer(true);
+        //params.setUseJsonStreamer(true);
 
         InsertReportResultObservers.add(observer);
         client.post(apiMethods.get("putReport"), params, new JsonHttpResponseHandler() {
@@ -121,71 +132,21 @@ public class PlateApiClient {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject jo) {
                 // called when response HTTP status is "200 OK"
-                //Log.i("API RESULT", Integer.toString(statusCode));
+                Log.i("API RESULT", Integer.toString(statusCode));
+                int a = 2;
+
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String res, Throwable t) {
-                //Log.i("API RESULT", Integer.toString(statusCode));
+                Log.i("API RESULT", Integer.toString(statusCode));
+            }
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject jo) {
+                Log.i("API RESULT", Integer.toString(statusCode));
             }
 
         });
-        /*
-        RequestParams param = new RequestParams();
-
-        //String json = new Gson().toJson(report);
-        param.put("plate", report.plate);
-        param.put("image", "qwerasdf");
-        param.put("date", "2016-11-04 21:21:56Z");//report.date);
-
-        try {
-            JSONArray arr = new JSONArray(report.position);
-            param.put("position", arr);
-        }
-        catch (JSONException e)
-        {
-            return;
-        }
-
-        InsertReportResultObservers.add(observer);
-        client.post(apiMethods.get("putReport") ,param, new AsyncHttpResponseHandler() {
-            // When the response returned by REST has Http response code '200'
-            @Override
-            public void onFinish() {
-                    boolean que_pasa = true;
-
-            }
-            @Override
-            public void onSuccess(String response) {
-
-                for (InsertReportResponse ev : InsertReportResultObservers) {
-                    ev.callback(true);
-                }
-            }
-            // When the response returned by REST has Http response code other than '200'
-            @Override
-            public void onFailure(int statusCode, Throwable error,
-                                  String content) {
-                // Hide Progress Dialog
-                // When Http response code is '404'
-                for (InsertReportResponse ev : InsertReportResultObservers) {
-                    ev.callback(false);
-                }
-                if(statusCode == 404){
-                    Log.d("pos", "Requested resource not found");
-                }
-                // When Http response code is '500'
-                else if(statusCode == 500){
-                    Log.d("pos", "Something went wrong at server end");
-                }
-                // When Http response code other than 404, 500
-                else{
-                    Log.d("pos", "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]");
-
-                }
-            }
-        });
-        */
     }
 
 
