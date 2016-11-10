@@ -78,6 +78,7 @@ public class PlateRecognizer {
 
 
             int b = 0;
+
             for (ImageSize is : ImageSize.values()) {
                 if (is != ImageSize.PEQUEÑA)
                     continue;
@@ -476,7 +477,6 @@ public class PlateRecognizer {
     }
 
     private List<RotatedRect> GetBlueCandidates(CandidatesFinder candidatesFinder, int b) {
-
         candidatesFinder.SetPreMultiDilationImage();
         candidatesFinder.Erode2();
         AddStep(firstProcessSteps, candidatesFinder.CurrentImage, 8);

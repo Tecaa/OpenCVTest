@@ -183,14 +183,8 @@ public class CandidatesFinder {
     public void GaussianBlur() {
         Size size;
         int sigma;
-        //if (ImageViewer.GOOD_SIZE) {
-        size = new Size(9, 9);//size = new Size(5, 5);
-            sigma = 2; //4?
-        /*}
-        else {
-            size = new Size(3, 3);
-            sigma = 1;
-        }*/
+        size = new Size(9, 9);
+            sigma = 2;
         Imgproc.GaussianBlur(CurrentImage, PreMultiDilationImage, size, sigma);
     }
 

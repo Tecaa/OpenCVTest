@@ -66,10 +66,14 @@ public class PlateProcessSystem{
         Mat m = new Mat();
         image = img;
         Utils.bitmapToMat(image, m);
-        return ProcessCapture(m, justProcess);
+        return InnerProcessCapture(m, justProcess);
     }
 
     public PlateResult ProcessCapture(Mat mat, Boolean justProcess) {
+        return InnerProcessCapture(mat, justProcess);
+    }
+
+    private PlateResult InnerProcessCapture(Mat mat, Boolean justProcess) {
         m_image = mat;
         PlateResult plate = ImageProcess(mat, justProcess);
         Location location = MainActivity.locationController.GetCurrentLocation();

@@ -32,6 +32,10 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.opencv.android.Utils;
@@ -76,12 +80,13 @@ public class CameraContinously extends AppCompatActivity {
     private boolean mFlashSupported;
     private Handler mBackgroundHandler;
     private HandlerThread mBackgroundThread;
+    private boolean takePhoto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera_continously);
-
+        takePhoto = true;
         textureView = (TextureView) findViewById(R.id.texture);
         assert textureView != null;
         textureView.setSurfaceTextureListener(textureListener);
@@ -93,16 +98,20 @@ public class CameraContinously extends AppCompatActivity {
                 takePicture();
             }
         });
+        table = (TableLayout) findViewById(R.id.tableLayout);
     }
+    TableLayout table;
     TextureView.SurfaceTextureListener textureListener = new TextureView.SurfaceTextureListener() {
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
             //open your camera here
             openCamera();
+            //takePicture();
         }
         @Override
         public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
             // Transform you image captured size according to the surface width and height
+
         }
         @Override
         public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
@@ -110,6 +119,12 @@ public class CameraContinously extends AppCompatActivity {
         }
         @Override
         public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+            /*
+            Log.d("test", "take picture");
+            if (takePhoto)
+            {
+                takePhoto = false;
+            }*/
         }
     };
     private final CameraDevice.StateCallback stateCallback = new CameraDevice.StateCallback() {
@@ -138,7 +153,7 @@ public class CameraContinously extends AppCompatActivity {
             createCameraPreview();
         }
     };
-    Mat mat;
+    //Mat mat;
     protected void startBackgroundThread() {
         mBackgroundThread = new HandlerThread("Camera Background");
         mBackgroundThread.start();
@@ -157,12 +172,17 @@ public class CameraContinously extends AppCompatActivity {
     int width = 640;
     int height = 480;
     Bitmap bmx;
+    ImageReader.OnImageAvailableListener readerListener;
+    ImageReader reader;
+    List<Surface> outputSurfaces;
+    CaptureRequest.Builder captureBuilder;
+    CameraManager manager;
     protected void takePicture() {
         if(null == cameraDevice) {
             Log.e(TAG, "cameraDevice is null");
             return;
         }
-        CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+        manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try {
             CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraDevice.getId());
             Size[] jpegSizes = null;
@@ -174,35 +194,91 @@ public class CameraContinously extends AppCompatActivity {
                 width = jpegSizes[0].getWidth();
                 height = jpegSizes[0].getHeight();
             }
-            ImageReader reader = ImageReader.newInstance(width, height, ImageFormat.JPEG, 1);
-            List<Surface> outputSurfaces = new ArrayList<Surface>(2);
+            reader = ImageReader.newInstance(width, height, ImageFormat.JPEG, 1);
+            outputSurfaces = new ArrayList<Surface>(2);
             outputSurfaces.add(reader.getSurface());
             outputSurfaces.add(new Surface(textureView.getSurfaceTexture()));
-            final CaptureRequest.Builder captureBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
+            captureBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
             captureBuilder.addTarget(reader.getSurface());
             captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
             // Orientation
             int rotation = getWindowManager().getDefaultDisplay().getRotation();
             captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
-            final File file = new File(Environment.getExternalStorageDirectory()+"/pic.jpg");
+            //final File file = new File(Environment.getExternalStorageDirectory()+"/pic.jpg");
 
-            ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
+            readerListener = new ImageReader.OnImageAvailableListener() {
                 @Override
                 public void onImageAvailable(final ImageReader reader) {
 
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            try {
+                                createCaptureSesion();
+
+                                if (takePhoto) {
+                                    takePhoto = false;
+                                    processImage(reader);
+                                }
+                            }
+                            catch (CameraAccessException e) {
+                                e.printStackTrace();
+                            }
+                        }
 
 
-                            TimeProfiler.ResetCheckPoints();
-                            TimeProfiler.CheckPoint(0);
-                            Bitmap qq = funcionrara(reader);
-                            TimeProfiler.CheckPoint(1);
+                    });
+                }
 
 
-                            mat = new Mat();
-                            Utils.bitmapToMat(qq, mat);
+            };
+
+
+
+            reader.setOnImageAvailableListener(readerListener, mBackgroundHandler);
+            captureListener = new CameraCaptureSession.CaptureCallback() {
+                @Override
+                public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
+                    super.onCaptureCompleted(session, request, result);
+                    //Toast.makeText(CameraContinously.this, "Saved:" + file, Toast.LENGTH_SHORT).show();
+                 //   createCameraPreview();
+                }
+            };
+            createCaptureSesion();
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    private void createCaptureSesion() throws CameraAccessException {
+        cameraDevice.createCaptureSession(outputSurfaces, new CameraCaptureSession.StateCallback() {
+            @Override
+            public void onConfigured(CameraCaptureSession session) {
+                try {
+                    session.capture(captureBuilder.build(), captureListener, mBackgroundHandler);
+                } catch (CameraAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            public void onConfigureFailed(CameraCaptureSession session) {
+            }
+        }, mBackgroundHandler);
+    }
+
+    CameraCaptureSession.CaptureCallback captureListener;
+    private void processImage(ImageReader reader) {
+
+
+        TimeProfiler.ResetCheckPoints();
+        TimeProfiler.CheckPoint(0);
+        Bitmap img = funcionrara(reader);
+
+
+        //mat = new Mat();
+        //Utils.bitmapToMat(qq, mat);
 
 /*
                             TimeProfiler.clean();
@@ -214,65 +290,29 @@ public class CameraContinously extends AppCompatActivity {
 
 
 
-                            TimeProfiler.CheckPoint(2);
-                            long t = TimeProfiler.GetTotalTime();
-                            PlateResult plate = MainActivity.plateProcessSystem.ProcessCapture(mat, false);
+        PlateResult plate = MainActivity.plateProcessSystem.ProcessCapture(img, true);
 
-                            long time = TimeProfiler.GetTotalTime();
-                            if (plate != null)
-                                Toast.makeText(CameraContinously.this, "Plate:" + plate.Plate + " " + plate.Confidence + "%"
-                                    + " " + time + " " + t, Toast.LENGTH_LONG).show();
+        long time = TimeProfiler.GetTotalTime();
+        if (plate != null) {
+            String text = plate.Plate + " " + plate.Confidence + "%"
+                    + " " + time + " [ms]";
 
-                            /*
-                            ImageView i = (ImageView) findViewById(R.id.image1);
-                            i.setImageBitmap(Bitmap.createScaledBitmap(qq, 700, 600, false));*/
-                        }});
-                }
+            TableRow row = new TableRow(this);
 
+            TextView tv = new TextView(this);
+            tv.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+            tv.setText(text);
+            row.addView(tv);
+            table.addView(row, 0);
+            if (table.getChildCount() > 20)
+                table.removeViewAt(20);
 
-                private void save(byte[] bytes) throws IOException {
-                    OutputStream output = null;
-                    try {
-                        output = new FileOutputStream(file);
-                        output.write(bytes);
-                    } finally {
-                        if (null != output) {
-                            output.close();
-                        }
-                    }
-                }
-
-            };
-
-
-
-            reader.setOnImageAvailableListener(readerListener, mBackgroundHandler);
-            final CameraCaptureSession.CaptureCallback captureListener = new CameraCaptureSession.CaptureCallback() {
-                @Override
-                public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
-                    super.onCaptureCompleted(session, request, result);
-                    //Toast.makeText(CameraContinously.this, "Saved:" + file, Toast.LENGTH_SHORT).show();
-                    createCameraPreview();
-                }
-            };
-            cameraDevice.createCaptureSession(outputSurfaces, new CameraCaptureSession.StateCallback() {
-                @Override
-                public void onConfigured(CameraCaptureSession session) {
-                    try {
-                        session.capture(captureBuilder.build(), captureListener, mBackgroundHandler);
-                    } catch (CameraAccessException e) {
-                        e.printStackTrace();
-                    }
-                }
-                @Override
-                public void onConfigureFailed(CameraCaptureSession session) {
-                }
-            }, mBackgroundHandler);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
+            //Toast.makeText(CameraContinously.this, text, Toast.LENGTH_LONG).show();
         }
+        takePhoto = true;
 
-
+        ImageView i = (ImageView) findViewById(R.id.image1);
+        i.setImageBitmap(Bitmap.createScaledBitmap(img, 700, 600, false));
     }
 
     private Bitmap funcionrara(ImageReader reader) {
@@ -284,6 +324,7 @@ public class CameraContinously extends AppCompatActivity {
         byte[] data = new byte[buffer.capacity()];
         buffer.get(data);
         Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+        image.close();
         return bitmap;
     }
 
@@ -308,7 +349,7 @@ public class CameraContinously extends AppCompatActivity {
             assert texture != null;
             texture.setDefaultBufferSize(imageDimension.getWidth(), imageDimension.getHeight());
             Surface surface = new Surface(texture);
-            captureRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+            captureRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
             captureRequestBuilder.addTarget(surface);
             cameraDevice.createCaptureSession(Arrays.asList(surface), new CameraCaptureSession.StateCallback(){
                 @Override
