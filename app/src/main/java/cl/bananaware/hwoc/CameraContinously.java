@@ -85,6 +85,7 @@ public class CameraContinously extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ImageViewer.SHOW_PROCESS_DEBUG = false;
         setContentView(R.layout.activity_camera_continously);
         takePhoto = true;
         textureView = (TextureView) findViewById(R.id.texture);
@@ -99,6 +100,7 @@ public class CameraContinously extends AppCompatActivity {
             }
         });
         table = (TableLayout) findViewById(R.id.tableLayout);
+
     }
     TableLayout table;
     TextureView.SurfaceTextureListener textureListener = new TextureView.SurfaceTextureListener() {
@@ -134,6 +136,7 @@ public class CameraContinously extends AppCompatActivity {
             Log.e(TAG, "onOpened");
             cameraDevice = camera;
             createCameraPreview();
+
         }
         @Override
         public void onDisconnected(CameraDevice camera) {
@@ -177,7 +180,9 @@ public class CameraContinously extends AppCompatActivity {
     List<Surface> outputSurfaces;
     CaptureRequest.Builder captureBuilder;
     CameraManager manager;
+    Long millis = null;
     protected void takePicture() {
+        millis = System.currentTimeMillis();
         if(null == cameraDevice) {
             Log.e(TAG, "cameraDevice is null");
             return;
@@ -215,8 +220,11 @@ public class CameraContinously extends AppCompatActivity {
                         public void run() {
                             try {
                                 createCaptureSesion();
-
                                 if (takePhoto) {
+
+                                    millis = System.currentTimeMillis();
+                                    TimeProfiler.ResetCheckPoints();
+                                    TimeProfiler.CheckPoint(0);
                                     takePhoto = false;
                                     processImage(reader);
                                 }
@@ -272,8 +280,6 @@ public class CameraContinously extends AppCompatActivity {
     private void processImage(ImageReader reader) {
 
 
-        TimeProfiler.ResetCheckPoints();
-        TimeProfiler.CheckPoint(0);
         Bitmap img = funcionrara(reader);
 
 
@@ -290,12 +296,14 @@ public class CameraContinously extends AppCompatActivity {
 
 
 
-        PlateResult plate = MainActivity.plateProcessSystem.ProcessCapture(img, true);
+        PlateResult plate = MainActivity.plateProcessSystem.ProcessCapture(img);
 
         long time = TimeProfiler.GetTotalTime();
         if (plate != null) {
-            String text = plate.Plate + " " + plate.Confidence + "%"
-                    + " " + time + " [ms]";
+            String text = "";
+            if (millis != null)
+                 text = plate.Plate + " " + plate.Confidence + "%"
+                    + " " + String.valueOf(System.currentTimeMillis() - millis) + " [ms]";
 
             TableRow row = new TableRow(this);
 

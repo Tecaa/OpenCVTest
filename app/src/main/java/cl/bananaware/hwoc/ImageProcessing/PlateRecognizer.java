@@ -63,11 +63,6 @@ public class PlateRecognizer {
 
         for (int mt = 0; mt<matss.size()/2; ++mt) {
 
-
-            //if (1 == 1)
-           //    return new PlateResult();
-
-
             CandidatesFinder candidatesFinder = new CandidatesFinder(matss.get(mt+matss.size()/2),matss.get(mt));
             //CandidatesFinder candidatesFinder = new CandidatesFinder(m_);
             GetPreMultiDilationImage(candidatesFinder);

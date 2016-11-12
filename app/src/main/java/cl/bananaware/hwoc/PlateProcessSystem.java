@@ -62,20 +62,20 @@ public class PlateProcessSystem{
     Bitmap image;
     Mat m_image;
     // Toma una captura y almacena la posicion del gps y la imagen.
-    public PlateResult ProcessCapture(Bitmap img, Boolean justProcess) {
+    public PlateResult ProcessCapture(Bitmap img) {
         Mat m = new Mat();
         image = img;
         Utils.bitmapToMat(image, m);
-        return InnerProcessCapture(m, justProcess);
+        return InnerProcessCapture(m);
     }
 
-    public PlateResult ProcessCapture(Mat mat, Boolean justProcess) {
-        return InnerProcessCapture(mat, justProcess);
+    public PlateResult ProcessCapture(Mat mat) {
+        return InnerProcessCapture(mat);
     }
 
-    private PlateResult InnerProcessCapture(Mat mat, Boolean justProcess) {
+    private PlateResult InnerProcessCapture(Mat mat) {
         m_image = mat;
-        PlateResult plate = ImageProcess(mat, justProcess);
+        PlateResult plate = ImageProcess(mat);
         Location location = MainActivity.locationController.GetCurrentLocation();
 
         if (plate != null) {
@@ -96,18 +96,15 @@ public class PlateProcessSystem{
 
 
     // Se procesa la captura realizada
-    private PlateResult ImageProcess(Mat mat, boolean justProcess)
+    private PlateResult ImageProcess(Mat mat)
     {
         plateRecognizer = new PlateRecognizer();
         plateRecognizer.InitDebug(debugHWOC);
         LastPlateReaded = plateRecognizer.Recognize(m_image);
 
-        if (justProcess)
-            return LastPlateReaded;
-
 
         Plate p = new Plate(LastPlateReaded.Plate);
-        if (stolenPlates.contains(p))
+        if (ImageViewer.ALL_PLATES_STOLEN_DEBUG || stolenPlates.contains(p))
             return LastPlateReaded;
 
         return null;

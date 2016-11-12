@@ -75,6 +75,6 @@ public class FolderBatch {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(), options);
-        return plateProcessSystem.ProcessCapture(bitmap, true);
+        return plateProcessSystem.ProcessCapture(bitmap);
     }
 }

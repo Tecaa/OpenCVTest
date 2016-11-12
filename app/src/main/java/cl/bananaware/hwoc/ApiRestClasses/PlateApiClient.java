@@ -32,8 +32,9 @@ public class PlateApiClient {
     private final String TOKEN_KEY = "AnonymousToken";
     private final String TOKEN_VALUE = "65e0e866-03d6-428b-a20d-76be1673561e";
     private HashMap<String, String> apiMethods = new HashMap<String, String>() {{
-        put("getStolenPlates","https://api.backand.com/1/objects/plates");
-        put("putReport","https://api.backand.com/1/objects/reports");
+        put("getStolenPlates", "https://api.backand.com/1/objects/plates");
+        put("putReportImage", "https://api.backand.com/1/objects/action/reports?name=uploadImage");
+        put("putReport", "https://api.backand.com/1/objects/reports");
     }};
     AsyncHttpClient client;
     private Context context;
@@ -63,8 +64,8 @@ public class PlateApiClient {
         client = new AsyncHttpClient();
         client.addHeader(TOKEN_KEY, TOKEN_VALUE);
         //client.addHeader("Content-Type", "multipart/form-data; charset=utf-8");
-        //client.addHeader("Content-Type", "application/json; charset=utf-8");
-        client.setTimeout(60000);
+        client.addHeader("Content-Type", "application/json");
+        client.setTimeout(20 * 100);
 
     }
     public void getStolenPlatesRequest(StolenPlatesArrived observer){
@@ -120,21 +121,43 @@ public class PlateApiClient {
             return;
 
         RequestParams params = new RequestParams();
-        params.put("plate", report.plate);
-        params.put("position", new JSONArray(report.position));
-        params.put("image", new ByteArrayInputStream(report.image2), report.plate + ".jpg");
-        params.put("date", "2016-11-04 21:21:56Z");
-        //params.setUseJsonStreamer(true);
+        params.put("filedata", report.image);
+        //params.put("plate", report.plate);
+        //params.put("position", new JSONArray(report.position));
+        //params.put("image", new ByteArrayInputStream(report.image2), report.plate + ".jpg");
+        //params.put("date", "2016-11-04 21:21:56Z");
+        params.setUseJsonStreamer(true);
 
         InsertReportResultObservers.add(observer);
-        client.post(apiMethods.get("putReport"), params, new JsonHttpResponseHandler() {
-
+        client.post(apiMethods.get("putReportImage"), params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject jo) {
                 // called when response HTTP status is "200 OK"
-                Log.i("API RESULT", Integer.toString(statusCode));
-                int a = 2;
 
+                RequestParams params = new RequestParams();
+                params.put("plate", report.plate);
+                params.put("position", new JSONArray(report.position));
+                try {
+                    params.put("image", jo.getString("url"));
+                }
+                catch (Exception e){}
+                params.put("date", report.date);
+                params.setUseJsonStreamer(true);
+
+                client.post(apiMethods.get("putReport"), params, new JsonHttpResponseHandler() {
+
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        // called when response HTTP status is "200 OK"
+                        Log.i("API RESULT", Integer.toString(statusCode));
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String res, Throwable t) {
+                        Log.i("API RESULT", Integer.toString(statusCode));
+                    }
+
+                });
             }
 
             @Override

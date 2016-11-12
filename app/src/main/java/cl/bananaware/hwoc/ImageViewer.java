@@ -39,7 +39,8 @@ import cl.bananaware.hwoc.ImageProcessing.PlateResult;
  * Created by Marco on 21-04-2016.
  */
 public class ImageViewer extends Activity {
-    public static boolean SHOW_PROCESS_DEBUG = false;
+    public static boolean ALL_PLATES_STOLEN_DEBUG = true;
+    public static boolean SHOW_PROCESS_DEBUG = true;
     public static boolean USE_API_DEBUG = false;
     public final static boolean GOOD_SIZE = false;
     public final static int I_LEVEL = 90;
@@ -77,7 +78,7 @@ public class ImageViewer extends Activity {
         if (b == null)
             return;
 
-        MainActivity.plateProcessSystem.ProcessCapture(b, false);
+        MainActivity.plateProcessSystem.ProcessCapture(b);
         TimeProfiler.CheckPoint(36);
 
         if (SHOW_PROCESS_DEBUG) {
