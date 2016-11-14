@@ -64,7 +64,6 @@ public class PlateRecognizer {
         for (int mt = 0; mt<matss.size()/2; ++mt) {
 
             CandidatesFinder candidatesFinder = new CandidatesFinder(matss.get(mt+matss.size()/2),matss.get(mt));
-            //CandidatesFinder candidatesFinder = new CandidatesFinder(m_);
             GetPreMultiDilationImage(candidatesFinder);
 
 
@@ -83,7 +82,7 @@ public class PlateRecognizer {
 
                 //STEP 3: loop
                 for (int i = 0; i < outlines.size(); ++i) {
-                    if (System.currentTimeMillis() - initialMillis >= MILISECOND_MAX) {
+                    if (!ImageViewer.TEST_DISTANCE && System.currentTimeMillis() - initialMillis >= MILISECOND_MAX) {
                         Log.d("time", "time excedeed " + (System.currentTimeMillis() - initialMillis ));
                         return result;
                     }
@@ -174,6 +173,8 @@ public class PlateRecognizer {
                     }
 
                     Mat img = candidateSelector.GetFinalImage(true);
+                    if (img == null || img.cols() <= 0 || img.rows() <= 0)
+                        continue;
                     AddStep(firstProcessSteps, img, 19);
                     TimeProfiler.CheckPoint(29, b, i);
 
@@ -387,7 +388,12 @@ public class PlateRecognizer {
 
         Mat x = new Mat();
         x = m_.clone();
-        double factor = CandidatesFinder.Resize(x, 400);
+
+        double factor;
+        if (ImageViewer.TEST_DISTANCE)
+            factor = CandidatesFinder.Resize(x, 400);
+        else
+            factor = CandidatesFinder.Resize(x, 400);
         Mat x_gray = x.clone();
         Imgproc.cvtColor(x, x, Imgproc.COLOR_RGB2GRAY);
 

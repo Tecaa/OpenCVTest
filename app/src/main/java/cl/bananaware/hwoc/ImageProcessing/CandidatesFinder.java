@@ -41,10 +41,16 @@ public class CandidatesFinder {
             Imgproc.cvtColor(OriginalImage, OriginalImageRealSize, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
 
         final int MAX_PIXELS;
-        if (ImageViewer.GOOD_SIZE)
-            MAX_PIXELS = 1000;
-        else
+        if (ImageViewer.TEST_DISTANCE) {
             MAX_PIXELS = 400;
+        }
+        else
+        {
+            if (ImageViewer.GOOD_SIZE)
+                MAX_PIXELS = 1000;
+            else
+                MAX_PIXELS = 400;
+        }
 
         Resize(OriginalImage, MAX_PIXELS);
         TimeProfiler.CheckPoint(1.3);
@@ -184,7 +190,7 @@ public class CandidatesFinder {
         Size size;
         int sigma;
         size = new Size(9, 9);
-            sigma = 2;
+        sigma = 2;
         Imgproc.GaussianBlur(CurrentImage, PreMultiDilationImage, size, sigma);
     }
 
@@ -238,13 +244,27 @@ public class CandidatesFinder {
             double area_perc =rrArea /CurrentImage.size().area();
 
             //TODO: Poner un máximo de area?
-            if( (ratio < 0.45) || (bbArea*scale/2 < 450)/*antes era 400*/ || area_perc > MAX_AREA_PERC ){
-                ;// do nothing
-            }else{
-                //BlueCandidatesRR.add(mr);
-                LastBlueCandidatesMAR.add(mr);
-                LastBlueCandidates.add(contours.get(i));
+            if (ImageViewer.TEST_DISTANCE) {
+                if( (ratio < 0.45) || (bbArea*scale/2 < 50)/*antes era 400*/ || area_perc > MAX_AREA_PERC ){
+                    ;// do nothing
+                }else{
+                    //BlueCandidatesRR.add(mr);
+                    LastBlueCandidatesMAR.add(mr);
+                    LastBlueCandidates.add(contours.get(i));
 
+                }
+
+            }
+            else
+            {
+                if( (ratio < 0.45) || (bbArea*scale/2 < 400)/*antes era 400*/ || area_perc > MAX_AREA_PERC ){
+                    ;// do nothing
+                }else{
+                    //BlueCandidatesRR.add(mr);
+                    LastBlueCandidatesMAR.add(mr);
+                    LastBlueCandidates.add(contours.get(i));
+
+                }
             }
         }
 

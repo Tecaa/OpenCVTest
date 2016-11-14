@@ -100,6 +100,7 @@ public class CharacterSeparator {
             return sizeF;
 
         relationFilter();
+
         revisionFinalContourns(finalsContourns);
         MatOfPoint limits = GetLimits(finalsContourns);
         if (REMOVE_OUTSIDE) {
@@ -128,6 +129,8 @@ public class CharacterSeparator {
         return finalsContourns.size();
 
     }
+
+
 
     public boolean biggerAreaCheck() {
         boolean thereAreFinalContornsInside = false;
@@ -263,6 +266,7 @@ public class CharacterSeparator {
     CaracteristicaRelacionador alturas;
     CaracteristicaRelacionador anchuras;
     CaracteristicaRelacionador areas;
+    CaracteristicaRelacionador lejanias;
     private void relationAddValues(Rect r) {
 
         alturas.NuevoValor(r.height);
@@ -278,12 +282,45 @@ public class CharacterSeparator {
             boolean altura = alturas.EsMayoria(r.height);
             boolean anchura = anchuras.EsMayoria(r.width);
             boolean area = areas.EsMayoria(r.area());
-            if (!altura || !anchura || !area)
+
+            Rect r_old = (i!=0)? Imgproc.boundingRect(finalsContourns.get(i-1)) : null;
+            Rect r_next = (i != finalsContourns.size()-1) ? Imgproc.boundingRect(finalsContourns.get(i+1)) : null;
+            boolean lejania = (finalsContourns.size() > 6) ? lejanias.EsMayoria(getDistance(r)) : true;
+            if (!altura || !anchura || !area || !lejania)
                 dels.add(finalsContourns.get(i));
         }
         finalsContourns.removeAll(dels);
 
 
+    }
+
+    private double getDistance(Rect bb) {
+        double menorDistancia = Double.MAX_VALUE;
+        for (int i=0; i<finalsContourns.size();++i)
+        {
+            Rect bb2 = Imgproc.boundingRect(finalsContourns.get(i));
+            double d = Math.sqrt(Math.pow(bb2.x - bb.x,2) + Math.pow(bb2.y - bb.y,2));
+            if (menorDistancia > d && d != 0)
+                menorDistancia = d;
+        }
+        return menorDistancia;
+            /*
+        if (r_old == null)
+            return Math.abs(r_next.x - r.x);
+        if (r_next == null)
+            return Math.abs(r.x - r_old.x);
+        return Math.min(Math.abs(r_next.x - r.x), Math.abs(r.x - r_old.x));*/
+    }
+
+    private double getLejania(Rect r) {
+        double menorLejania = Double.MAX_VALUE;
+        for (int i=0; i<finalsContourns.size();++i)
+        {
+            Rect r2 = Imgproc.boundingRect(finalsContourns.get(i));
+            if (Math.abs(r.x - r2.x) < menorLejania )
+                menorLejania =Math.abs(r.x - r2.x);
+        }
+        return menorLejania;
     }
 
 
@@ -577,8 +614,8 @@ public class CharacterSeparator {
         alturas = new CaracteristicaRelacionador(0.40);
         anchuras = new CaracteristicaRelacionador(0.40);
         areas = new CaracteristicaRelacionador(0.35);
+        lejanias = new CaracteristicaRelacionador(1);
 
-        //List<Point> pts = new ArrayList<Point>();
         isBiggerBoundingArea = false;
         biggerBoundingArea = 0;
         biggerAreaRect = new Rect();
@@ -597,7 +634,7 @@ public class CharacterSeparator {
             //MatOfPoint mop = contourns.get(i);
             //MatOfPoint2f mop2f = CandidateSelector.mopToMop2f(mop);
             //RotatedRect rr = Imgproc.minAreaRect(mop2f);
-            boolean area_check =areaCheck(boundingRect);
+            boolean area_check = areaCheck(boundingRect);
             boolean ratio_check = aspectRatioCheck(boundingRect);
             boolean area_contourn_check = areaContournCheck(Imgproc.contourArea(contourns.get(i)));
             //Log.e("err", "x " +Boolean.valueOf(area_check) + "  " + Boolean.valueOf(ratio_check) + " " + Boolean.valueOf(area_contourn_check));
@@ -606,6 +643,7 @@ public class CharacterSeparator {
 
                 finalsContourns.add(contourns.get(i));
                 relationAddValues(boundingRect);
+
 
             }
             if (REMOVE_OUTSIDE){
@@ -635,11 +673,14 @@ public class CharacterSeparator {
             isBiggerBoundingArea = true;
         }
 
-
+        if (finalsContourns.size()>6)
+            for(int i=0; i<finalsContourns.size(); ++i) {
+                Rect boundinRect = Imgproc.boundingRect(finalsContourns.get(i));
+                lejanias.NuevoValor(getDistance(boundinRect));
+            }
 
         return finalsContourns.size();
     }
-
     private void revisionFinalContourns(List<MatOfPoint> finalsContourns) {
         if (finalsContourns.size() != 7 &&
              finalsContourns.size() != 8)
@@ -656,24 +697,25 @@ public class CharacterSeparator {
         double majorDistance2 = 0;
         int majorDistance2index = -1;
 
-        Rect lastBB =Imgproc.boundingRect(finalsContourns.get(0));
+        Rect lastBB =Imgproc.boundingRect(finalsContourns.get(0));;
         for (int i=1 ; i<finalsContourns.size();++i)
         {
             Rect bb = Imgproc.boundingRect(finalsContourns.get(i));
-            double distance = bb.x - lastBB.x;
-            if (distance> majorDistance1)
-            {
-                majorDistance2 = majorDistance1;
-                majorDistance2index = majorDistance1index;
 
-                majorDistance1 = distance;
-                majorDistance1index = i;
-            }
-            else if (distance> majorDistance2)
-            {
-                majorDistance2 = distance;
-                majorDistance2index = i;
-            }
+
+
+                double distance = bb.x - lastBB.x;
+                if (distance > majorDistance1) {
+                    majorDistance2 = majorDistance1;
+                    majorDistance2index = majorDistance1index;
+
+                    majorDistance1 = distance;
+                    majorDistance1index = i;
+                } else if (distance > majorDistance2) {
+                    majorDistance2 = distance;
+                    majorDistance2index = i;
+                }
+
             lastBB = bb;
         }
 
@@ -724,10 +766,9 @@ public class CharacterSeparator {
 
     private boolean areaContournCheck(double area) {
         final double MIN_AREA_PERCENTAJE = 0.001; //0.003
-
         double areaPercentaje = area / CurrentImage.size().area();
 
-        if (area > 0 && areaPercentaje > MIN_AREA_PERCENTAJE)
+        if (area > 20 && areaPercentaje > MIN_AREA_PERCENTAJE)
             return true;
         else
             return false;

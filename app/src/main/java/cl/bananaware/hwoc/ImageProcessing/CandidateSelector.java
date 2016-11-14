@@ -25,6 +25,7 @@ import cl.bananaware.hwoc.R;
  */
 public class CandidateSelector {
     private static final boolean ROTATED_RECT = false;
+    private final Rect BBCandidateRect;
     private double OriginalAngle;
     public RotatedRect CandidateRect, MinAreaRotatedRect;
     public Rect MinAreaRect;
@@ -46,6 +47,7 @@ public class CandidateSelector {
         this.OriginalImageRealSize = OriginalImageRealSize;
         scale = OriginalImageRealSize.size().width / OriginalEqualizedImage.size().width;
         this.CandidateRect = candidate;
+        this.BBCandidateRect = candidate.boundingRect();
         GreenCandidatesPro = new ArrayList<MatOfPoint>();
         double angle = candidate.angle;
         if (angle < -45.)
@@ -58,9 +60,18 @@ public class CandidateSelector {
 
     public void CalculateBounds() {
         //FUNCIONA MEJOR CON DX =0 DY=0 :o?
-        dx = Math.round(0.01f * (float) CandidateRect.boundingRect().size().width);//Math.round(0.02f * (float)CandidateRect.boundingRect().size().width);
-        dy = Math.round(0.05f * (float) CandidateRect.boundingRect().size().height);
-        ;//Math.round(0.06f * (float)CandidateRect.boundingRect().size().height);;
+        //dx = Math.round(0.08f * (float) CandidateRect.boundingRect().size().width);
+        //dy = Math.round(0.25f * (float) CandidateRect.boundingRect().size().height);
+        float x_perc = 0.005f;
+        float y_perc = 0.03f;
+        Log.d("qqqq", String.valueOf(CandidateRect.boundingRect().area()*scale/2));
+        if (CandidateRect.boundingRect().area()*scale/2 < 450)
+        {
+            x_perc = 0.05f;
+            y_perc = 0.20f;
+        }
+        dx = Math.round(x_perc * (float) CandidateRect.boundingRect().size().width);
+        dy = Math.round(y_perc * (float) CandidateRect.boundingRect().size().height);
 
         newWidth = (int) (CandidateRect.boundingRect().size().width + 2 * dx);
         newHeight = (int) (CandidateRect.boundingRect().size().height + 2 * dy);
@@ -84,10 +95,10 @@ public class CandidateSelector {
         if (realSize) {
 
             RotatedRect rr = CandidateRect.clone();
-            rr.size.width = ((double) newWidth) * EXTRA * scale;
+            rr.size.width = ((double) newWidth) *EXTRA * scale;
             rr.size.height = ((double) newHeight) * EXTRA * scale;
-            rr.center.x = (rr.center.x - dx) * scale;
-            rr.center.y = (rr.center.y - dy) * scale;
+            rr.center.x = (rr.center.x) * scale;
+            rr.center.y = (rr.center.y) * scale;
 
             if (rr.angle < -45.) {
                 rr.angle += 90.0;
@@ -113,35 +124,63 @@ public class CandidateSelector {
         } else {
 
 
-            RotatedRect rr = CandidateRect.clone();
+            if (true) {
+                RotatedRect rr = CandidateRect.clone();
             /*rr.size.width *= EXTRA;
             rr.size.height *= EXTRA;
             */
-            rr.size.width = ((double) newWidth) * EXTRA;
-            rr.size.height = ((double) newHeight) * EXTRA;
+                rr.size.width = ((double) newWidth) * EXTRA;
+                rr.size.height = ((double) newHeight) * EXTRA;
 
-            //rr.center.x -= dx;
-            //rr.center.y -= dy;
+                rr.center.x -= dx;
+                rr.center.y -= dy;
 
-            if (rr.angle < -45.) {
-                rr.angle += 90.0;
+                if (rr.angle < -45.) {
+                    rr.angle += 90.0;
 
                 /*double widthTemp = rr.size.width;
                 rr.size.width = rr.size.height;
                 rr.size.height = widthTemp;*/
+                }
+                OriginalAngle = rr.angle;
+                Mat matrix = Imgproc.getRotationMatrix2D(rr.center, /*MinAreaRectAngle + */rr.angle, 1.0);
+                // perform the affine transformation
+                Mat rotated = new Mat();
+                CurrentImage = new Mat();
+                Mat precrop = OriginalEqualizedImage.clone();
+                Imgproc.warpAffine(precrop, rotated, matrix, precrop.size(), Imgproc.INTER_CUBIC);
+                // crop the resulting image
+                Imgproc.getRectSubPix(rotated, rr.size, rr.center, CurrentImage);
+                if (ImageViewer.SHOW_PROCESS_DEBUG)
+                    CroppedExtraBoundingBox = CurrentImage.clone();
             }
-            OriginalAngle = rr.angle;
-            Mat matrix = Imgproc.getRotationMatrix2D(rr.center, /*MinAreaRectAngle + */rr.angle, 1.0);
-            // perform the affine transformation
-            Mat rotated = new Mat();
-            CurrentImage = new Mat();
-            Mat precrop = OriginalEqualizedImage.clone();
-            Imgproc.warpAffine(precrop, rotated, matrix, precrop.size(), Imgproc.INTER_CUBIC);
-            // crop the resulting image
-            Imgproc.getRectSubPix(rotated, rr.size, rr.center, CurrentImage);
-            if (ImageViewer.SHOW_PROCESS_DEBUG)
-            CroppedExtraBoundingBox = CurrentImage.clone();
+            else
+            {
+                Rect rr = BBCandidateRect.clone();
 
+
+                rr.x -= dx;
+                rr.y -= dy;
+
+                rr.width = (int)( (float)newWidth * EXTRA);
+                rr.height = (int)( (float)newHeight * EXTRA);
+
+
+                rr.x = Math.max(0, rr.x);
+                rr.y = Math.max(0, rr.y);
+                rr.width = Math.min(rr.width, OriginalEqualizedImage.width() - rr.x);
+                rr.height = Math.min(rr.height, OriginalEqualizedImage.height() - rr.y);
+
+                CurrentImage = new Mat(OriginalEqualizedImage, rr).clone();
+                if (ImageViewer.SHOW_PROCESS_DEBUG)
+                    CroppedExtraBoundingBox = CurrentImage.clone();
+
+
+
+
+
+
+            }
         }
 
         return factor;
@@ -218,9 +257,9 @@ public class CandidateSelector {
         Core.addWeighted(abs_grad_x2, 1, abs_grad_x2, 0, 0, CurrentImage); // or? Core.addWeighted(abs_grad_x, 0.5, abs_grad_x, 0, 0, dest);
     }
 
-    public void GaussianBlur() {
+    public void GaussianBlur() {/*
         int factor = GetGaussianBlurFactor(CurrentImage.size());
-        Imgproc.GaussianBlur(CurrentImage, CurrentImage, new Size(factor, factor), 2);
+        Imgproc.GaussianBlur(CurrentImage, CurrentImage, new Size(factor, factor), 2);*/
     }
 
     private int GetGaussianBlurFactor(Size size) {
@@ -271,7 +310,8 @@ public class CandidateSelector {
 
     public void OtsusThreshold() {
 //        Imgproc.cvtColor(CurrentImage, CurrentImage, Imgproc.COLOR_RGB2GRAY); //Convert to gray scale
-        Imgproc.threshold(CurrentImage, CurrentImage, 0, 255, Imgproc.THRESH_OTSU | Imgproc.THRESH_BINARY);
+//        Imgproc.threshold(CurrentImage, CurrentImage, 0, 255, Imgproc.THRESH_OTSU | Imgproc.THRESH_BINARY);
+        Imgproc.threshold(CurrentImage, CurrentImage, 70, 255, Imgproc.THRESH_BINARY); //90,255
     }
 
     public void FindOutlines() {
@@ -344,7 +384,7 @@ public class CandidateSelector {
         double imageRatio = rectSize.width / rectSize.height;//Math.max(mr2.size.width,mr2.size.height)/Math.min(mr2.size.width,mr2.size.height);
         final double OFFICIAL_RATIO = 36f/13f;
         final double MIN_RATIO = 2.1f;// funciona 2.2f;
-        final double MAX_RATIO = 5.7f;
+        final double MAX_RATIO = 15.0f;//5.7f;
         CheckError checkError = null;
 
         if (imageRatio < MIN_RATIO)
@@ -399,21 +439,22 @@ public class CandidateSelector {
                 int mas = (int)(MinAreaRect.height * 0.2);
                 MinAreaRect.y -= mas;
                 MinAreaRect.height += mas;
-/*
-                if (MinAreaRect.width / MinAreaRect.height > 0)
-                    MinAreaRect.width *= EXTRA2;
-                else
-                    MinAreaRect.height *= EXTRA2;*/
 
                 MinAreaRect.x = Math.max(0, MinAreaRect.x);
-                MinAreaRect.width = Math.min(CurrentImage.width() - MinAreaRect.x, MinAreaRect.width);
+                MinAreaRect.width = Math.max(Math.min(CurrentImage.width() - MinAreaRect.x, MinAreaRect.width), 0);
                 MinAreaRect.y = Math.max(0, MinAreaRect.y);
-                MinAreaRect.height = Math.min(CurrentImage.height() - MinAreaRect.y, MinAreaRect.height);
+                MinAreaRect.height = Math.max(Math.min(CurrentImage.height() - MinAreaRect.y, MinAreaRect.height), 0);
 
 
 
         }}
-        CurrentImage = CurrentImage.submat(MinAreaRect);
+        Log.d("testtt", realSizeCrop + "  " + factor);
+        Log.d("testtt", CurrentImage.width() + " " + CurrentImage.height());
+        Log.d("testtt", MinAreaRect.x + " " + MinAreaRect.y + " " + MinAreaRect.width  + " " + MinAreaRect.height);
+        if (MinAreaRect.x + MinAreaRect.width > CurrentImage.width() || MinAreaRect.y + MinAreaRect.height > CurrentImage.height())
+            CurrentImage = null;
+        else
+            CurrentImage = CurrentImage.submat(MinAreaRect);
     }
 
 

@@ -288,10 +288,10 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     }
 
     public void batchClick(View v) {
-        //directoryPicker();
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath()
+                + "/DCIM/Imágenes con Patentes2";
         FolderBatch folderBatch = new FolderBatch(this.getBaseContext());
-        folderBatch.Process(Environment.getExternalStorageDirectory().getAbsolutePath()
-                + "/DCIM/Imágenes con Patentes");
+        folderBatch.Process(path);
     }
 
     private void directoryPicker() {
