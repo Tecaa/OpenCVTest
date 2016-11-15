@@ -74,11 +74,11 @@ public class PlateProcessSystem{
     }
 
     private PlateResult InnerProcessCapture(Mat mat) {
-        m_image = mat;
+        m_image = mat.clone();
         PlateResult plate = ImageProcess(mat);
         Location location = MainActivity.locationController.GetCurrentLocation();
 
-        if (plate != null) {
+        if (plate != null && plate.Plate != "") {
             InsertReport(location, image, new Plate(plate.Plate));
         }
         return plate;

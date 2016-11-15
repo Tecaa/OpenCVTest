@@ -42,7 +42,8 @@ public class ImageViewer extends Activity {
     public static boolean TEST_DISTANCE = false;
     public static boolean ALL_PLATES_STOLEN_DEBUG = true;
     public static boolean SHOW_PROCESS_DEBUG = true;
-    public static boolean USE_API_DEBUG = false;
+    public static boolean USE_API_DEBUG = true;
+
     public final static boolean GOOD_SIZE = false;
     public final static int I_LEVEL = 90;
     public final static boolean CHARS = false;

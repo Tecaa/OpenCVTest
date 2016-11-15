@@ -214,24 +214,34 @@ public class CameraContinously extends AppCompatActivity {
             readerListener = new ImageReader.OnImageAvailableListener() {
                 @Override
                 public void onImageAvailable(final ImageReader reader) {
+                    PlateResult result = null;
+                    Bitmap img = null;
+                    try {
+                        createCaptureSesion();
+                    } catch (CameraAccessException e) {
+                        e.printStackTrace();
+                    }
+                    if (takePhoto) {
+                        millis = System.currentTimeMillis();
+                        TimeProfiler.ResetCheckPoints();
+                        TimeProfiler.CheckPoint(0);
+                        takePhoto = false;
 
+                        img = funcionrara(reader);
+                        result =  MainActivity.plateProcessSystem.ProcessCapture(img);
+                    }
+                    else
+                    {
+                        img = funcionrara(reader);
+                    }
+
+                    final PlateResult finalResult = result;
+                    final Bitmap finalImg = img;
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            try {
-                                createCaptureSesion();
-                                if (takePhoto) {
-
-                                    millis = System.currentTimeMillis();
-                                    TimeProfiler.ResetCheckPoints();
-                                    TimeProfiler.CheckPoint(0);
-                                    takePhoto = false;
-                                    processImage(reader);
-                                }
-                            }
-                            catch (CameraAccessException e) {
-                                e.printStackTrace();
-                            }
+                            Bitmap b = display2(finalImg);
+                            displayData(finalResult, b);
                         }
 
 
@@ -260,6 +270,41 @@ public class CameraContinously extends AppCompatActivity {
 
     }
 
+    private Bitmap display2(Bitmap finalImg1) {
+        //ImageView i = (ImageView) findViewById(R.id.texture);
+        Bitmap res = Bitmap.createScaledBitmap(finalImg1, 700, 600, false);
+        //i.setImageBitmap(res);
+        return res;
+    }
+
+    private void displayData(PlateResult plate, Bitmap img) {
+
+        long time = TimeProfiler.GetTotalTime();
+        if (plate != null) {
+            String text = "";
+            if (millis != null)
+                text = plate.Plate + " " + plate.Confidence + "%"
+                        + " " + String.valueOf(System.currentTimeMillis() - millis) + " [ms]";
+
+            TableRow row = new TableRow(this);
+
+            TextView tv = new TextView(this);
+            tv.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+            tv.setText(text);
+            row.addView(tv);
+            table.addView(row, 0);
+            if (table.getChildCount() > 20)
+                table.removeViewAt(20);
+
+            //Toast.makeText(CameraContinously.this, text, Toast.LENGTH_LONG).show();
+        }
+        takePhoto = true;
+
+        ImageView i = (ImageView) findViewById(R.id.image1);
+        //b = Bitmap.createScaledBitmap(img, 700, 600, false);
+        i.setImageBitmap(img);
+    }
+
     private void createCaptureSesion() throws CameraAccessException {
         cameraDevice.createCaptureSession(outputSurfaces, new CameraCaptureSession.StateCallback() {
             @Override
@@ -277,51 +322,7 @@ public class CameraContinously extends AppCompatActivity {
     }
 
     CameraCaptureSession.CaptureCallback captureListener;
-    private void processImage(ImageReader reader) {
 
-
-        Bitmap img = funcionrara(reader);
-
-
-        //mat = new Mat();
-        //Utils.bitmapToMat(qq, mat);
-
-/*
-                            TimeProfiler.clean();
-                            TimeProfiler.CheckPoint(0);
-                            mat = funcionrara(reader);
-                            TimeProfiler.CheckPoint(1);*/
-
-
-
-
-
-        PlateResult plate = MainActivity.plateProcessSystem.ProcessCapture(img);
-
-        long time = TimeProfiler.GetTotalTime();
-        if (plate != null) {
-            String text = "";
-            if (millis != null)
-                 text = plate.Plate + " " + plate.Confidence + "%"
-                    + " " + String.valueOf(System.currentTimeMillis() - millis) + " [ms]";
-
-            TableRow row = new TableRow(this);
-
-            TextView tv = new TextView(this);
-            tv.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
-            tv.setText(text);
-            row.addView(tv);
-            table.addView(row, 0);
-            if (table.getChildCount() > 20)
-                table.removeViewAt(20);
-
-            //Toast.makeText(CameraContinously.this, text, Toast.LENGTH_LONG).show();
-        }
-        takePhoto = true;
-
-        ImageView i = (ImageView) findViewById(R.id.image1);
-        i.setImageBitmap(Bitmap.createScaledBitmap(img, 700, 600, false));
-    }
 
     private Bitmap funcionrara(ImageReader reader) {
         Image image = null;

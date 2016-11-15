@@ -77,6 +77,7 @@ public class PlateApiClient {
         client.get(apiMethods.get("getStolenPlates"), params ,new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject jo) {
+                Log.d("webapi", "putReportImage getStolenPlate onSuccess");
                 try {
                     List<Plate> plates = Plate.FromJSONArray(jo.getJSONArray("data"));
                     for (Plate p : plates)
@@ -97,6 +98,7 @@ public class PlateApiClient {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.d("webapi", "putReportImage getStolenPlate onFailure");
                 // Hide Progress Dialog
                 // When Http response code is '404'
                 if(statusCode == 404){
@@ -133,7 +135,7 @@ public class PlateApiClient {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject jo) {
                 // called when response HTTP status is "200 OK"
-
+                Log.d("webapi", "putReportImage image onSuccess");
                 RequestParams params = new RequestParams();
                 params.put("plate", report.plate);
                 params.put("position", new JSONArray(report.position));
@@ -148,12 +150,14 @@ public class PlateApiClient {
 
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        Log.d("webapi", "putReportImage data onSuccess");
                         // called when response HTTP status is "200 OK"
                         Log.i("API RESULT", Integer.toString(statusCode));
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String res, Throwable t) {
+                        Log.d("webapi", "putReportImage data onFailure");
                         Log.i("API RESULT", Integer.toString(statusCode));
                     }
 
@@ -162,10 +166,12 @@ public class PlateApiClient {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String res, Throwable t) {
+                Log.d("webapi", "putReportImage image onFailure");
                 Log.i("API RESULT", Integer.toString(statusCode));
             }
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable t, JSONObject jo) {
+                Log.d("webapi", "putReportImage image onFailure");
                 Log.i("API RESULT", Integer.toString(statusCode));
             }
 
