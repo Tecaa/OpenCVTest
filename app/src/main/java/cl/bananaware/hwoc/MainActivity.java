@@ -279,6 +279,10 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         Intent i = new Intent(this, CameraContinously.class);
         startActivity(i);
     }
+    public void detectorViewButtonClick(View v) {
+        Intent i = new Intent(this, DetectorView.class);
+        startActivity(i);
+    }
 
 
     public void testcamClick(View v) {

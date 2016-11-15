@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextureView
+        android:layout_width="192dp"
+        android:layout_height="261dp"
+        android:id="@+id/viewCont" />
+
+    <TextureView
+        android:layout_width="192dp"
+        android:layout_height="261dp"
+        android:id="@+id/viewDisc"
+        android:layout_weight="1" />
+</LinearLayout>

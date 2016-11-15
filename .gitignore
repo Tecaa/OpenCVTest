@@ -6,3 +6,5 @@
 .DS_Store
 /build
 /captures
+/openCVLibrary300/build
+/tess-two/build

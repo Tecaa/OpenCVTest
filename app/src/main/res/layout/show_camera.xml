@@ -24,9 +24,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Cont Camera"
-        android:id="@+id/camera2Button"
+        android:id="@+id/button"
         android:layout_gravity="right|top"
-        android:onClick="camera2Click"/>
+        android:onClick="camera2Click" />
 
     <Button
         android:layout_width="wrap_content"
@@ -42,4 +42,14 @@
         android:id="@+id/batch"
         android:layout_gravity="left|center_vertical"
         android:onClick="batchClick"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Detector View"
+        android:id="@+id/detectorViewButton"
+        android:layout_gravity="center"
+        android:onClick="detectorViewButtonClick"
+        android:elevation="0dp" />
+
 </FrameLayout>
