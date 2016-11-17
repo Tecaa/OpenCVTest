@@ -1,16 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <TextureView
         android:layout_width="192dp"
         android:layout_height="261dp"
-        android:id="@+id/viewCont" />
+        android:id="@+id/viewCont"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/captureButton" />
 
-    <TextureView
-        android:layout_width="192dp"
-        android:layout_height="261dp"
-        android:id="@+id/viewDisc"
-        android:layout_weight="1" />
-</LinearLayout>
+
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/scannerTable"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/viewCont"
+        android:layout_alignBottom="@+id/viewCont"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp">
+
+    </TableLayout>
+    <Button
+        android:text="Capture Image"
+        android:id="@+id/captureButton"
+        android:onClick="capturePhoto (DetectorView)"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_marginEnd="64dp"
+        android:layout_alignParentEnd="true" android:visibility="invisible" />
+
+    <Button
+        android:text="Iniciar Detección"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/startCaptureButton" />
+
+    <Button
+        android:text="Detener Detección"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/startCaptureButton"
+        android:layout_toEndOf="@+id/startCaptureButton"
+        android:id="@+id/stopCaptureButton" />
+
+</RelativeLayout>

@@ -1,4 +1,4 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:opencv="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -7,49 +7,69 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Gallery"
-        android:id="@+id/galleryButton"
-        android:layout_gravity="left|top"
-        android:onClick="galleryClick"/>
+        android:text="Camera"
+        android:id="@+id/cameraButton"
+        android:onClick="cameraClick"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Camera"
-        android:id="@+id/cameraButton"
-        android:layout_gravity="center_horizontal|top"
-        android:onClick="cameraClick"/>
+        android:text="Batch"
+        android:id="@+id/batch"
+        android:onClick="batchClick"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Detector No Auto Focus"
+        android:id="@+id/detectorNoAutoFocusButton"
+        android:onClick="detectorNoAutoFocusButtonClick (MainActivity)"
+        android:elevation="0dp"
+        android:layout_below="@+id/cameraButton"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="202dp" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Cont Camera"
         android:id="@+id/button"
-        android:layout_gravity="right|top"
-        android:onClick="camera2Click" />
+        android:onClick="camera2Click"
+        android:layout_alignParentTop="true"
+        android:layout_toStartOf="@+id/batch"
+        android:layout_marginEnd="18dp" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="testcam"
         android:id="@+id/testcam"
-        android:layout_gravity="right|center_vertical"
-        android:onClick="testcamClick"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Batch"
-        android:id="@+id/batch"
-        android:layout_gravity="left|center_vertical"
-        android:onClick="batchClick"/>
+        android:onClick="testcamClick"
+        android:layout_below="@+id/batch"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="20dp" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Detector View"
+        android:text="Gallery"
+        android:id="@+id/galleryButton"
+        android:onClick="galleryClick"
+        android:layout_alignBaseline="@+id/testcam"
+        android:layout_alignBottom="@+id/testcam"
+        android:layout_alignEnd="@+id/button" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Detector Auto Focus"
         android:id="@+id/detectorViewButton"
-        android:layout_gravity="center"
-        android:onClick="detectorViewButtonClick"
-        android:elevation="0dp" />
+        android:onClick="detectorAutoFocusButtonClick (MainActivity)"
+        android:elevation="0dp"
+        android:layout_alignBaseline="@+id/detectorNoAutoFocusButton"
+        android:layout_alignBottom="@+id/detectorNoAutoFocusButton"
+        android:layout_toEndOf="@+id/detectorNoAutoFocusButton" />
 
-</FrameLayout>
+</RelativeLayout>
