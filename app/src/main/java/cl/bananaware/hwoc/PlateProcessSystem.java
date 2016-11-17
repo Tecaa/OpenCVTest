@@ -79,10 +79,13 @@ public class PlateProcessSystem{
         Location location = MainActivity.locationController.GetCurrentLocation();
 
         if (plate != null && plate.Plate != "") {
-            InsertReport(location, image, new Plate(plate.Plate));
+            if (MainActivity.locationController.IsAwayEnough(location, plate.Plate))
+                InsertReport(location, image, new Plate(plate.Plate));
         }
         return plate;
     }
+
+
     private void InsertReport(Location location, Bitmap image, Plate plate) {
         Date currentDate = new Date(System.currentTimeMillis());
         Report report = new Report(location, plate, currentDate, image);

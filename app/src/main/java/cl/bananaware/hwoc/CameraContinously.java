@@ -209,11 +209,12 @@ public class CameraContinously extends AppCompatActivity {
             // Orientation
             int rotation = getWindowManager().getDefaultDisplay().getRotation();
             captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
+
             //final File file = new File(Environment.getExternalStorageDirectory()+"/pic.jpg");
 
             readerListener = new ImageReader.OnImageAvailableListener() {
                 @Override
-                public void onImageAvailable(final ImageReader reader) {
+                public void onImageAvailable(final ImageReader reader2) {
                     PlateResult result = null;
                     Bitmap img = null;
                     try {
@@ -227,7 +228,7 @@ public class CameraContinously extends AppCompatActivity {
                         TimeProfiler.CheckPoint(0);
                         takePhoto = false;
 
-                        img = funcionrara(reader);
+                        img = funcionrara(reader2);
                         result =  MainActivity.plateProcessSystem.ProcessCapture(img);
                     }
                     else
@@ -240,8 +241,7 @@ public class CameraContinously extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Bitmap b = display2(finalImg);
-                            displayData(finalResult, b);
+                            displayData(finalResult, finalImg);
                         }
 
 
@@ -270,13 +270,6 @@ public class CameraContinously extends AppCompatActivity {
 
     }
 
-    private Bitmap display2(Bitmap finalImg1) {
-        //ImageView i = (ImageView) findViewById(R.id.texture);
-        Bitmap res = Bitmap.createScaledBitmap(finalImg1, 700, 600, false);
-        //i.setImageBitmap(res);
-        return res;
-    }
-
     private void displayData(PlateResult plate, Bitmap img) {
 
         long time = TimeProfiler.GetTotalTime();
@@ -300,9 +293,10 @@ public class CameraContinously extends AppCompatActivity {
         }
         takePhoto = true;
 
+        /*
         ImageView i = (ImageView) findViewById(R.id.image1);
-        //b = Bitmap.createScaledBitmap(img, 700, 600, false);
-        i.setImageBitmap(img);
+        b = Bitmap.createScaledBitmap(img, 700, 600, false);
+        i.setImageBitmap(img);*/
     }
 
     private void createCaptureSesion() throws CameraAccessException {

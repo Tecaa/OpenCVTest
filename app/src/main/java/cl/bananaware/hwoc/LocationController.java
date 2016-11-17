@@ -10,16 +10,23 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by fergu on 04-11-2016.
  */
 public class LocationController implements LocationListener {
 
+    private static final float METERS_MIN = 2;
     LocationManager locationManager;
     Context context;
     private Location currentLocation;
+    private Location lastLocationReported;
+    private List<String> lastLocationPlates;
     public LocationController(Context cont)
     {
+        lastLocationPlates = new ArrayList<String>();
         this.context = cont;
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(cont, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(cont, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -62,5 +69,27 @@ public class LocationController implements LocationListener {
     @Override
     public void onProviderDisabled(String provider) {
 
+    }
+
+    public boolean IsAwayEnough(Location location, String plate) {
+        if (lastLocationPlates.contains(plate)) {
+            float distance = lastLocationReported.distanceTo(location);
+            if (lastLocationReported == null || distance >= METERS_MIN) {
+                lastLocationReported = location;
+                lastLocationPlates.clear();
+                lastLocationPlates.add(plate);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            lastLocationReported = location;
+            lastLocationPlates.add(plate);
+            return true;
+        }
     }
 }
