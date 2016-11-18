@@ -7,7 +7,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
+import android.graphics.Matrix;
 import android.graphics.PixelFormat;
+import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
@@ -38,7 +40,9 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -87,6 +91,14 @@ public class DetectorView extends Activity {
 
     }
 
+   /* private static final SparseIntArray ORIENTATIONS_PREVIEW = new SparseIntArray();
+    static {
+        ORIENTATIONS_PREVIEW.append(Surface.ROTATION_0, 0);
+        ORIENTATIONS_PREVIEW.append(Surface.ROTATION_90, 90);
+        ORIENTATIONS_PREVIEW.append(Surface.ROTATION_180, 270);
+        ORIENTATIONS_PREVIEW.append(Surface.ROTATION_270, 180);
+    }*/
+
     private TableLayout table;
     private int mState;
     private static final String TAG = "AndroidCameraApi";
@@ -122,6 +134,7 @@ public class DetectorView extends Activity {
      */
     private GoogleApiClient client;
     public static DetectorView instance;
+    private ImageView viewDisc;
 
     private void createCameraPreviewSession() {
         try {
@@ -130,6 +143,9 @@ public class DetectorView extends Activity {
             Surface previewSurface = new Surface(surfaceTexture);
             mPreviewCaptureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             mPreviewCaptureRequestBuilder.addTarget(previewSurface);
+            //int rotation = getWindowManager().getDefaultDisplay().getRotation();
+            //mPreviewCaptureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
+
             mCameraDevice.createCaptureSession(Arrays.asList(previewSurface, mImageReader.getSurface()), new CameraCaptureSession.StateCallback() {
 
                 @Override
@@ -200,11 +216,11 @@ public class DetectorView extends Activity {
         public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int width, int height) {
             setupCamera(width, height);
             openCamera();
+            configureTransform(width, height);
         }
 
         @Override
         public void onSurfaceTextureSizeChanged(SurfaceTexture surfaceTexture, int width, int height) {
-
         }
 
         @Override
@@ -214,9 +230,34 @@ public class DetectorView extends Activity {
 
         @Override
         public void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture) {
-
         }
     };
+
+    private void configureTransform(int viewWidth, int viewHeight) {
+        Activity activity = this;
+        if (null == mTextureView || null == mPreviewSize || null == activity) {
+            return;
+        }
+        int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+        Matrix matrix = new Matrix();
+        RectF viewRect = new RectF(0, 0, viewWidth, viewHeight);
+        RectF bufferRect = new RectF(0, 0, mPreviewSize.getHeight(), mPreviewSize.getWidth());
+        float centerX = viewRect.centerX();
+        float centerY = viewRect.centerY();
+        if (Surface.ROTATION_90 == rotation || Surface.ROTATION_270 == rotation) {
+            bufferRect.offset(centerX - bufferRect.centerX(), centerY - bufferRect.centerY());
+            matrix.setRectToRect(viewRect, bufferRect, Matrix.ScaleToFit.FILL);
+            float scale = Math.max(
+                    (float) viewHeight / mPreviewSize.getHeight(),
+                    (float) viewWidth / mPreviewSize.getWidth());
+            matrix.postScale(scale, scale, centerX, centerY);
+            matrix.postRotate(90 * (rotation - 2), centerX, centerY);
+        } else if (Surface.ROTATION_180 == rotation) {
+            matrix.postRotate(180, centerX, centerY);
+        }
+        mTextureView.setTransform(matrix);
+    }
+
     private HandlerThread mBackgroundThread;
     private Handler mBackgroundHandler;
 
@@ -290,6 +331,7 @@ public class DetectorView extends Activity {
             UIHandler.post(new Runnable() {
                 @Override
                 public void run() {
+                    DetectorView.instance.viewDisc.setImageBitmap(img);
                     TableRow row = new TableRow(DetectorView.instance);
                     TextView tv = new TextView(DetectorView.instance);
                     tv.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
@@ -346,6 +388,7 @@ public class DetectorView extends Activity {
                 return;
             }
             cameraManager.openCamera(mCameraId, mCameraDeviceStateCallBack, mBackgroundHandler);
+
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -361,6 +404,8 @@ public class DetectorView extends Activity {
         instance = this;
         setContentView(R.layout.detector_view);
         mTextureView = (TextureView) findViewById(R.id.viewCont);
+        viewDisc = (ImageView) findViewById(R.id.viewDisco);
+
         table = (TableLayout) findViewById(R.id.scannerTable);
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -375,6 +420,8 @@ public class DetectorView extends Activity {
             }
         });
         createTableHeader();
+        //mTextureView.setRotation(90.0f);
+        //mTextureView.setLayoutParams(new RelativeLayout.LayoutParams(mTextureView.getHeight(), mTextureView.getWidth()));
     }
 
 
@@ -538,9 +585,10 @@ public class DetectorView extends Activity {
         mState = STATE_PREVIEW;
         try {
             CaptureRequest.Builder captureStillBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
-            captureStillBuilder.addTarget(mImageReader.getSurface());
             int rotation = getWindowManager().getDefaultDisplay().getRotation();
             captureStillBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
+            captureStillBuilder.addTarget(mImageReader.getSurface());
+
 
             CameraCaptureSession.CaptureCallback captureCallBack = new CameraCaptureSession.CaptureCallback() {
 

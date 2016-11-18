@@ -5,8 +5,8 @@
     android:layout_height="match_parent">
 
     <TextureView
-        android:layout_width="192dp"
-        android:layout_height="261dp"
+        android:layout_width="261dp"
+        android:layout_height="192dp"
         android:id="@+id/viewCont"
         android:layout_alignParentStart="true"
         android:layout_toStartOf="@+id/captureButton" />
@@ -49,5 +49,14 @@
         android:layout_alignTop="@+id/startCaptureButton"
         android:layout_toEndOf="@+id/startCaptureButton"
         android:id="@+id/stopCaptureButton" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@mipmap/bin_im"
+        android:id="@+id/viewDisco"
+        android:layout_alignParentBottom="true"
+        android:layout_alignEnd="@+id/captureButton"
+        android:layout_below="@+id/scannerTable" />
 
 </RelativeLayout>
