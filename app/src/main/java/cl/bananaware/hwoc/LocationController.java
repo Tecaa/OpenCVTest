@@ -74,6 +74,7 @@ public class LocationController implements LocationListener {
     public boolean IsAwayEnough(Location location, String plate) {
         if (lastLocationPlates.contains(plate)) {
             float distance = lastLocationReported.distanceTo(location);
+            Log.d("distance", String.valueOf(distance));
             if (lastLocationReported == null || distance >= METERS_MIN) {
                 lastLocationReported = location;
                 lastLocationPlates.clear();
