@@ -20,6 +20,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
 
@@ -96,6 +98,26 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.show_camera);
 
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        Button button = (Button) findViewById(R.id.detectorNoAutoFocusButton);
+        button.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                detectorNoAutoFocusButtonClick();
+            }
+        });
+        button = (Button) findViewById(R.id.detectorViewButton);
+        button.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                detectorAutoFocusButtonClick();
+            }
+        });
         locationController = new LocationController(this.getApplicationContext());
         InitOCT();
         InitPPS();
@@ -279,7 +301,14 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         Intent i = new Intent(this, CameraContinously.class);
         startActivity(i);
     }
-    public void detectorViewButtonClick(View v) {
+    public void detectorAutoFocusButtonClick() {
+        DetectorView.autoFocus = true;
+        Intent i = new Intent(this, DetectorView.class);
+        startActivity(i);
+    }
+
+    public void detectorNoAutoFocusButtonClick() {
+        DetectorView.autoFocus = false;
         Intent i = new Intent(this, DetectorView.class);
         startActivity(i);
     }

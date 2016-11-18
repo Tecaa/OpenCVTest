@@ -43,4 +43,6 @@ dependencies {
     //compile 'com.rmtheis:tess-two:5.4.0'
     compile project(path: ':tess-two')
     compile 'com.google.code.gson:gson:2.2.4'
+    compile 'com.google.android.gms:play-services-appindexing:8.4.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
 }
