@@ -136,6 +136,10 @@ public class DetectorView extends Activity {
     public static DetectorView instance;
     private ImageView viewDisc;
 
+    public static int detectorWidth;
+    public static int detectorHeight;
+    private TextView resolutionText;
+
     private void createCameraPreviewSession() {
         try {
             SurfaceTexture surfaceTexture = mTextureView.getSurfaceTexture();
@@ -322,16 +326,16 @@ public class DetectorView extends Activity {
             Log.d("SCANNER", "Scaneando");
             TimeProfiler.ResetCheckPoints();
             TimeProfiler.CheckPoint(0);
-            final Bitmap img = ReaderToBitmap(mImage);
-
             final long millis = System.currentTimeMillis();
-            final PlateResult result = MainActivity.plateProcessSystem.ProcessCapture(img);
+            final Bitmap img = ReaderToBitmap(mImage);
+            final PlateResult result = MainActivity.plateProcessSystem.ProcessCapture(img, millis);
             Log.d("SCANNER", "Scan Result" + result.Plate + " " + result.Confidence + "%"
                     + " " + String.valueOf(System.currentTimeMillis() - millis) + " [ms]");
             UIHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    DetectorView.instance.viewDisc.setImageBitmap(img);
+                    DetectorView.instance.resolutionText.setText(img.getWidth() + "x" + img.getHeight());
+                    //DetectorView.instance.viewDisc.setImageBitmap(img);
                     TableRow row = new TableRow(DetectorView.instance);
                     TextView tv = new TextView(DetectorView.instance);
                     tv.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
@@ -404,6 +408,7 @@ public class DetectorView extends Activity {
         instance = this;
         setContentView(R.layout.detector_view);
         mTextureView = (TextureView) findViewById(R.id.viewCont);
+        resolutionText = (TextView) findViewById(R.id.resolutionText);
         viewDisc = (ImageView) findViewById(R.id.viewDisco);
 
         table = (TableLayout) findViewById(R.id.scannerTable);
@@ -509,7 +514,7 @@ public class DetectorView extends Activity {
                 });
 
                 //mImageReader = ImageReader.newInstance(largestImageSize.getWidth(), largestImageSize.getHeight(), ImageFormat.JPEG, 1);
-                mImageReader = ImageReader.newInstance(1920, 1080, ImageFormat.JPEG, 1);
+                mImageReader = ImageReader.newInstance(detectorWidth, detectorHeight, ImageFormat.JPEG, 1);
                 mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroundHandler);
 
                 mPreviewSize = getPreferredPreviewSize(map.getOutputSizes(SurfaceTexture.class), width, height);

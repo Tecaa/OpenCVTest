@@ -1,5 +1,9 @@
 [
     {
+        "outputFile": "C:\\OpenCVTest\\openCVLibrary300\\build\\intermediates\\incremental\\mergeDebugAndroidTestResources\\merged.dir\\values\\values.xml",
+        "map": []
+    },
+    {
         "outputFile": "C:\\Users\\fergu\\Documents\\TT\\OpenCVTest\\openCVLibrary300\\build\\intermediates\\res\\merged\\androidTest\\debug\\values\\values.xml",
         "map": []
     }

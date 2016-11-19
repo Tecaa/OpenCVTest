@@ -228,8 +228,8 @@ public class CameraContinously extends AppCompatActivity {
                         TimeProfiler.CheckPoint(0);
                         takePhoto = false;
 
-                        img = funcionrara(reader2);
-                        result =  MainActivity.plateProcessSystem.ProcessCapture(img);
+                        img = funcionrara(reader);
+                        result =  MainActivity.plateProcessSystem.ProcessCapture(img, millis);
                     }
                     else
                     {

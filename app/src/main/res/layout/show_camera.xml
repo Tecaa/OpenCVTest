@@ -72,4 +72,24 @@
         android:layout_alignBottom="@+id/detectorNoAutoFocusButton"
         android:layout_toEndOf="@+id/detectorNoAutoFocusButton" />
 
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10"
+        android:layout_below="@+id/detectorNoAutoFocusButton"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="54dp"
+        android:id="@+id/textWidth" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10"
+        android:layout_alignTop="@+id/textWidth"
+        android:layout_alignStart="@+id/galleryButton"
+        android:id="@+id/textHeight"
+        android:layout_alignEnd="@+id/detectorViewButton" />
+
 </RelativeLayout>

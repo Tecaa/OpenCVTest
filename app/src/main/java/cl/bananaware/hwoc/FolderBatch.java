@@ -3,6 +3,7 @@ package cl.bananaware.hwoc;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.provider.Settings;
 import android.util.Log;
 
 import java.io.File;
@@ -75,6 +76,6 @@ public class FolderBatch {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(), options);
-        return plateProcessSystem.ProcessCapture(bitmap);
+        return plateProcessSystem.ProcessCapture(bitmap, System.currentTimeMillis());
     }
 }

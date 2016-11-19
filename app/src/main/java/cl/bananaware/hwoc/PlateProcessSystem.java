@@ -33,6 +33,7 @@ public class PlateProcessSystem{
     Context context;
     Location currentLocation;
     PlateApiClient plateApiClient;
+    long startTime;
     List<Plate> stolenPlates;
     PlateRecognizer plateRecognizer;
     public PlateResult LastPlateReaded;
@@ -62,8 +63,9 @@ public class PlateProcessSystem{
     Bitmap image;
     Mat m_image;
     // Toma una captura y almacena la posicion del gps y la imagen.
-    public PlateResult ProcessCapture(Bitmap img) {
+    public PlateResult ProcessCapture(Bitmap img, long startTime) {
         Mat m = new Mat();
+        this.startTime = startTime;
         image = img;
         Utils.bitmapToMat(image, m);
         return InnerProcessCapture(m);
@@ -88,7 +90,7 @@ public class PlateProcessSystem{
 
     private void InsertReport(Location location, Bitmap image, Plate plate) {
         Date currentDate = new Date(System.currentTimeMillis());
-        Report report = new Report(location, plate, currentDate, image);
+        Report report = new Report(location, plate, currentDate, image, System.currentTimeMillis() - this.startTime);
         plateApiClient.InsertReport(report, new PlateApiClient.InsertReportResponse() {
             @Override
             public void callback(Boolean correct) {

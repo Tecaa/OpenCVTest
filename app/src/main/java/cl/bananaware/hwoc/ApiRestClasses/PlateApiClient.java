@@ -124,10 +124,6 @@ public class PlateApiClient {
 
         RequestParams params = new RequestParams();
         params.put("filedata", report.image);
-        //params.put("plate", report.plate);
-        //params.put("position", new JSONArray(report.position));
-        //params.put("image", new ByteArrayInputStream(report.image2), report.plate + ".jpg");
-        //params.put("date", "2016-11-04 21:21:56Z");
         params.setUseJsonStreamer(true);
 
         InsertReportResultObservers.add(observer);
@@ -139,6 +135,7 @@ public class PlateApiClient {
                 RequestParams params = new RequestParams();
                 params.put("plate", report.plate);
                 params.put("position", new JSONArray(report.position));
+                params.put("process", report.process);
                 try {
                     params.put("image", jo.getString("url"));
                 }

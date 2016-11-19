@@ -22,6 +22,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
 
@@ -93,6 +94,8 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
         }
     };
 
+    EditText textWidth;
+    EditText textHeight;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,6 +113,9 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
             }
         });
         button = (Button) findViewById(R.id.detectorViewButton);
+        textWidth = (EditText) findViewById(R.id.textWidth);
+        textHeight = (EditText) findViewById(R.id.textHeight);
+
         button.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -303,12 +309,17 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
     }
     public void detectorAutoFocusButtonClick() {
         DetectorView.autoFocus = true;
+        DetectorView.detectorWidth = textWidth.getText().toString() == ""? 1920 : Integer.valueOf(textWidth.getText().toString());
+        DetectorView.detectorHeight = textHeight.getText().toString() == ""? 1080 : Integer.valueOf(textHeight.getText().toString());
+
         Intent i = new Intent(this, DetectorView.class);
         startActivity(i);
     }
 
     public void detectorNoAutoFocusButtonClick() {
         DetectorView.autoFocus = false;
+        DetectorView.detectorWidth = textWidth.getText().toString() == ""? 1920 : Integer.valueOf(textWidth.getText().toString());
+        DetectorView.detectorHeight = textHeight.getText().toString() == ""? 1080 : Integer.valueOf(textHeight.getText().toString());
         Intent i = new Intent(this, DetectorView.class);
         startActivity(i);
     }

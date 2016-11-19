@@ -57,6 +57,16 @@
         android:id="@+id/viewDisco"
         android:layout_alignParentBottom="true"
         android:layout_alignEnd="@+id/captureButton"
-        android:layout_below="@+id/scannerTable" />
+        android:layout_below="@+id/scannerTable"
+        android:visibility="invisible"/>
+
+    <TextView
+        android:text="TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
+        android:id="@+id/resolutionText"
+        android:layout_toStartOf="@+id/viewDisco" />
 
 </RelativeLayout>

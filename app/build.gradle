@@ -3,10 +3,10 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
         release {
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
-            storeFile file('C:\\Users\\fergu\\.android\\debug.keystore')
-            storePassword 'android'
+            keyAlias 'alias_name'
+            keyPassword '123123'
+            storeFile file('C:\\my-release-key.keystore')
+            storePassword '123123'
         }
     }
     compileSdkVersion 23
@@ -35,14 +35,14 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
-    compile 'com.loopj.android:android-async-http:1.4.9'
-    compile 'com.android.support:appcompat-v7:23.3.0'
-    compile project(':openCVLibrary300')
+    releaseCompile fileTree(include: ['*.jar'], dir: 'libs')
+    releaseCompile 'junit:junit:4.12'
+    releaseCompile 'com.loopj.android:android-async-http:1.4.9'
+    releaseCompile 'com.android.support:appcompat-v7:23.3.0'
+    releaseCompile project(':openCVLibrary300')
     //compile 'com.rmtheis:tess-two:5.4.0'
-    compile project(path: ':tess-two')
-    compile 'com.google.code.gson:gson:2.2.4'
-    compile 'com.google.android.gms:play-services-appindexing:8.4.0'
-    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
+    releaseCompile project(path: ':tess-two')
+    releaseCompile 'com.google.code.gson:gson:2.2.4'
+    releaseCompile 'com.google.android.gms:play-services-appindexing:8.4.0'
+    releaseCompile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
 }

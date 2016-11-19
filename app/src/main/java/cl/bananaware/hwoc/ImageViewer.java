@@ -80,7 +80,7 @@ public class ImageViewer extends Activity {
         if (b == null)
             return;
 
-        MainActivity.plateProcessSystem.ProcessCapture(b);
+        MainActivity.plateProcessSystem.ProcessCapture(b, System.currentTimeMillis());
         TimeProfiler.CheckPoint(36);
 
         if (SHOW_PROCESS_DEBUG) {
